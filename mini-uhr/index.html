@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live-Uhr, Timer, Wecker & Stoppuhr</title>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{
+  font-family:'Work Sans',Arial,sans-serif;
+  background:linear-gradient(180deg,#eef4fb,#fff);
+  margin:0;padding:20px;
+  display:flex;flex-direction:column;align-items:center;
+}
+h1{margin-bottom:20px;color:#0f172a;text-align:center}
+.section{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  margin:20px;
+  max-width:500px;
+  width:100%;
+  text-align:center;
+}
+.big{font-size:3rem;margin:10px 0;color:#0f172a;}
+input,button{
+  padding:10px;margin:4px;border:1px solid #d1d5db;
+  border-radius:8px;font-size:1rem;
+}
+button{
+  background:#0f172a;color:#fff;border:none;cursor:pointer;
+}
+button:hover{background:#1e293b;}
+label{display:block;margin-top:8px;color:#6b7280}
+</style>
+</head>
+<body>
+
+<h1>🕑 Live-Uhr • Timer • Wecker • Stoppuhr</h1>
+
+<div class="section">
+  <h2>Live-Uhr</h2>
+  <div class="big" id="clock">--:--:--</div>
+  <div id="date">--.--.----</div>
+</div>
+
+<div class="section">
+  <h2>Timer</h2>
+  <label>Minuten <input type="number" id="timerMin" value="1" min="0"></label>
+  <label>Sekunden <input type="number" id="timerSec" value="0" min="0" max="59"></label>
+  <button onclick="startTimer()">Start</button>
+  <button onclick="stopTimer()">Stop</button>
+  <div class="big" id="timerDisplay">00:00</div>
+</div>
+
+<div class="section">
+  <h2>Wecker</h2>
+  <label>Zielzeit (HH:MM)
+    <input type="time" id="alarmTime">
+  </label>
+  <button onclick="setAlarm()">Setzen</button>
+  <button onclick="clearAlarm()">Löschen</button>
+  <div id="alarmStatus">Kein Wecker aktiv</div>
+</div>
+
+<div class="section">
+  <h2>Stoppuhr</h2>
+  <button onclick="startStopwatch()">Start</button>
+  <button onclick="stopStopwatch()">Stopp</button>
+  <button onclick="resetStopwatch()">Reset</button>
+  <div class="big" id="stopwatchDisplay">00:00.0</div>
+</div>
+
+<audio id="beep" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+<script>
+/* ===== Live-Uhr ===== */
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('date').textContent =
+    now.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+}
+setInterval(updateClock,1000); updateClock();
+
+/* ===== Timer ===== */
+let timerInt=null, timerRemain=0;
+function startTimer(){
+  const m = parseInt(document.getElementById('timerMin').value)||0;
+  const s = parseInt(document.getElementById('timerSec').value)||0;
+  timerRemain = m*60 + s;
+  stopTimer();
+  timerInt = setInterval(()=>{
+    if(timerRemain<=0){
+      stopTimer();
+      beep();
+    }else{
+      timerRemain--;
+      displayTimer();
+    }
+  },1000);
+  displayTimer();
+}
+function stopTimer(){ if(timerInt){clearInterval(timerInt); timerInt=null;} }
+function displayTimer(){
+  const m = String(Math.floor(timerRemain/60)).padStart(2,'0');
+  const s = String(timerRemain%60).padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+}
+
+/* ===== Wecker ===== */
+let alarmInt=null, alarmTarget=null;
+function setAlarm(){
+  const val = document.getElementById('alarmTime').value;
+  if(!val){alert('Bitte Uhrzeit wählen');return;}
+  const [h,m] = val.split(':').map(Number);
+  alarmTarget = {h,m};
+  document.getElementById('alarmStatus').textContent =
+    `Wecker gestellt auf ${val}`;
+  if(alarmInt) clearInterval(alarmInt);
+  alarmInt = setInterval(checkAlarm,1000);
+}
+function checkAlarm(){
+  const now = new Date();
+  if(alarmTarget &&
+     now.getHours()===alarmTarget.h &&
+     now.getMinutes()===alarmTarget.m &&
+     now.getSeconds()===0){
+       beep();
+       clearAlarm();
+  }
+}
+function clearAlarm(){
+  if(alarmInt) clearInterval(alarmInt);
+  alarmInt=null; alarmTarget=null;
+  document.getElementById('alarmStatus').textContent='Kein Wecker aktiv';
+}
+
+/* ===== Stoppuhr ===== */
+let swInt=null, swStart=0, swElapsed=0;
+function startStopwatch(){
+  if(swInt) return;
+  swStart = Date.now() - swElapsed;
+  swInt = setInterval(()=>{
+    swElapsed = Date.now() - swStart;
+    displayStopwatch();
+  },100);
+}
+function stopStopwatch(){
+  if(swInt){clearInterval(swInt); swInt=null;}
+}
+function resetStopwatch(){
+  stopStopwatch();
+  swElapsed=0;
+  displayStopwatch();
+}
+function displayStopwatch(){
+  const t = swElapsed;
+  const m = String(Math.floor(t/60000)).padStart(2,'0');
+  const s = String(Math.floor((t%60000)/1000)).padStart(2,'0');
+  const d = Math.floor((t%1000)/100);
+  document.getElementById('stopwatchDisplay').textContent = `${m}:${s}.${d}`;
+}
+
+/* ===== Signal ===== */
+function beep(){
+  document.getElementById('beep').play().catch(()=>{});
+  alert('⏰ Zeit abgelaufen!');
+}
+</script>
+</body>
+</html>
