@@ -1,0 +1,364 @@
+<!-- === MINI-TABLE.HTML — PART 1 START === -->
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini-Table — Final (.octtb)</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600&family=Roboto&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#eef4fb;
+    --paper:#fff;
+    --muted:#6b7280;
+    --accent:#0f172a;
+    --panel:#f8fafc;
+    --grid:#e6eff9;
+    --danger:#ef4444;
+  }
+  html,body{height:100%;margin:0;font-family:Work Sans,Roboto,system-ui,Segoe UI,Arial}
+  body{
+    background:linear-gradient(180deg,var(--bg),#fff);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:18px;
+    box-sizing:border-box;
+    color:var(--accent)
+  }
+
+  /* Header / Toolbar */
+  header{
+    width:100%;
+    max-width:980px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px;
+    border-radius:12px;
+    background:var(--paper);
+    box-shadow:0 6px 24px rgba(16,24,40,0.06);
+    margin-bottom:12px;
+    flex-wrap:wrap
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--accent)}
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:1}
+  .btn, .select, .color{
+    background:var(--panel);
+    border:1px solid #e6eef7;
+    padding:8px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .btn:active{transform:translateY(1px)}
+  .select{appearance:none}
+  input[type="color"].color{padding:4px;height:36px;width:42px;border-radius:8px}
+
+  /* Paper / Table Canvas */
+  .canvas{width:100%;max-width:980px;display:flex;justify-content:center}
+  .paper{
+    width:100%;
+    background:var(--paper);
+    box-shadow:0 8px 24px rgba(16,24,40,0.08);
+    border-radius:10px;
+    padding:12px;
+    box-sizing:border-box;
+    min-height:520px;
+    border:1px solid rgba(15,23,42,0.04);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  /* table area */
+  .table-wrap{
+    overflow:auto;
+    background:linear-gradient(180deg,#fff,#fbfdff);
+    border-radius:8px;
+    padding:10px;
+    border:1px solid rgba(15,23,42,0.03);
+  }
+  table.sheet{
+    border-collapse:collapse;
+    width:100%;
+    min-width:700px;
+    background:transparent;
+  }
+  table.sheet th, table.sheet td{
+    border:1px solid var(--grid);
+    padding:8px 10px;
+    min-width:80px;
+    vertical-align:top;
+  }
+  table.sheet th{
+    background:#f8fbff;
+    font-weight:600;
+    color:var(--muted);
+  }
+  table.sheet td[contenteditable="true"]{ outline: none; cursor:text; }
+
+  /* selected cell highlight */
+  td.selected{
+    box-shadow:inset 0 0 0 2px rgba(59,130,246,0.18);
+    background:rgba(59,130,246,0.04);
+  }
+
+  /* row/col controls */
+  .rc-controls{display:flex;gap:6px;align-items:center}
+  .mini{padding:6px 8px;font-size:13px;border-radius:6px}
+
+  /* footer/status */
+  footer{
+    width:100%;
+    max-width:980px;
+    margin-top:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:13px;
+    color:var(--muted)
+  }
+
+  /* responsive */
+  @media (max-width:760px){
+    .paper{padding:8px}
+    table.sheet{min-width:600px}
+  }
+</style>
+</head>
+<!-- === MINI-TABLE.HTML — PART 1 END === -->
+<!-- === MINI-TABLE.HTML — PART 2 START === -->
+<body>
+<header>
+  <div class="brand">📊 Mini-Table</div>
+
+  <div class="toolbar" role="toolbar" aria-label="Werkzeuge">
+    <button class="btn" onclick="addRow()">➕ Zeile</button>
+    <button class="btn" onclick="addCol()">➕ Spalte</button>
+    <button class="btn" onclick="delRow()">🗑 Zeile</button>
+    <button class="btn" onclick="delCol()">🗑 Spalte</button>
+
+    <button class="btn" onclick="mergeCells()">🔗 Zellen verbinden</button>
+    <button class="btn" onclick="splitCell()">✂️ Zelle teilen</button>
+
+    <button class="btn" onclick="exec('bold')"><b>B</b></button>
+    <button class="btn" onclick="exec('italic')"><i>I</i></button>
+    <button class="btn" onclick="exec('underline')"><u>U</u></button>
+
+    <input class="color" title="Textfarbe" type="color" onchange="exec('foreColor', this.value)">
+    <input class="color" title="Hintergrund" type="color" onchange="setCellBg(this.value)">
+
+    <button class="btn" onclick="downloadOcttb()">💾 .octtb</button>
+    <button class="btn" onclick="uploadOcttb()">📂 Öffnen</button>
+    <button class="btn" onclick="exportCSV()">CSV</button>
+    <button class="btn" onclick="printTable()">🖨 Drucken</button>
+  </div>
+</header>
+
+<div class="canvas">
+  <article class="paper">
+    <div class="rc-controls">
+      <button class="btn mini" onclick="insertSample()">📑 Neue Tabelle</button>
+    </div>
+    <div class="table-wrap">
+      <table class="sheet" id="sheet">
+        <thead>
+          <tr>
+            <th>A</th><th>B</th><th>C</th><th>D</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+          <tr>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+            <td contenteditable="true"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</div>
+
+<footer>
+  <div class="status" id="status">Bereit</div>
+  <div class="muted">Zellen: <span id="cellCount">0</span></div>
+</footer>
+
+<input id="openFile" type="file" accept=".octtb,.html,.csv" style="display:none" onchange="loadOcttb(this.files)">
+<!-- === MINI-TABLE.HTML — PART 2 END === -->
+<!-- === MINI-TABLE.HTML — PART 3 START === -->
+<script>
+const sheet = document.getElementById('sheet');
+const statusEl = document.getElementById('status');
+const cellCountEl = document.getElementById('cellCount');
+const openFileInput = document.getElementById('openFile');
+const LS_KEY = 'minitable_octtb_v1';
+
+let saveTimer=null;
+
+/* ---------- Init ---------- */
+function updateCellCount(){
+  cellCountEl.textContent = sheet.querySelectorAll('td').length;
+}
+function init(){
+  const saved = localStorage.getItem(LS_KEY);
+  if(saved){ sheet.tBodies[0].innerHTML = saved; }
+  updateCellCount();
+}
+init();
+
+/* ---------- Table helpers ---------- */
+function addRow(){
+  const cols = sheet.tHead.rows[0].cells.length;
+  const row = sheet.tBodies[0].insertRow();
+  for(let i=0;i<cols;i++){
+    const td = row.insertCell();
+    td.contentEditable = 'true';
+  }
+  update();
+}
+function addCol(){
+  const th = document.createElement('th');
+  th.textContent = String.fromCharCode(65 + sheet.tHead.rows[0].cells.length);
+  sheet.tHead.rows[0].appendChild(th);
+  [...sheet.tBodies[0].rows].forEach(r=>{
+    const td = r.insertCell();
+    td.contentEditable = 'true';
+  });
+  update();
+}
+function delRow(){
+  if(sheet.tBodies[0].rows.length>1){
+    sheet.tBodies[0].deleteRow(-1);
+    update();
+  }
+}
+function delCol(){
+  const colCount = sheet.tHead.rows[0].cells.length;
+  if(colCount>1){
+    sheet.tHead.rows[0].deleteCell(-1);
+    [...sheet.tBodies[0].rows].forEach(r=>r.deleteCell(-1));
+    update();
+  }
+}
+
+function insertSample(){
+  sheet.tBodies[0].innerHTML =
+    '<tr>'+Array(4).fill('<td contenteditable=\"true\"></td>').join('')+'</tr>'+
+    '<tr>'+Array(4).fill('<td contenteditable=\"true\"></td>').join('')+'</tr>';
+  update();
+}
+
+/* ---------- Cell operations ---------- */
+function exec(cmd,val=null){
+  document.execCommand('styleWithCSS', false, true);
+  document.execCommand(cmd,false,val);
+  sheet.focus();
+}
+function setCellBg(color){
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  const cell = sel.anchorNode?.parentElement.closest('td');
+  if(cell){ cell.style.background=color; update(); }
+}
+function mergeCells(){
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const td = range.startContainer.parentElement.closest('td');
+  const next = td?.nextElementSibling;
+  if(td && next){
+    td.colSpan = (td.colSpan||1)+ (next.colSpan||1);
+    td.innerHTML += ' ' + next.innerHTML;
+    next.remove();
+    update();
+  }
+}
+function splitCell(){
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  const td = sel.anchorNode?.parentElement.closest('td');
+  if(td && td.colSpan>1){
+    const cols = td.colSpan;
+    td.colSpan = 1;
+    for(let i=1;i<cols;i++){
+      const n = td.parentElement.insertCell(td.cellIndex+1);
+      n.contentEditable='true';
+    }
+    update();
+  }
+}
+
+/* ---------- Save/Load ---------- */
+function downloadOcttb(){
+  const name = 'tabelle.octtb';
+  const blob = new Blob([sheet.tBodies[0].innerHTML], {type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  statusEl.textContent='Heruntergeladen: '+name;
+}
+function uploadOcttb(){ openFileInput.click(); }
+function loadOcttb(files){
+  const f = files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    sheet.tBodies[0].innerHTML = r.result;
+    update();
+    statusEl.textContent='Datei geladen';
+  };
+  r.readAsText(f);
+  openFileInput.value='';
+}
+
+/* ---------- CSV/Print ---------- */
+function exportCSV(){
+  let csv='';
+  const rows=[...sheet.rows];
+  rows.forEach(r=>{
+    const cells=[...r.cells].map(c=>`\"${c.innerText.replace(/\"/g,'\"\"')}\"`);
+    csv += cells.join(';')+'\\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='tabelle.csv';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function printTable(){
+  const w=window.open('','_blank');
+  const css='<style>body{font-family:Work Sans,Arial;margin:40px} table{border-collapse:collapse;width:100%} td,th{border:1px solid #ccc;padding:8px}</style>';
+  w.document.write('<html><head><meta charset=\"utf-8\">'+css+'</head><body>'+sheet.outerHTML+'</body></html>');
+  w.document.close();
+  setTimeout(()=>w.print(),300);
+}
+
+/* ---------- Autosave ---------- */
+function update(){
+  updateCellCount();
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    localStorage.setItem(LS_KEY, sheet.tBodies[0].innerHTML);
+    statusEl.textContent='Alle Änderungen gespeichert';
+  },700);
+}
+sheet.addEventListener('input', update);
+
+</script>
+</body>
+</html>
+<!-- === MINI-TABLE.HTML — PART 3 END === -->
