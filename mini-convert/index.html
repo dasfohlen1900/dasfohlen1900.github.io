@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini-Converter</title>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{
+  font-family:'Work Sans',Arial,sans-serif;
+  background:linear-gradient(180deg,#eef4fb,#fff);
+  margin:0;padding:20px;
+  display:flex;flex-direction:column;align-items:center;
+}
+h1{color:#0f172a;text-align:center;margin-bottom:20px;}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  width:90%;max-width:500px;
+  margin-bottom:20px;
+}
+label{display:block;margin-top:10px;}
+input,select{
+  width:100%;padding:10px;
+  border:1px solid #d1d5db;border-radius:8px;
+  font-size:1rem;margin-top:6px;
+}
+.result{margin-top:12px;font-size:1.3rem;color:#0f172a;font-weight:600;}
+</style>
+</head>
+<body>
+
+<h1>🔄 Mini-Converter</h1>
+
+<div class="card" id="lenCard">
+  <h2>Länge</h2>
+  <label>Wert:
+    <input type="number" id="lenVal" value="1" step="any" oninput="convert('len')">
+  </label>
+  <label>Von:
+    <select id="lenFrom" onchange="convert('len')"></select>
+  </label>
+  <label>Nach:
+    <select id="lenTo" onchange="convert('len')"></select>
+  </label>
+  <div class="result" id="lenOut"></div>
+</div>
+
+<div class="card" id="tempCard">
+  <h2>Temperatur</h2>
+  <label>Wert:
+    <input type="number" id="tempVal" value="0" step="any" oninput="convertTemp()">
+  </label>
+  <label>Von:
+    <select id="tempFrom" onchange="convertTemp()">
+      <option value="C">°C</option><option value="F">°F</option><option value="K">K</option>
+    </select>
+  </label>
+  <label>Nach:
+    <select id="tempTo" onchange="convertTemp()">
+      <option value="C">°C</option><option value="F">°F</option><option value="K">K</option>
+    </select>
+  </label>
+  <div class="result" id="tempOut"></div>
+</div>
+
+<div class="card" id="volCard">
+  <h2>Hohlmaß / Volumen</h2>
+  <label>Wert:
+    <input type="number" id="volVal" value="1" step="any" oninput="convert('vol')">
+  </label>
+  <label>Von:
+    <select id="volFrom" onchange="convert('vol')"></select>
+  </label>
+  <label>Nach:
+    <select id="volTo" onchange="convert('vol')"></select>
+  </label>
+  <div class="result" id="volOut"></div>
+</div>
+
+<div class="card" id="dataCard">
+  <h2>Daten</h2>
+  <label>Wert:
+    <input type="number" id="dataVal" value="1" step="any" oninput="convert('data')">
+  </label>
+  <label>Von:
+    <select id="dataFrom" onchange="convert('data')"></select>
+  </label>
+  <label>Nach:
+    <select id="dataTo" onchange="convert('data')"></select>
+  </label>
+  <div class="result" id="dataOut"></div>
+</div>
+
+<script>
+// ===== Einheitstabellen =====
+const lengthUnits = {
+  'm': {name:'Meter', factor:1},
+  'cm':{name:'Zentimeter', factor:0.01},
+  'mm':{name:'Millimeter', factor:0.001},
+  'km':{name:'Kilometer', factor:1000},
+  'inch':{name:'Zoll (inch)', factor:0.0254},
+  'ft':{name:'Fuß (ft)', factor:0.3048},
+  'yd':{name:'Yard', factor:0.9144},
+  'mi':{name:'Meile', factor:1609.34}
+};
+const volUnits = {
+  'l':{name:'Liter', factor:1},
+  'ml':{name:'Milliliter', factor:0.001},
+  'm3':{name:'Kubikmeter', factor:1000},
+  'gal':{name:'US-Gallone', factor:3.78541},
+  'cup':{name:'Cup (US)', factor:0.236588}
+};
+const dataUnits = {
+  'B': {name:'Byte', factor:1},
+  'KB':{name:'Kilobyte', factor:1024},
+  'MB':{name:'Megabyte', factor:1024**2},
+  'GB':{name:'Gigabyte', factor:1024**3},
+  'TB':{name:'Terabyte', factor:1024**4}
+};
+
+// ===== Dropdowns füllen =====
+function fillSelect(prefix, units){
+  const fromSel=document.getElementById(prefix+'From');
+  const toSel=document.getElementById(prefix+'To');
+  for(const [key,u] of Object.entries(units)){
+    fromSel.innerHTML += `<option value="${key}">${u.name}</option>`;
+    toSel.innerHTML   += `<option value="${key}">${u.name}</option>`;
+  }
+  fromSel.value=Object.keys(units)[0];
+  toSel.value=Object.keys(units)[1];
+}
+fillSelect('len',lengthUnits);
+fillSelect('vol',volUnits);
+fillSelect('data',dataUnits);
+
+// ===== Allgemeine Umrechnung =====
+function convert(type){
+  const units = type==='len'? lengthUnits : type==='vol'? volUnits : dataUnits;
+  const val = parseFloat(document.getElementById(type+'Val').value)||0;
+  const from = document.getElementById(type+'From').value;
+  const to   = document.getElementById(type+'To').value;
+  const base = val * units[from].factor;
+  const res  = base / units[to].factor;
+  document.getElementById(type+'Out').textContent =
+    `= ${res.toLocaleString(undefined,{maximumFractionDigits:6})} ${to}`;
+}
+
+// ===== Temperatur separat =====
+function convertTemp(){
+  const val = parseFloat(document.getElementById('tempVal').value)||0;
+  const from = document.getElementById('tempFrom').value;
+  const to   = document.getElementById('tempTo').value;
+  let c;
+  // nach Celsius
+  if(from==='C') c = val;
+  else if(from==='F') c = (val-32)*5/9;
+  else if(from==='K') c = val - 273.15;
+  // von Celsius nach Ziel
+  let out;
+  if(to==='C') out = c;
+  else if(to==='F') out = c*9/5 + 32;
+  else if(to==='K') out = c + 273.15;
+  document.getElementById('tempOut').textContent =
+    `= ${out.toLocaleString(undefined,{maximumFractionDigits:6})} °${to}`;
+}
+
+// Startwerte berechnen
+convert('len'); convert('vol'); convert('data'); convertTemp();
+</script>
+
+</body>
+</html>
