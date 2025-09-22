@@ -1,299 +1,99 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mini-Word 2.0 — Fixed (.octxt)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini-Office – Startseite</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600&family=Roboto&family=Open+Sans&display=swap" rel="stylesheet">
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-  :root{
-    --bg:#eef4fb;
-    --paper:#fff;
-    --muted:#6b7280;
-    --accent:#0f172a;
-    --panel:#f8fafc;
-  }
-  html,body{height:100%;margin:0;font-family:Work Sans,Roboto,Open Sans,system-ui,Segoe UI,Arial}
-  body{background:linear-gradient(180deg,var(--bg),#fff);display:flex;flex-direction:column;align-items:center;padding:18px 12px;box-sizing:border-box}
-  header{width:100%;max-width:980px;display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;background:var(--paper);box-shadow:0 6px 24px rgba(16,24,40,0.06);margin-bottom:12px;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--accent)}
-  .toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:1}
-  .btn, .select, .color{
-    background:var(--panel);border:1px solid #e6eef7;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px
-  }
-  .btn:active{transform:translateY(1px)}
-  .select{appearance:none}
-  input[type="color"].color{padding:4px;height:36px;width:42px;border-radius:8px}
-  .canvas{width:100%;max-width:980px;display:flex;justify-content:center}
-  .paper{
-    width:800px;min-width:600px;background:var(--paper);box-shadow:0 8px 24px rgba(16,24,40,0.08);
-    border-radius:10px;padding:18px 22px;box-sizing:border-box;min-height:560px;overflow:auto;
-    border:1px solid rgba(15,23,42,0.04);
-  }
-  #title{font-size:18px;border:0;outline:none;margin:0 0 6px 0;padding:6px 0;font-weight:600}
-  #editor{min-height:420px;outline:none;padding:10px;border-radius:6px;background:linear-gradient(180deg,#fff,#fbfdff)}
-  #editor img{max-width:100%;height:auto;display:block;margin:8px 0}
-  footer{width:100%;max-width:980px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
-  .status{color:var(--muted)}
-  .counter{font-weight:600;color:var(--accent)}
-  @media (max-width:760px){
-    .paper{width:100%;min-width:auto}
-    header{padding:8px}
-  }
+:root{
+  --bg:#eef4fb;
+  --card:#ffffff;
+  --accent:#0f172a;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Work Sans',system-ui,Arial;
+  background:linear-gradient(180deg,var(--bg),#fff);
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:40px 20px;
+}
+header{text-align:center;margin-bottom:40px;}
+h1{font-size:2.2rem;color:var(--accent);margin-bottom:6px;}
+p.tagline{color:var(--muted);font-size:1.1rem;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:24px;
+  width:100%;
+  max-width:960px;
+  margin-top:20px;
+}
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.06);
+  transition:transform .2s, box-shadow .2s;
+  text-decoration:none;
+  color:var(--accent);
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 10px 26px rgba(0,0,0,0.08);
+}
+.card h2{font-size:1.4rem;margin-bottom:8px;}
+.card p{font-size:0.95rem;color:var(--muted);}
+footer{
+  margin-top:auto;
+  font-size:0.85rem;
+  color:var(--muted);
+  text-align:center;
+  padding-top:20px;
+}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="brand">📝 Mini-Word 2.0</div>
-  <div class="toolbar" role="toolbar" aria-label="Hauptwerkzeuge">
-    <button class="btn" onclick="exec('bold')"><b>B</b></button>
-    <button class="btn" onclick="exec('italic')"><i>I</i></button>
-    <button class="btn" onclick="exec('underline')"><u>U</u></button>
-    <button class="btn" onclick="formatBlock('H1')">H1</button>
-    <button class="btn" onclick="exec('insertUnorderedList')">• Liste</button>
-    <button class="btn" onclick="exec('insertOrderedList')">1. Liste</button>
-    <button class="btn" onclick="exec('justifyLeft')">⯇</button>
-    <button class="btn" onclick="exec('justifyCenter')">≡</button>
-    <button class="btn" onclick="exec('justifyRight')">⯈</button>
-    <button class="btn" onclick="exec('justifyFull')">⯌</button>
-    <button class="btn" onclick="exec('undo')">↺</button>
-    <button class="btn" onclick="exec('redo')">↻</button>
-
-    <select class="select" id="fontFamily" onchange="exec('fontName', this.value)">
-      <option value="Work Sans">Work Sans</option>
-      <option value="Arial">Arial</option>
-      <option value="Georgia">Georgia</option>
-      <option value="Times New Roman">Times New Roman</option>
-      <option value="Courier New">Courier New</option>
-      <option value="Roboto">Roboto</option>
-      <option value="Open Sans">Open Sans</option>
-    </select>
-
-    <select class="select" id="fontSize" onchange="setFontSize(this.value)">
-      <option value="3">14px</option>
-      <option value="4" selected>16px</option>
-      <option value="5">18px</option>
-      <option value="6">20px</option>
-      <option value="7">24px</option>
-    </select>
-
-    <input class="color" type="color" onchange="exec('foreColor', this.value)">
-    <input class="color" type="color" onchange="exec('hiliteColor', this.value)">
-    <button class="btn" onclick="addLink()">🔗</button>
-    <button class="btn" onclick="exec('unlink')">✖</button>
-
-    <input id="imgFile" type="file" accept="image/*" style="display:none" onchange="insertImage(this.files)">
-    <button class="btn" onclick="document.getElementById('imgFile').click()">🖼️</button>
-
-    <button class="btn" onclick="printDoc()">🖨 Drucken</button>
-    <button class="btn" onclick="downloadOctxt()">💾 .octxt</button>
-    <button class="btn" onclick="downloadHTML()">HTML</button>
-    <button class="btn" onclick="downloadText()">TXT</button>
-
-    <input id="openFile" type="file" accept=".octxt,.html,.txt" style="display:none">
-    <button class="btn" onclick="document.getElementById('openFile').click()">📂 Öffnen</button>
-  </div>
+  <h1>🚀 Mini-Office</h1>
+  <p class="tagline">Alle deine Mini-Apps auf einen Blick</p>
 </header>
 
-<div class="canvas">
-  <article class="paper">
-    <input id="title" value="Neues Dokument" />
-    <div id="editor" contenteditable="true" spellcheck="true">
-      <p>Willkommen zu Mini-Word 2.0 — schreibe los.</p>
-    </div>
-  </article>
-</div>
+<main class="grid">
+  <a class="card" href="mini-word/">
+    <h2>Mini-Word</h2>
+    <p>Texteditor mit .octxt-Speicherung</p>
+  </a>
+
+  <a class="card" href="mini-draw/">
+    <h2>Mini-Draw</h2>
+    <p>Zeichnen und Bilder einfügen</p>
+  </a>
+
+  <a class="card" href="mini-calc/">
+    <h2>Mini-Calc</h2>
+    <p>Wissenschaftlicher Rechner mit Verlauf</p>
+  </a>
+
+  <a class="card" href="mini-table/">
+    <h2>Mini-Table</h2>
+    <p>Einfache Tabellenkalkulation</p>
+  </a>
+</main>
 
 <footer>
-  <div class="status" id="status">Bereit</div>
-  <div>Wörter: <span id="wordCount" class="counter">0</span> — Zeichen: <span id="charCount" class="counter">0</span></div>
+  &copy; 2025 Mini-Office –
+  <a href="https://github.com/dasfohlen1900" style="color:inherit;text-decoration:underline;">
+    dasfohlen1900
+  </a>
 </footer>
 
-<script>
-const editor = document.getElementById('editor');
-const status = document.getElementById('status');
-const titleInput = document.getElementById('title');
-const openFileInput = document.getElementById('openFile');
-const LS_KEY = 'miniword2_octxt_v1';
-const LS_TITLE = 'miniword2_title_v1';
-let saveTimer = null;
-
-/* --- Wort- und Zeichen­zähler --- */
-function updateCounts(){
-  const text = editor.innerText || '';
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  const chars = text.replace(/\n/g,'').length;
-  document.getElementById('wordCount').textContent = words;
-  document.getElementById('charCount').textContent = chars;
-}
-editor.addEventListener('input', () => {
-  status.textContent = 'Speichern...';
-  updateCounts();
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    localStorage.setItem(LS_KEY, editor.innerHTML);
-    localStorage.setItem(LS_TITLE, titleInput.value || 'Neues Dokument');
-    status.textContent = 'Alle Änderungen gespeichert';
-  }, 700);
-});
-titleInput.addEventListener('input', ()=> {
-  localStorage.setItem(LS_TITLE, titleInput.value || 'Neues Dokument');
-});
-
-/* --- Editor-Befehle --- */
-function exec(cmd,val=null){
-  document.execCommand('styleWithCSS', false, true);
-  document.execCommand(cmd,false,val);
-  editor.focus();
-}
-function formatBlock(tag){document.execCommand('formatBlock',false,tag);editor.focus();}
-function setFontSize(size){
-  document.execCommand('fontSize', false, size);
-  const fonts = editor.querySelectorAll('font[size]');
-  fonts.forEach(f => {
-    const map={'1':'10px','2':'12px','3':'14px','4':'16px','5':'18px','6':'20px','7':'24px'};
-    const px = map[size] || '14px';
-    const span = document.createElement('span');
-    span.style.fontSize = px;
-    span.innerHTML = f.innerHTML;
-    f.replaceWith(span);
-  });
-  editor.focus();
-}
-function addLink(){
-  const url = prompt('Link-Adresse (inkl. https://) eingeben:');
-  if(url) exec('createLink', url);
-}
-function printDoc(){
-  const w = window.open('', '_blank');
-  const css = '<style>body{font-family:Work Sans,Arial,Georgia;margin:40px;} img{max-width:100%;}</style>';
-  w.document.write('<html><head><meta charset="utf-8"><title>' + (titleInput.value||'Dokument') + '</title>'+css+'</head><body>' + editor.innerHTML + '</body></html>');
-  w.document.close(); w.focus(); setTimeout(()=>{ w.print(); },300);
-}
-function downloadOctxt(){
-  const name = (titleInput.value||'dokument').replace(/\s+/g,'_') + '.octxt';
-  const blob = new Blob([editor.innerHTML], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = name; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-}
-function downloadHTML(){
-  const name = (titleInput.value||'dokument').replace(/\s+/g,'_') + '.html';
-  const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + (titleInput.value||'Dokument') + '</title></head><body>' + editor.innerHTML + '</body></html>';
-  const blob = new Blob([html], {type:'text/html'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = name; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-}
-function downloadText(){
-  const name = (titleInput.value||'dokument').replace(/\s+/g,'_') + '.txt';
-  const text = editor.innerText || '';
-  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = name; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-}
-/* --- Import (.octxt / .html / .txt) --- */
-openFileInput.addEventListener('change', (e) => {
-  const f = e.target.files[0];
-  if(!f) return;
-  const r = new FileReader();
-  r.onload = ()=> {
-    const name = f.name.toLowerCase();
-    if(name.endsWith('.octxt') || name.endsWith('.txt')) {
-      // ✅ Fix: LocalStorage löschen + trim
-      localStorage.removeItem(LS_KEY);
-      editor.innerHTML = r.result.trim();
-    } else if(name.endsWith('.html') || name.endsWith('.htm')) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(r.result, 'text/html');
-      editor.innerHTML = doc.body.innerHTML || r.result;
-    } else {
-      alert('Ununterstütztes Format');
-    }
-    status.textContent = 'Datei geladen';
-    updateCounts();
-  };
-  r.readAsText(f);
-  openFileInput.value = '';
-});
-
-/* --- Bilder einfügen --- */
-function insertImage(files){
-  if(!files||!files[0])return;
-  const file = files[0];
-  if(!file.type.startsWith('image/')) return alert('Keine Bilddatei');
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    const img=document.createElement('img');
-    img.src=reader.result; img.alt=file.name;
-    insertNodeAtCaret(img);
-    updateCounts();
-  };
-  reader.readAsDataURL(file);
-}
-
-/* --- Node an Cursorposition einfügen --- */
-function insertNodeAtCaret(node){
-  const sel=window.getSelection();
-  if(!sel||sel.rangeCount===0){editor.appendChild(node);return;}
-  const range=sel.getRangeAt(0);
-  range.deleteContents();
-  range.insertNode(node);
-  range.setStartAfter(node);
-  range.setEndAfter(node);
-  sel.removeAllRanges();
-  sel.addRange(range);
-  editor.focus();
-}
-
-/* --- Drag & Drop Bilder --- */
-editor.addEventListener('dragover', (e)=> { e.preventDefault(); editor.style.outline = '2px dashed #cfe9ff'; });
-editor.addEventListener('dragleave', ()=> { editor.style.outline = 'none'; });
-editor.addEventListener('drop', (e)=> {
-  e.preventDefault(); editor.style.outline = 'none';
-  const files = Array.from(e.dataTransfer.files || []);
-  const imgs = files.filter(f => f.type && f.type.startsWith('image/'));
-  if(imgs.length) insertImage(imgs);
-});
-
-/* --- Zähler initial --- */
-updateCounts();
-/* --- Tastenkürzel --- */
-document.addEventListener('keydown', (e) => {
-  const mac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-    e.preventDefault();
-    downloadOctxt();
-    status.textContent = 'Manuell gespeichert';
-  }
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); exec('bold'); }
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); exec('italic'); }
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') { e.preventDefault(); exec('underline'); }
-});
-
-/* --- Funktionen global verfügbar machen --- */
-window.exec = exec;
-window.formatBlock = formatBlock;
-window.setFontSize = setFontSize;
-window.insertImage = function(files){ insertImage(files); };
-window.addLink = addLink;
-window.printDoc = printDoc;
-window.downloadOctxt = downloadOctxt;
-window.downloadHTML = downloadHTML;
-window.downloadText = downloadText;
-window.openFile = function(files){ openFileInput.files = files; openFileInput.dispatchEvent(new Event('change')); };
-
-/* --- Editor beim Laden fokussieren --- */
-window.addEventListener('load', ()=>{ editor.setAttribute('tabindex', '0'); });
-
-/* --- Vor dem Schließen speichern --- */
-window.addEventListener('beforeunload', ()=> {
-  localStorage.setItem(LS_KEY, editor.innerHTML);
-  localStorage.setItem(LS_TITLE, titleInput.value || 'Neues Dokument');
-});
-</script>
 </body>
 </html>
+
