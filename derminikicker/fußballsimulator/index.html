@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini-Kicker ⚽🐙</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+    }
+    .ribbon {
+      display: flex;
+      background: #0078d7;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+    }
+    .tab {
+      margin-right: 20px;
+      cursor: pointer;
+    }
+    .tab:hover {
+      text-decoration: underline;
+    }
+    .toolbar {
+      background: #e0e0e0;
+      padding: 10px;
+      display: none;
+    }
+    .toolbar.active {
+      display: block;
+    }
+    button {
+      margin-right: 10px;
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .editor {
+      padding: 20px;
+      background: white;
+      min-height: 400px;
+      border-top: 2px solid #0078d7;
+    }
+    h1 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="ribbon">
+    <div class="tab" onclick="showTab('start')">Start</div>
+    <div class="tab" onclick="showTab('einfügen')">Einfügen</div>
+    <div class="tab" onclick="showTab('statistik')">Statistik</div>
+    <div class="tab" onclick="showTab('export')">Export</div>
+  </div>
+
+  <div class="toolbar active" id="start">
+    <button onclick="newMatch()">🆕 Neues Spiel</button>
+    <button onclick="addTeam()">➕ Team hinzufügen</button>
+  </div>
+
+  <div class="toolbar" id="einfügen">
+    <button onclick="insertGoal()">⚽ Tor</button>
+    <button onclick="insertCard('Gelb')">🟨 Gelbe Karte</button>
+    <button onclick="insertCard('Rot')">🟥 Rote Karte</button>
+    <button onclick="insertComment()">💬 Kommentar</button>
+  </div>
+
+  <div class="toolbar" id="statistik">
+    <button onclick="insertStat('Ballbesitz')">📊 Ballbesitz</button>
+    <button onclick="insertStat('Torschüsse')">🎯 Torschüsse</button>
+    <button onclick="insertStat('Ecken')">🚩 Ecken</button>
+  </div>
+
+  <div class="toolbar" id="export">
+    <button onclick="downloadReport()">💾 Speichern (.octxt)</button>
+  </div>
+
+  <div class="editor" contenteditable="true" id="report">
+    <h1>Mini-Kicker Spielbericht</h1>
+    <p>🏟️ Spiel: Borussia Nordhorn vs. Oktopus United</p>
+    <p>📅 Datum: 23.09.2025</p>
+    <p>⏱️ Anstoß: 15:30 Uhr</p>
+    <hr />
+  </div>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.toolbar').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function newMatch() {
+      document.getElementById('report').innerHTML = `
+        <h1>Mini-Kicker Spielbericht</h1>
+        <p>🏟️ Spiel: Borussia Nordhorn vs. Oktopus United</p>
+        <p>📅 Datum: ${new Date().toLocaleDateString()}</p>
+        <p>⏱️ Anstoß: 15:30 Uhr</p>
+        <hr />
+      `;
+    }
+
+    function addTeam() {
+      const team = prompt("Teamname eingeben:");
+      if (team) {
+        document.getElementById('report').innerHTML += `<p>👥 Team hinzugefügt: ${team}</p>`;
+      }
+    }
+
+    function insertGoal() {
+      const minute = prompt("Minute des Tores:");
+      const scorer = prompt("Torschütze:");
+      if (minute && scorer) {
+        document.getElementById('report').innerHTML += `<p>⚽ ${minute}' ${scorer}</p>`;
+      }
+    }
+
+    function insertCard(type) {
+      const minute = prompt(`Minute der ${type}en Karte:`);
+      const player = prompt("Spielername:");
+      if (minute && player) {
+        const emoji = type === 'Gelb' ? '🟨' : '🟥';
+        document.getElementById('report').innerHTML += `<p>${emoji} ${minute}' ${player}</p>`;
+      }
+    }
+
+    function insertComment() {
+      const comment = prompt("Kommentar eingeben:");
+      if (comment) {
+        document.getElementById('report').innerHTML += `<p>💬 ${comment}</p>`;
+      }
+    }
+
+    function insertStat(type) {
+      const value = prompt(`${type} eingeben (z. B. 58% / 42%)`);
+      if (value) {
+        document.getElementById('report').innerHTML += `<p>📊 ${type}: ${value}</p>`;
+      }
+    }
+
+    function downloadReport() {
+      const content = document.getElementById('report').innerText;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'spielbericht.octxt';
+      link.click();
+    }
+  </script>
+</body>
+</html>
