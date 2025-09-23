@@ -49,28 +49,28 @@
 </head>
 <body>
   <div class="ribbon">
-    <div class="tab" onclick="showTab('standings')">📊 Tabelle</div>
-    <div class="tab" onclick="showTab('upcoming')">📅 Nächste Spiele</div>
+    <div class="tab" onclick="showTab('tabelle')">📊 Tabelle</div>
+    <div class="tab" onclick="showTab('spiele')">📅 Spiele</div>
     <div class="tab" onclick="showTab('team')">🧠 Teamdaten</div>
   </div>
 
-  <div class="toolbar active" id="standings">
+  <div class="toolbar active" id="tabelle">
     <div class="section">
-      <h2>📊 Aktuelle Tabelle</h2>
-      <div id="fs-standings"></div>
+      <h2>📊 Aktuelle Bundesliga-Tabelle</h2>
+      <div id="fblwidget_table"></div>
     </div>
   </div>
 
-  <div class="toolbar" id="upcoming">
+  <div class="toolbar" id="spiele">
     <div class="section">
-      <h2>📅 Kommende Spiele</h2>
+      <h2>📅 Kommende Spiele: Borussia Nordhorn</h2>
       <div id="fs-upcoming"></div>
     </div>
   </div>
 
   <div class="toolbar" id="team">
     <div class="section">
-      <h2>🧠 Teamdaten: Borussia Mönchengladbach</h2>
+      <h2>🧠 Teamdaten: Borussia Nordhorn</h2>
       <iframe src="https://footystats.org/de/api/club?id=39"></iframe>
     </div>
   </div>
@@ -82,18 +82,10 @@
     }
   </script>
 
-  <!-- FootyStats Widgets -->
-  <script>
-    (function (w,d,s,o,f,js,fjs) {
-      w['fsStandingsEmbed']=o;
-      w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
-      js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
-      js.id = o; js.src = f; js.async = 1;
-      fjs.parentNode.insertBefore(js, fjs);
-    }(window, document, 'script', 'mw', 'https://cdn.footystats.org/embeds/standings-loc.js'));
-    mw('params', { leagueID: 4392, lang: 'de' });
-  </script>
+  <!-- Bundesliga Widgets: Live-Tabelle -->
+  <script src="//bundesliga-widgets.de/js/table.js" type="text/javascript"></script>
 
+  <!-- FootyStats: Kommende Spiele -->
   <script>
     (function (w,d,s,o,f,js,fjs) {
       w['fsUpcomingEmbed']=o;
