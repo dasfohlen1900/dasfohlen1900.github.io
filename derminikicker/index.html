@@ -1,123 +1,108 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini-Kicker</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
-  margin: 0;
-}
-header, footer {
-  text-align: center;
-  background: #222;
-  color: #fff;
-  padding: 1rem;
-}
-main {
-  max-width: 900px;
-  margin: auto;
-  padding: 1rem;
-}
-h1 { margin: 0; }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  margin-bottom: 2rem;
-}
-table th, table td {
-  border: 1px solid #ccc;
-  padding: .4rem;
-  text-align: center;
-}
-table tbody tr:nth-child(even) { background: #eee; }
-#matches { list-style: none; padding: 0; }
-#matches li {
-  background: #fff;
-  border: 1px solid #ccc;
-  margin-bottom: .5rem;
-  padding: .6rem;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>Mini-Kicker Live ⚽🐙</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+    }
+    .ribbon {
+      display: flex;
+      background: #0078d7;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+    }
+    .tab {
+      margin-right: 20px;
+      cursor: pointer;
+    }
+    .tab:hover {
+      text-decoration: underline;
+    }
+    .toolbar {
+      background: #e0e0e0;
+      padding: 10px;
+      display: none;
+    }
+    .toolbar.active {
+      display: block;
+    }
+    .section {
+      padding: 20px;
+      background: white;
+      border-top: 2px solid #0078d7;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 420px;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>⚽ Mini-Kicker</h1>
-  <p>Live-Tabelle & nächste Spiele der Bundesliga</p>
-</header>
+  <div class="ribbon">
+    <div class="tab" onclick="showTab('standings')">📊 Tabelle</div>
+    <div class="tab" onclick="showTab('upcoming')">📅 Nächste Spiele</div>
+    <div class="tab" onclick="showTab('team')">🧠 Teamdaten</div>
+  </div>
 
-<main>
-  <section>
-    <h2>Tabelle</h2>
-    <table id="table">
-      <thead>
-        <tr>
-          <th>#</th><th>Team</th><th>Sp</th><th>G</th><th>U</th><th>V</th>
-          <th>Tore</th><th>Diff</th><th>Pkt</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+  <div class="toolbar active" id="standings">
+    <div class="section">
+      <h2>📊 Aktuelle Tabelle</h2>
+      <div id="fs-standings"></div>
+    </div>
+  </div>
 
-  <section>
-    <h2>Nächste Spiele</h2>
-    <ul id="matches"></ul>
-  </section>
-</main>
+  <div class="toolbar" id="upcoming">
+    <div class="section">
+      <h2>📅 Kommende Spiele</h2>
+      <div id="fs-upcoming"></div>
+    </div>
+  </div>
 
-<footer>
-  <small>Daten: openligadb.de (frei zugänglich)</small>
-</footer>
+  <div class="toolbar" id="team">
+    <div class="section">
+      <h2>🧠 Teamdaten: Borussia Nordhorn</h2>
+      <iframe src="https://footystats.org/de/api/club?id=39"></iframe>
+    </div>
+  </div>
 
-<script>
-const season = new Date().getFullYear();
-const league = "bl1";
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.toolbar').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+  </script>
 
-async function loadTable() {
-  const r = await fetch(`https://www.openligadb.de/api/getbltable/${league}/${season}`);
-  const d = await r.json();
-  const body = document.querySelector("#table tbody");
-  body.innerHTML = "";
-  d.forEach((t,i) => body.insertAdjacentHTML("beforeend", `
-    <tr>
-      <td>${i+1}</td>
-      <td>${t.TeamName}</td>
-      <td>${t.Matches}</td>
-      <td>${t.Won}</td>
-      <td>${t.Draw}</td>
-      <td>${t.Lost}</td>
-      <td>${t.Goals}:${t.OpponentGoals}</td>
-      <td>${t.GoalDiff}</td>
-      <td>${t.Points}</td>
-    </tr>`));
-}
+  <!-- FootyStats Widgets -->
+  <script>
+    (function (w,d,s,o,f,js,fjs) {
+      w['fsStandingsEmbed']=o;
+      w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
+      js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
+      js.id = o; js.src = f; js.async = 1;
+      fjs.parentNode.insertBefore(js, fjs);
+    }(window, document, 'script', 'mw', 'https://cdn.footystats.org/embeds/standings-loc.js'));
+    mw('params', { leagueID: 4392, lang: 'de' });
+  </script>
 
-async function loadMatches() {
-  const r = await fetch(`https://www.openligadb.de/api/getmatchdata/${league}/${season}`);
-  const d = await r.json();
-  const upcoming = d.filter(m => !m.MatchResults?.length)
-                    .sort((a,b)=> new Date(a.MatchDateTimeUTC)-new Date(b.MatchDateTimeUTC))
-                    .slice(0,10);
-  const list = document.getElementById("matches");
-  list.innerHTML = "";
-  upcoming.forEach(m=>{
-    const dt = new Date(m.MatchDateTimeUTC+"Z").toLocaleString(
-      "de-DE",
-      {timeZone:"Europe/Berlin",weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}
-    );
-    list.insertAdjacentHTML("beforeend",
-      `<li>${dt}: ${m.Team1.TeamName} – ${m.Team2.TeamName}</li>`);
-  });
-}
-
-loadTable();
-loadMatches();
-setInterval(()=>{loadTable();loadMatches();}, 300000);
-</script>
+  <script>
+    (function (w,d,s,o,f,js,fjs) {
+      w['fsUpcomingEmbed']=o;
+      w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
+      js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
+      js.id = o; js.src = f; js.async = 1;
+      fjs.parentNode.insertBefore(js, fjs);
+    }(window, document, 'script', 'fsUpcoming', 'https://cdn.footystats.org/embeds/upcoming-loc.js'));
+    fsUpcoming('params', { teamID: 39, lang: 'de' });
+  </script>
 </body>
 </html>
-
