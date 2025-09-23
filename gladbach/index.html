@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BMG Mini-Office</title>
+
+  <!-- Google Font: Bungee -->
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+
+  <style>
+  /* === BMG Farbpalette === */
+  :root {
+    --bmg-black: #000000;
+    --bmg-white: #ffffff;
+    --bmg-green: #008c45; /* BMG-Grün */
+  }
+
+  body {
+    font-family: 'Bungee', cursive;
+    background: var(--bmg-black);
+    color: var(--bmg-white);
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    padding: 2rem;
+    background: var(--bmg-green);
+    color: var(--bmg-white);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+
+  main {
+    padding: 2rem;
+  }
+
+  .button {
+    display: inline-block;
+    margin: 1rem;
+    padding: 1rem 2rem;
+    background: var(--bmg-green);
+    color: var(--bmg-white);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: 0.3s;
+  }
+  .button:hover {
+    background: var(--bmg-white);
+    color: var(--bmg-green);
+  }
+
+  footer {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: var(--bmg-black);
+    font-size: 0.9rem;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🖤🤍💚 Mini-Office</h1>
+    <p>Willkommen bei meiner BMG-Edition</p>
+  </header>
+
+  <main>
+    <a href="../miniword/index.html" class="button">Mini-Word</a>
+    <a href="../minipresenter/index.html" class="button">Mini-Präsentator</a>
+    <a href="../minicalc/index.html" class="button">Mini-Calc</a>
+  </main>
+
+  <footer>
+    <p>© 2025 DasFohlen1900</p>
+  </footer>
+</body>
+</html>
