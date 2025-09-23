@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mini-Kalender</title>
+<style>
+/* ---- Grundlayout (Mini-Word Stil) ---- */
+body{
+  margin:0;
+  background:#f4f4f4;
+  font-family:Segoe UI, Arial, sans-serif;
+}
+header{
+  background:#222;
+  color:#fff;
+  text-align:center;
+  padding:1rem;
+  box-shadow:0 2px 5px rgba(0,0,0,0.3);
+}
+main{
+  max-width:1000px;
+  margin:20px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* ---- Steuerleiste ---- */
+#controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-bottom:20px;
+}
+select,input,button{
+  padding:6px 10px;
+  font-size:14px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+button{
+  background:#4CAF50;
+  color:#fff;
+  cursor:pointer;
+}
+button:hover{background:#45a049;}
+
+/* ---- Kalendergitter ---- */
+#calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+.day{
+  background:#fafafa;
+  border:1px solid #ddd;
+  min-height:100px;
+  padding:8px;
+  border-radius:8px;
+  position:relative;
+  transition:background .2s;
+}
+.day:hover{
+  background:#e8f5e9;
+  cursor:pointer;
+}
+.date{
+  font-weight:bold;
+  margin-bottom:4px;
+}
+.event{
+  font-size:12px;
+  margin-top:3px;
+  color:#333;
+  text-align:left;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>📅 Mini-Kalender</h1>
+</header>
+
+<main>
+  <div id="controls">
+    <select id="monthSelect"></select>
+    <select id="yearSelect"></select>
+    <select id="fontSelect">
+      <option value="Segoe UI">Segoe UI</option>
+      <option value="Arial">Arial</option>
+      <option value="Georgia">Georgia</option>
+      <option value="Courier New">Courier New</option>
+    </select>
+    <select id="sizeSelect">
+      <option value="14px">Klein</option>
+      <option value="16px" selected>Normal</option>
+      <option value="18px">Groß</option>
+      <option value="20px">Sehr groß</option>
+    </select>
+    <input type="color" id="colorPicker" value="#000000">
+    <button onclick="generateCalendar()">📆 Anzeigen</button>
+  </div>
+
+  <div id="calendar"></div>
+</main>
+
+<script>
+const monthNames=["Januar","Februar","März","April","Mai","Juni",
+"Juli","August","September","Oktober","November","Dezember"];
+const monthSelect=document.getElementById("monthSelect");
+const yearSelect=document.getElementById("yearSelect");
+
+for(let i=0;i<12;i++){
+  monthSelect.insertAdjacentHTML("beforeend",`<option value="${i}">${monthNames[i]}</option>`);
+}
+const currentYear=new Date().getFullYear();
+for(let y=currentYear-5;y<=currentYear+5;y++){
+  yearSelect.insertAdjacentHTML("beforeend",`<option value="${y}">${y}</option>`);
+}
+monthSelect.value=new Date().getMonth();
+yearSelect.value=currentYear;
+
+function generateCalendar(){
+  const m=parseInt(monthSelect.value);
+  const y=parseInt(yearSelect.value);
+  const font=document.getElementById("fontSelect").value;
+  const size=document.getElementById("sizeSelect").value;
+  const color=document.getElementById("colorPicker").value;
+  const cal=document.getElementById("calendar");
+  cal.innerHTML="";
+  const firstDay=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  for(let i=0;i<firstDay;i++) cal.appendChild(document.createElement("div"));
+  for(let d=1;d<=daysInMonth;d++){
+    const cell=document.createElement("div");
+    cell.className="day";
+    cell.style.fontFamily=font;
+    cell.style.fontSize=size;
+    cell.style.color=color;
+
+    const date=document.createElement("div");
+    date.className="date";
+    date.textContent=d+". "+monthNames[m];
+    cell.appendChild(date);
+
+    cell.onclick=()=>{
+      const txt=prompt("Termin für "+d+". "+monthNames[m]+":");
+      if(txt){
+        const note=document.createElement("div");
+        note.className="event";
+        note.textContent="• "+txt;
+        cell.appendChild(note);
+      }
+    };
+    cal.appendChild(cell);
+  }
+}
+generateCalendar();
+</script>
+</body>
+</html>
