@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mini-Präsentator</title>
+<style>
+body{margin:0;background:#f4f4f4;font-family:Segoe UI,Arial,sans-serif;}
+header{background:#222;color:#fff;text-align:center;padding:1rem;box-shadow:0 2px 5px rgba(0,0,0,0.3);}
+main{max-width:1000px;margin:20px auto;background:#fff;padding:20px;border-radius:12px;
+     box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+#formatBar,#controls,#fileBar{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:15px;}
+button,select,input[type="color"]{padding:6px 10px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#eee;}
+button:hover{background:#ddd;}
+#editor{width:260px;height:100px;border:1px solid #ccc;border-radius:6px;padding:8px;overflow:auto;background:#fafafa;}
+#slideArea{position:relative;background:#fafafa;border:1px solid #ddd;border-radius:12px;
+           height:480px;display:flex;align-items:center;justify-content:center;font-size:32px;
+           text-align:center;overflow:auto;padding:20px;}
+.nav{display:flex;justify-content:center;gap:20px;margin-top:15px;}
+.nav button{background:#2196F3;color:#fff;} .nav button:hover{background:#1976D2;}
+</style>
+</head>
+<body>
+<header>
+  <h1>📽️ Mini-Präsentator</h1>
+</header>
+
+<main>
+  <!-- Formatleiste -->
+  <div id="formatBar">
+    <button onclick="format('bold')"><b>B</b></button>
+    <button onclick="format('italic')"><i>I</i></button>
+    <button onclick="format('underline')"><u>U</u></button>
+    <select id="fontSelect" onchange="formatFont()">
+      <option value="Segoe UI">Segoe UI</option><option value="Arial">Arial</option>
+      <option value="Georgia">Georgia</option><option value="Courier New">Courier New</option>
+    </select>
+    <select id="sizeSelect" onchange="formatSize()">
+      <option value="16px">16px</option><option value="20px" selected>20px</option>
+      <option value="24px">24px</option><option value="32px">32px</option>
+    </select>
+    <input type="color" id="colorPicker" onchange="formatColor(this.value)" value="#000000">
+  </div>
+
+  <!-- Datei-Leiste -->
+  <div id="fileBar">
+    <button onclick="saveFile()">💾 Speichern (.octpt)</button>
+    <input type="file" id="openFile" accept=".octpt" onchange="openFile(this.files[0])">
+  </div>
+
+  <!-- Neue Folie -->
+  <div id="controls">
+    <input type="text" id="titleInput" placeholder="Titel">
+    <div id="editor" contenteditable="true" placeholder="Text hier eingeben"></div>
+    <button onclick="addSlide()">➕ Folie hinzufügen</button>
+  </div>
+
+  <!-- Präsentationsanzeige -->
+  <div id="slideArea">Keine Folien vorhanden</div>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button onclick="prevSlide()">⬅️ Zurück</button>
+    <button onclick="nextSlide()">➡️ Weiter</button>
+  </div>
+</main>
+
+<script>
+let slides=[], current=0;
+
+function format(cmd){document.execCommand(cmd,false,null);}
+function formatColor(c){document.execCommand('foreColor',false,c);}
+function formatFont(){document.execCommand('fontName',false,
+        document.getElementById('fontSelect').value);}
+function formatSize(){
+  const s=document.getElementById('sizeSelect').value;
+  document.execCommand('fontSize',false,'4');
+  const sel=window.getSelection();
+  if(sel.rangeCount){
+    const el=sel.focusNode.parentElement;
+    if(el) el.style.fontSize=s;
+  }
+}
+
+function addSlide(){
+  const title=document.getElementById("titleInput").value.trim();
+  const content=document.getElementById("editor").innerHTML.trim();
+  if(!title && !content){alert("Bitte Titel oder Inhalt eingeben");return;}
+  slides.push({title, content});
+  document.getElementById("titleInput").value="";
+  document.getElementById("editor").innerHTML="";
+  current=slides.length-1;
+  showSlide();
+}
+
+function showSlide(){
+  const area=document.getElementById("slideArea");
+  if(slides.length===0){area.textContent="Keine Folien vorhanden";return;}
+  const s=slides[current];
+  area.innerHTML=`<div>
+      <h2>${s.title||""}</h2>
+      <div style="white-space:pre-wrap;text-align:left;">${s.content||""}</div>
+    </div>`;
+}
+
+function prevSlide(){if(slides.length){current=(current-1+slides.length)%slides.length;showSlide();}}
+function nextSlide(){if(slides.length){current=(current+1)%slides.length;showSlide();}}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft") prevSlide();
+  if(e.key==="ArrowRight") nextSlide();
+});
+
+/* ---- Speichern als .octpt ---- */
+function saveFile(){
+  if(slides.length===0){alert("Keine Folien zum Speichern");return;}
+  const html = encodeURIComponent(JSON.stringify(slides));
+  const blob = new Blob([html],{type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "presentation.octpt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---- Öffnen/Import ---- */
+function openFile(file){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      slides=JSON.parse(decodeURIComponent(e.target.result));
+      current=0;
+      showSlide();
+    }catch(err){
+      alert("Datei konnte nicht gelesen werden.");
+    }
+  };
+  reader.readAsText(file);
+}
+</script>
+</body>
+</html>
