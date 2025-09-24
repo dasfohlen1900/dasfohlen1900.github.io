@@ -85,8 +85,35 @@
     <a class="card" href="fohlen-word/">
     <h2>Fohlen-Word</h2>
     <p>Mini Word im Borussia-Style</p>
-  </a>
-  </main>
+  </a><a class="card"
+   href="Z/"
+   onclick="return auswaertsHinweis(event)">
+  <h2> Zum normalen Startseite</h2>
+  <p>Öffnet die normale Startseite</p>
+</a>
+</main>
+  
+<script>
+function auswaertsHinweis(e){
+  e.preventDefault(); // Standard-Weiterleitung stoppen
+  const ziel = e.currentTarget.href; // Ziel-URL merken
+
+  // Benutzerabfrage (einfaches confirm) → Text anpassen
+  const warnung = "⚠️ Vorsicht – Auswärts!\n\n" +
+                  "Über diesen Link kommst du auf eine Seite außerhalb des Startmenüs.\n\n" +
+                  "Fortfahren?";
+  if (confirm(warnung)){
+    alert("⚽ Ja – mach ein Tor!");
+    window.location.href = ziel;   // weiterleiten
+  } else {
+    alert("⬅️ Nein – zurück zum Bökelberg!");
+    // nichts tun → bleibt auf aktueller Seite
+  }
+  return false; // Link selbst nicht folgen
+}
+</script>
+
+  
 
   <footer>
     <p>© 2025 DasFohlen1900</p>
