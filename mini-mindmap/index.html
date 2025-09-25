@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini Brainstorm (.octbs)</title>
+
+<!-- Bungee Font -->
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bmg-black:#000;
+  --bmg-white:#fff;
+  --bmg-green:#008c45;
+  --bmg-green-dark:#006f3c;
+  --ui-bg:#071217;
+  --node-bg:#071217;
+  --muted: #bfc8cd;
+}
+
+/* Page */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: 'Work Sans', system-ui, Arial;
+  background: linear-gradient(180deg, #031014, #071217 40%);
+  color:var(--bmg-white);
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:14px;
+}
+
+/* Header UI */
+.header {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  max-width:1200px;
+  margin:auto;
+}
+.brand {
+  display:flex;align-items:center;gap:12px;
+  font-family:'Bungee', cursive;
+  font-size:1.25rem;
+}
+.controls {
+  display:flex;gap:8px;align-items:center;
+  flex-wrap:wrap;
+}
+
+/* Buttons */
+.btn {
+  background:var(--bmg-green);
+  color:var(--bmg-white);
+  border:0;padding:8px 12px;border-radius:10px;
+  cursor:pointer;font-weight:600;
+  box-shadow:0 6px 16px rgba(0,0,0,0.5);
+}
+.btn.ghost {
+  background:transparent;border:1px solid rgba(255,255,255,0.06);
+}
+.toggle {
+  background:transparent;border:1px solid rgba(255,255,255,0.06);
+  padding:6px 10px;border-radius:8px;color:var(--muted);
+}
+
+/* Canvas area */
+.stage-wrap {
+  max-width:1200px;margin:auto;flex:1;display:flex;flex-direction:column;
+  gap:8px;
+}
+.toolbar {
+  display:flex;gap:10px;align-items:center;padding:6px 8px;
+  background:rgba(255,255,255,0.02);border-radius:10px;
+}
+.canvas {
+  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12));
+  border: 1px solid rgba(255,255,255,0.02);
+  height:66vh;border-radius:12px;overflow:hidden;position:relative;
+}
+
+/* pan & zoom container */
+.view {
+  width:100%;height:100%;touch-action:none;cursor:grab;
+  transform-origin: 0 0;
+  position:relative;
+}
+
+/* SVG lines overlay */
+.lines {
+  position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;
+}
+
+/* Node styles */
+.node {
+  position:absolute;
+  min-width:120px;max-width:320px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.05));
+  border:2px solid var(--bmg-green);
+  color:var(--bmg-white);
+  padding:10px 12px;border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.6);
+  cursor:grab;
+  user-select:none;
+}
+.node:active{cursor:grabbing}
+.node .title {
+  font-weight:700;margin-bottom:6px;font-size:1rem;
+}
+.node .text {
+  font-size:0.9rem;opacity:0.9;
+}
+/* editable state */
+.node[contenteditable="true"]{outline:3px dashed rgba(0,140,69,0.25)}
+
+/* small helpers */
+.small {font-size:0.85rem;color:var(--muted)}
+.right {margin-left:auto}
+.footer-note {text-align:center;font-size:0.8rem;color:var(--muted);margin-top:6px}
+
+/* responsive */
+@media (max-width:700px){
+  .header{flex-direction:column;align-items:stretch;gap:8px}
+  .controls{justify-content:space-between}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    🖤🤍💚 <span>Mini Brainstorm</span>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="addNodeBtn">Neuer Knoten</button>
+    <button class="btn ghost" id="clearBtn">Alles löschen</button>
+
+    <label class="toggle small" title="Verbindungsmodus">
+      <input type="checkbox" id="connectMode" style="margin-right:6px"> Verbinden
+    </label>
+
+    <label class="small">Zoom
+      <input id="zoom" type="range" min="0.5" max="1.6" step="0.05" value="1" style="vertical-align:middle;margin-left:6px">
+    </label>
+
+    <button class="btn" id="saveBtn">Speichern (.octbs)</button>
+    <input id="fileInput" type="file" accept=".octbs" style="display:none">
+    <button class="btn ghost" id="loadBtn">Laden (.octbs)</button>
+  </div>
+</div>
+
+<div class="stage-wrap">
+  <div class="toolbar small">Tipp: Doppelklick auf Text → editieren • Im Verbinden-Modus: 2 Knoten anklicken</div>
+
+  <div class="canvas" id="canvas">
+    <div class="view" id="view">
+      <!-- SVG for connections -->
+      <svg class="lines" id="svgLines" xmlns="http://www.w3.org/2000/svg"></svg>
+
+      <!-- container for nodes; this innerHTML is what we save/load as .octbs -->
+      <div id="nodesContainer" style="position:absolute;left:0;top:0;width:2000px;height:2000px;"></div>
+    </div>
+  </div>
+
+  <div class="footer-note">Autosave: lokal • Format: <code>.octbs</code> (speichert HTML)</div>
+</div>
+
+<script>
+/* ----------------------
+   Mini Brainstorm App
+   - nodes are DIVs with class "node"
+   - lines are SVG <line> elements connecting node centers
+   - saving exports nodesContainer.innerHTML as .octbs (text/html)
+-----------------------*/
+
+const nodesContainer = document.getElementById('nodesContainer');
+const svg = document.getElementById('svgLines');
+const addNodeBtn = document.getElementById('addNodeBtn');
+const saveBtn = document.getElementById('saveBtn');
+const loadBtn = document.getElementById('loadBtn');
+const fileInput = document.getElementById('fileInput');
+const clearBtn = document.getElementById('clearBtn');
+const connectModeCheckbox = document.getElementById('connectMode');
+const zoomControl = document.getElementById('zoom');
+const view = document.getElementById('view');
+const canvas = document.getElementById('canvas');
+
+// State
+let nextId = 1;
+let dragging = null;
+let offset = {x:0,y:0};
+let connections = []; // {fromId, toId, lineId}
+let connectSelection = null;
+let autosaveKey = 'mini-brainstorm-octbs';
+
+// utils
+function createNode(x=100,y=100, title='Neuer Knoten', text='Doppelklick zum Bearbeiten'){
+  const id = 'node-'+(nextId++);
+  const el = document.createElement('div');
+  el.className='node';
+  el.dataset.id = id;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.innerHTML = `
+    <div class="title">${escapeHtml(title)}</div>
+    <div class="text">${escapeHtml(text)}</div>
+  `;
+  makeDraggable(el);
+  makeInteractive(el);
+  nodesContainer.appendChild(el);
+  updateAllLines();
+  return el;
+}
+
+function escapeHtml(str){
+  return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+}
+
+function makeDraggable(el){
+  el.addEventListener('pointerdown', (e)=>{
+    if (connectModeCheckbox.checked) return; // in connect-mode don't drag on pointerdown
+    dragging = el;
+    el.setPointerCapture(e.pointerId);
+    const rect = el.getBoundingClientRect();
+    const parentRect = nodesContainer.getBoundingClientRect();
+    offset.x = e.clientX - rect.left + parentRect.left;
+    offset.y = e.clientY - rect.top + parentRect.top;
+    // bring to front
+    el.style.zIndex = Date.now()%100000;
+  });
+  el.addEventListener('pointermove', (e)=>{
+    if (!dragging) return;
+    const parentRect = nodesContainer.getBoundingClientRect();
+    // compute new position relative to container
+    const x = e.clientX - parentRect.left - (offset.x - (parseInt(dragging.style.left)||0));
+    const y = e.clientY - parentRect.top - (offset.y - (parseInt(dragging.style.top)||0));
+    dragging.style.left = x + 'px';
+    dragging.style.top = y + 'px';
+    updateAllLines();
+  });
+  el.addEventListener('pointerup', (e)=>{
+    if (!dragging) return;
+    try { el.releasePointerCapture(e.pointerId); } catch(e){}
+    dragging = null;
+    scheduleAutosave();
+  });
+  // touch-friendly: prevent default to avoid scrolling while dragging
+  el.addEventListener('touchstart', e => e.preventDefault());
+}
+
+function makeInteractive(el){
+  // double-click to edit text (contenteditable)
+  el.addEventListener('dblclick', (e)=>{
+    // turn the inner text nodes into contenteditable for editing both title and text
+    const title = el.querySelector('.title');
+    const text = el.querySelector('.text');
+    // simple inline edit: toggle contenteditable on the whole node; user can edit both
+    el.contentEditable = "true";
+    el.setAttribute('data-editing','true');
+    title.style.pointerEvents = 'auto';
+    text.style.pointerEvents = 'auto';
+    // focus at end
+    const range = document.createRange();
+    range.selectNodeContents(text);
+    range.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    // when user leaves, stop editing
+    const stopEdit = ()=> {
+      el.contentEditable = "false";
+      el.removeAttribute('data-editing');
+      scheduleAutosave();
+      el.removeEventListener('blur', stopEdit, true);
+      el.removeEventListener('keydown', onKey, true);
+    };
+    const onKey = (ev)=>{
+      if (ev.key === 'Escape') { stopEdit(); }
+      if (ev.key === 'Enter' && ev.shiftKey===false) { ev.preventDefault(); stopEdit(); }
+    };
+    setTimeout(()=>{ el.addEventListener('blur', stopEdit, true); el.addEventListener('keydown', onKey, true); }, 0);
+  });
+
+  // click for connect-mode
+  el.addEventListener('click', (e)=>{
+    if (!connectModeCheckbox.checked) return;
+    e.stopPropagation();
+    const id = el.dataset.id;
+    if (!connectSelection){
+      connectSelection = id;
+      el.style.borderColor = '#ffd966';
+    } else if (connectSelection === id) {
+      // same node clicked -> cancel
+      connectSelection = null;
+      el.style.borderColor = '';
+    } else {
+      // create connection connectSelection -> id
+      addConnection(connectSelection, id);
+      // reset highlight
+      const prev = nodesContainer.querySelector(`[data-id="${connectSelection}"]`);
+      if (prev) prev.style.borderColor = '';
+      connectSelection = null;
+      scheduleAutosave();
+    }
+  });
+
+  // context menu delete on right-click
+  el.addEventListener('contextmenu', (e)=>{
+    e.preventDefault();
+    if (confirm('Knoten löschen?')) {
+      removeNode(el.dataset.id);
+      scheduleAutosave();
+    }
+  });
+}
+
+/* ---------- Connections (SVG lines) ----------- */
+function addConnection(fromId, toId){
+  // avoid duplicates
+  if (connections.some(c=>c.fromId===fromId && c.toId===toId)) return;
+  const lineId = 'line-'+Date.now()+'-'+Math.floor(Math.random()*9999);
+  connections.push({fromId,toId,lineId});
+  renderLine(fromId,toId,lineId);
+}
+
+function removeConnectionsForNode(id){
+  // remove lines and entries
+  connections = connections.filter(c=>{
+    if (c.fromId===id || c.toId===id) {
+      const el = document.getElementById(c.lineId);
+      if (el) el.remove();
+      return false;
+    }
+    return true;
+  });
+}
+
+function renderLine(fromId,toId,lineId){
+  const fromEl = nodesContainer.querySelector(`[data-id="${fromId}"]`);
+  const toEl = nodesContainer.querySelector(`[data-id="${toId}"]`);
+  if (!fromEl || !toEl) return;
+  // create svg line
+  const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('id', lineId);
+  l.setAttribute('stroke', 'rgba(0,140,69,0.9)');
+  l.setAttribute('stroke-width', '3');
+  l.setAttribute('stroke-linecap','round');
+  svg.appendChild(l);
+  updateLinePosition(l, fromEl, toEl);
+}
+
+function updateLinePosition(lineEl, aEl, bEl){
+  const parentRect = nodesContainer.getBoundingClientRect();
+  const aRect = aEl.getBoundingClientRect();
+  const bRect = bEl.getBoundingClientRect();
+  // get centers relative to container
+  const ax = aRect.left - parentRect.left + (aRect.width/2);
+  const ay = aRect.top - parentRect.top + (aRect.height/2);
+  const bx = bRect.left - parentRect.left + (bRect.width/2);
+  const by = bRect.top - parentRect.top + (bRect.height/2);
+  lineEl.setAttribute('x1', ax);
+  lineEl.setAttribute('y1', ay);
+  lineEl.setAttribute('x2', bx);
+  lineEl.setAttribute('y2', by);
+}
+
+function updateAllLines(){
+  // update existing line positions
+  connections.forEach(c=>{
+    const line = document.getElementById(c.lineId);
+    const from = nodesContainer.querySelector(`[data-id="${c.fromId}"]`);
+    const to   = nodesContainer.querySelector(`[data-id="${c.toId}"]`);
+    if (!line || !from || !to) return;
+    updateLinePosition(line, from, to);
+  });
+}
+
+/* ---------- Node management ---------- */
+function removeNode(id){
+  const el = nodesContainer.querySelector(`[data-id="${id}"]`);
+  if (el) el.remove();
+  // remove connections
+  removeConnectionsForNode(id);
+  updateAllLines();
+}
+
+function clearAll(){
+  if (!confirm('Alles löschen? (nicht rückgängig)')) return;
+  // remove nodes and lines
+  nodesContainer.innerHTML = '';
+  svg.innerHTML = '';
+  connections = [];
+  nextId = 1;
+  scheduleAutosave();
+}
+
+/* ---------- Save & Load (.octbs) ---------- */
+function exportOctbs(){
+  // Save the container's innerHTML as the .octbs file
+  // We'll also inject a small meta attribute with a timestamp
+  const data = `<!-- mini-brainstorm .octbs export ${new Date().toISOString()} -->\n` + nodesContainer.innerHTML;
+  const blob = new Blob([data], {type: 'text/html;charset=utf-8'});
+  const name = 'brainstorm_'+(new Date().toISOString().slice(0,10)) + '.octbs';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function importOctbs(fileText){
+  // simply set nodesContainer.innerHTML and re-init behaviors
+  nodesContainer.innerHTML = fileText;
+  // clear existing lines & connections (we expect embedded lines are not included)
+  svg.innerHTML = '';
+  connections = [];
+  // re-bind nodes and re-render
+  nextId = 1;
+  nodesContainer.querySelectorAll('.node').forEach(n=>{
+    // ensure each node has a data-id, if not generate one
+    if (!n.dataset.id) n.dataset.id = 'node-'+(nextId++);
+    else {
+      const numeric = parseInt(n.dataset.id.split('-').pop());
+      if (!isNaN(numeric) && numeric >= nextId) nextId = numeric+1;
+    }
+    makeDraggable(n);
+    makeInteractive(n);
+  });
+  updateAllLines();
+}
+
+/* ---------- Autosave ---------- */
+let autosaveTimer = null;
+function scheduleAutosave(){
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(()=> {
+    try {
+      localStorage.setItem(autosaveKey, nodesContainer.innerHTML);
+    } catch(e){}
+  }, 800);
+}
+
+/* ---------- Initialization & events ---------- */
+
+// Add node button
+addNodeBtn.addEventListener('click', ()=>{
+  const el = createNode(140 + Math.random()*300, 140 + Math.random()*200);
+  // quick focus into the text for easy editing
+  el.dispatchEvent(new Event('dblclick'));
+  scheduleAutosave();
+});
+
+// Save
+saveBtn.addEventListener('click', exportOctbs);
+
+// Load
+loadBtn.addEventListener('click', ()=> fileInput.click());
+fileInput.addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    importOctbs(reader.result);
+    scheduleAutosave();
+  };
+  reader.readAsText(f);
+  fileInput.value='';
+});
+
+// Clear
+clearBtn.addEventListener('click', clearAll);
+
+// click on blank canvas to reset connect selection
+nodesContainer.addEventListener('click', (e)=>{
+  if (!connectModeCheckbox.checked) return;
+  if (connectSelection){
+    const prev = nodesContainer.querySelector(`[data-id="${connectSelection}"]`);
+    if (prev) prev.style.borderColor = '';
+    connectSelection = null;
+  }
+});
+
+// zoom
+zoomControl.addEventListener('input', ()=>{
+  const z = parseFloat(zoomControl.value);
+  view.style.transform = `scale(${z})`;
+  // adjust svg size
+  svg.style.width = (nodesContainer.offsetWidth)+'px';
+  svg.style.height = (nodesContainer.offsetHeight)+'px';
+  updateAllLines();
+});
+
+// simple pan with middle mouse / space? we'll allow dragging the view with right mouse
+let panning = false, panStart={x:0,y:0}, viewPos={x:0,y:0};
+canvas.addEventListener('pointerdown',(e)=>{
+  if (e.button === 1 || (e.button === 0 && e.ctrlKey)) { // middle click or ctrl+left
+    panning = true; canvas.style.cursor='grabbing';
+    panStart = {x:e.clientX - viewPos.x, y:e.clientY - viewPos.y};
+    e.preventDefault();
+  }
+});
+window.addEventListener('pointermove',(e)=>{
+  if (!panning) return;
+  viewPos.x = e.clientX - panStart.x;
+  viewPos.y = e.clientY - panStart.y;
+  view.style.left = viewPos.x + 'px';
+  view.style.top = viewPos.y + 'px';
+});
+window.addEventListener('pointerup',(e)=>{
+  if (panning) {
+    panning=false; canvas.style.cursor='grab';
+    scheduleAutosave();
+  }
+});
+
+// update lines on window resize / scroll
+window.addEventListener('resize', updateAllLines);
+setInterval(updateAllLines, 250); // keep lines updated while dragging smoothly
+
+// load autosave on init
+(function tryLoadAutosave(){
+  const saved = localStorage.getItem(autosaveKey);
+  if (saved && saved.trim().length){
+    importOctbs(saved);
+  } else {
+    // create a starter node
+    createNode(160,120, 'Brainstorm Start','Doppelklick um zu bearbeiten');
+  }
+})();
+
+/* helpful: export layout on beforeunload */
+window.addEventListener('beforeunload', ()=> {
+  try { localStorage.setItem(autosaveKey, nodesContainer.innerHTML); } catch(e){}
+});
+
+/* keyboard shortcuts */
+window.addEventListener('keydown', (e)=>{
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault(); exportOctbs();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    // naive: do nothing for now
+  }
+});
+</script>
+</body>
+</html>
