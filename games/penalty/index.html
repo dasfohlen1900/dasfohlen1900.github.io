@@ -1,1 +1,141 @@
-""
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-Penalty</title>
+<style>
+  body {
+    margin:0;
+    background:#0a0a0a;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    font-family: Arial, sans-serif;
+    color:#fff;
+  }
+  h1{margin:0 0 10px 0;font-size:2rem;}
+  #game {
+    background:#4caf50; /* Rasen */
+    border:6px solid #fff;
+    position:relative;
+    width:320px;
+    height:480px;
+    overflow:hidden;
+  }
+  .goal {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:80px;
+    border-bottom:6px solid white;
+    background:linear-gradient(#e0e0e0,#b0b0b0);
+  }
+  .keeper {
+    position:absolute;
+    top:20px;
+    width:60px;
+    height:60px;
+    background:#222;
+    border-radius:50%;
+  }
+  .ball {
+    position:absolute;
+    bottom:20px;
+    left:130px;
+    width:40px;
+    height:40px;
+    background:white;
+    border-radius:50%;
+  }
+  #info {margin-top:15px;font-size:1.2rem;}
+  button {
+    margin-top:10px;
+    padding:8px 16px;
+    border:none;
+    border-radius:8px;
+    background:#fff;
+    color:#0a0a0a;
+    font-weight:bold;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<h1>⚽ Mini-Penalty</h1>
+<div id="game">
+  <div class="goal"></div>
+  <div class="keeper"></div>
+  <div class="ball"></div>
+</div>
+<div id="info">Drücke LEERTASTE oder klicke, um zu schießen!</div>
+<button id="restart" style="display:none;">Nochmal</button>
+
+<script>
+const game = document.getElementById('game');
+const keeper = document.querySelector('.keeper');
+const ball = document.querySelector('.ball');
+const info = document.getElementById('info');
+const restartBtn = document.getElementById('restart');
+
+let keeperDir = 1;
+let keeperX = 130;
+let keeperSpeed = 2;
+let ballY = 420;
+let ballMoving = false;
+let score = 0;
+
+function moveKeeper(){
+  keeperX += keeperDir * keeperSpeed;
+  if(keeperX <= 0 || keeperX >= 260) keeperDir *= -1;
+  keeper.style.left = keeperX + 'px';
+  requestAnimationFrame(moveKeeper);
+}
+moveKeeper();
+
+function shoot(){
+  if(ballMoving) return;
+  ballMoving = true;
+  let interval = setInterval(()=>{
+    ballY -= 8;
+    ball.style.bottom = (420 - ballY) + 'px';
+    if(ballY <= 80){
+      clearInterval(interval);
+      checkGoal();
+    }
+  },20);
+}
+
+function checkGoal(){
+  const ballCenter = parseInt(ball.style.left || '130') + 20;
+  const keeperCenter = keeperX + 30;
+  const dist = Math.abs(ballCenter - keeperCenter);
+  if(dist < 40){
+    info.textContent = "❌ Gehalten!";
+  } else {
+    score++;
+    info.textContent = "✅ TOR! | Treffer: " + score;
+  }
+  restartBtn.style.display = 'inline-block';
+}
+
+function resetBall(){
+  ballY = 420;
+  ball.style.bottom = '20px';
+  ballMoving = false;
+  ball.style.left = '130px';
+  restartBtn.style.display = 'none';
+  info.textContent = "Drücke LEERTASTE oder klicke, um zu schießen!";
+}
+
+document.addEventListener('keydown', e=>{
+  if(e.code === 'Space') shoot();
+});
+game.addEventListener('click', shoot);
+restartBtn.addEventListener('click', resetBall);
+</script>
+</body>
+</html>
