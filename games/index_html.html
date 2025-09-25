@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spiele • Das Fohlen – Start</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#071019;
+      --muted:#9aa6ad;
+      --accent:#00b050;
+      --white:#ffffff;
+      --glass: rgba(255,255,255,0.04);
+      --card-radius:14px;
+      font-family: 'Bungee', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#041018);color:var(--white)}
+    .wrap{max-width:1100px;margin:36px auto;padding:20px}
+    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo .emblem{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--panel),#081426);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .logo svg{width:38px;height:38px}
+    h1{font-size:22px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
+    .search{background:var(--glass);border:1px solid rgba(255,255,255,0.04);backdrop-filter: blur(6px);padding:8px 12px;border-radius:12px;color:var(--white)}
+    .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn.green{background:linear-gradient(90deg,var(--accent),#00ff7a);color:#00120a}
+
+    main{margin-top:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--card-radius);padding:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .15s ease, box-shadow .15s ease}
+    .card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    .thumb{height:120px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#07202a,#0b1014);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+    .meta{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+    .meta h3{margin:0;font-size:15px}
+    .meta small{color:var(--muted)}
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:520px){.wrap{margin:12px;padding:12px}.logo .emblem{width:52px;height:52px}.thumb{height:92px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="emblem" aria-hidden>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 16c1-3 4-5 8-5 4 0 6 3 8 5" stroke="white" stroke-opacity="0.9" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 7c1-2 4-3 6-2" stroke="white" stroke-opacity="0.9" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Spiele • Das Fohlen</h1>
+          <p class="lead">Mini-Games und Links — GitHub Pages Startseite</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="q" class="search" placeholder="Suche Spiele (z. B. 'Kicker')"/>
+        <button id="themeBtn" class="btn green">Farben</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid" id="grid">
+        <article class="card" data-title="Mini-Kicker" data-href="/dev/derminikicker/index.html">
+          <div class="thumb">Mini-Kicker Vorschau</div>
+          <div class="meta"><h3>Mini-Kicker</h3><small>Score &amp; Live</small></div>
+        </article>
+
+        <article class="card" data-title="Mini-Word-Spiel" data-href="/fohlen-word/index.html">
+          <div class="thumb">Mini-Word Spiel</div>
+          <div class="meta"><h3>Mini-Word-Spiel</h3><small>Tippe Wörter</small></div>
+        </article>
+
+        <article class="card" data-title="Mini-2048" data-href="/2048/index.html">
+          <div class="thumb">2048</div>
+          <div class="meta"><h3>Mini-2048</h3><small>Zahlen schieben</small></div>
+        </article>
+
+        <article class="card" data-title="Penalty" data-href="/penalty/index.html">
+          <div class="thumb">Penalty</div>
+          <div class="meta"><h3>Penalty</h3><small>Elfmeterschießen</small></div>
+        </article>
+
+      </section>
+    </main>
+
+    <footer>
+      <small>Erstellt für dein GitHub Pages-Repo • Passe Karten im Code an, um Spiele hinzuzufügen.</small>
+    </footer>
+  </div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const q = document.getElementById('q');
+    const themeBtn = document.getElementById('themeBtn');
+
+    grid.addEventListener('click', e => {
+      const card = e.target.closest('.card');
+      if(!card) return;
+      const href = card.dataset.href;
+      if(!href) return alert('Kein Pfad gesetzt.');
+      window.open(href, '_blank');
+    });
+
+    q.addEventListener('input', ()=>{
+      const v = q.value.toLowerCase();
+      document.querySelectorAll('.card').forEach(c=>{
+        const t = c.dataset.title.toLowerCase();
+        c.style.display = t.includes(v) ? '' : 'none';
+      });
+    });
+
+    const themes = [
+      {bg:'#0b0f14', accent:'#00b050'},
+      {bg:'#ffffff', accent:'#00b050', text:'#00120a'},
+      {bg:'#071019', accent:'#00ff7a'}
+    ];
+    let themeIndex = Number(localStorage.getItem('spiele-theme')||0);
+    function applyTheme(i){
+      const t = themes[i%themes.length];
+      document.documentElement.style.setProperty('--bg', t.bg);
+      if(t.text) document.documentElement.style.setProperty('--white', t.text);
+      document.documentElement.style.setProperty('--accent', t.accent);
+      localStorage.setItem('spiele-theme', i);
+    }
+    applyTheme(themeIndex);
+    themeBtn.addEventListener('click', ()=>{ themeIndex=(themeIndex+1)%themes.length; applyTheme(themeIndex)});
+  </script>
+</body>
+</html>
