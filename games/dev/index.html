@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEV-Game Bereich</title>
+
+<!-- Google Font: Bungee -->
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bmg-black:#0b0f14;
+  --bmg-white:#f5f5f5;
+  --bmg-green:#1fa83a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bmg-black);
+  color:var(--bmg-white);
+  font-family:'Bungee',sans-serif;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+header{
+  text-align:center;
+  padding:1.5rem;
+  background:#111;
+  border-bottom:3px solid var(--bmg-green);
+}
+header h1{font-size:2rem;margin-bottom:.5rem;color:var(--bmg-green)}
+#search{
+  width:90%;
+  max-width:400px;
+  padding:.6rem 1rem;
+  border:none;
+  border-radius:8px;
+  font-size:1rem;
+}
+main{
+  flex:1;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:1rem;
+  padding:1rem;
+}
+.card{
+  background:#1a1f24;
+  border:2px solid var(--bmg-green);
+  border-radius:12px;
+  padding:1rem;
+  text-align:center;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.card:hover{transform:scale(1.05)}
+.card h2{color:var(--bmg-green);font-size:1.3rem;margin-bottom:.5rem}
+.card p{font-size:.9rem;color:var(--bmg-white)}
+footer{
+  text-align:center;
+  padding:1rem;
+  background:#111;
+  border-top:3px solid var(--bmg-green);
+}
+iframe#preview{
+  width:100%;
+  height:70vh;
+  border:none;
+  display:none;
+}
+#actions{
+  margin:1rem;
+  text-align:center;
+}
+button{
+  background:var(--bmg-green);
+  color:var(--bmg-black);
+  border:none;
+  padding:.6rem 1rem;
+  margin:.3rem;
+  border-radius:8px;
+  cursor:pointer;
+  font-family:'Bungee',sans-serif;
+  font-size:.9rem;
+}
+button:hover{background:#27c949}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DEV-Game Bereich</h1>
+  <input id="search" type="text" placeholder="🔎 Spiel suchen (Ctrl+K)">
+</header>
+
+<main id="game-list"></main>
+
+<div id="actions">
+  <button id="add-game">➕ Neues Spiel</button>
+  <button id="export">💾 Export .octxt</button>
+  <button id="import">📂 Import .octxt</button>
+  <input id="import-file" type="file" accept=".octxt" style="display:none">
+</div>
+
+<iframe id="preview"></iframe>
+
+<footer>🖤🤍💚 &copy; dasfohlen1900 – DEV-Games</footer>
+
+<script>
+const storageKey = 'devGames';
+const defaultGames = [
+  {title:'Mini-2048',desc:'Das klassische 2048 Spiel',link:'/games/2048/'},
+  {title:'Penalty',desc:'Elfmeterschießen',link:'/games/penalty/'},
+  {title:'Mini-Kicker',desc:'Bundesliga Tabelle & Spiele',link:'/games/minikicker/'}
+];
+let games = JSON.parse(localStorage.getItem(storageKey)) || defaultGames.slice();
+
+const list = document.getElementById('game-list');
+const search = document.getElementById('search');
+const preview = document.getElementById('preview');
+
+function render(){
+  list.innerHTML = '';
+  games
+    .filter(g => g.title.toLowerCase().includes(search.value.toLowerCase()))
+    .forEach((g,i)=>{
+      const card=document.createElement('div');
+      card.className='card';
+      card.innerHTML=`<h2>${g.title}</h2><p>${g.desc}</p>`;
+      card.onclick=()=>openGame(g.link);
+      list.appendChild(card);
+    });
+}
+function openGame(url){
+  preview.style.display='block';
+  preview.src = url;
+  preview.scrollIntoView({behavior:'smooth'});
+}
+function save(){localStorage.setItem(storageKey,JSON.stringify(games));}
+
+document.getElementById('add-game').onclick=()=>{
+  const title=prompt('Titel des Spiels?'); if(!title) return;
+  const desc=prompt('Beschreibung?')||'';
+  const link=prompt('Link (ab /games/...):','/games/');
+  games.push({title,desc,link}); save(); render();
+};
+document.getElementById('export').onclick=()=>{
+  const blob=new Blob([JSON.stringify(games)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='dev-games.octxt';
+  a.click();
+};
+document.getElementById('import').onclick=()=>document.getElementById('import-file').click();
+document.getElementById('import-file').onchange=e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      games=JSON.parse(r.result); save(); render();
+    }catch(err){alert('Fehler beim Import!');}
+  };
+  r.readAsText(file);
+};
+
+search.oninput=render;
+window.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+    e.preventDefault(); search.focus();
+  }
+});
+
+render();
+</script>
+
+</body>
+</html>
