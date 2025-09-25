@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini‑Music — .octmm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#000; /* black */
+      --fg:#fff; /* white */
+      --accent:#0bb26a; /* green-ish */
+      --muted: #cfcfcf;
+      --card-bg: #101010;
+      --radius: 12px;
+      font-family: 'Bungee', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: dark;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#080808);color:var(--fg)}
+    .wrap{max-width:980px;margin:28px auto;padding:22px;background:linear-gradient(180deg,#0b0b0b,#151515);border-radius:18px;box-shadow:0 6px 30px rgba(0,0,0,.6);}
+    h1{font-size:28px;margin:0 0 8px;letter-spacing:1px}
+    .meta{color:var(--muted);font-size:13px;margin-bottom:14px}
+    .row{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+    .card{background:var(--card-bg);padding:12px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
+    button{background:var(--accent);border:0;padding:8px 12px;border-radius:10px;color:#000;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-weight:600}
+    .controls{display:flex;gap:8px;align-items:center}
+    .slider{appearance:none;width:160px}
+    .grid{display:grid;grid-template-columns:repeat(16,1fr);gap:6px;margin-top:10px}
+    .step{height:36px;border-radius:8px;background:#0a0a0a;border:1px solid #151515;display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .step.on{background:linear-gradient(180deg,var(--accent),#0a8b57);color:#000}
+    .small{font-size:12px;color:var(--muted)}
+    .piano{display:flex;gap:4px;margin-top:12px}
+    .key{width:36px;height:84px;border-radius:6px;background:#fff;color:#000;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;box-shadow:0 3px 8px rgba(0,0,0,.5);cursor:pointer}
+    .key.black{background:#111;color:#fff;height:56px;margin-left:-18px;margin-right:-18px;z-index:2;align-self:flex-start}
+    .footer{margin-top:14px;color:var(--muted);font-size:13px}
+    input[type=file]{display:none}
+    .title-with-dot{display:flex;gap:10px;align-items:center}
+    .dot{width:12px;height:12px;border-radius:50%;background:var(--accent)}
+    @media (max-width:640px){.grid{grid-template-columns:repeat(8,1fr)}.key{width:28px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title-with-dot"><div class="dot"></div><h1>Mini‑Music <span class="small">(.octmm)</span></h1></div>
+    <div class="meta">Algorithmischer Browser‑Musikgenerator · Export/Import als <code>.octmm</code> · Design: 🖤🤍💚</div>
+
+    <div class="row">
+      <div class="card controls">
+        <button id="play">Play</button>
+        <button id="stop" class="ghost">Stop</button>
+        <button id="random" class="ghost">Randomize</button>
+        <label class="small" style="margin-left:10px">BPM <span id="bpmVal">120</span></label>
+        <input id="bpm" class="slider" type="range" min="60" max="200" value="120"/>
+      </div>
+
+      <div class="card" style="padding:10px 14px">
+        <div class="small">Instrument</div>
+        <select id="oscType" style="margin-top:6px;padding:6px;border-radius:8px;background:#0b0b0b;color:var(--fg);border:1px solid #222">
+          <option value="sine">Sine</option>
+          <option value="triangle">Triangle</option>
+          <option value="sawtooth">Saw</option>
+          <option value="square">Square</option>
+        </select>
+      </div>
+
+      <div class="card" style="padding:10px 14px">
+        <div class="small">Steps</div>
+        <select id="stepsCount" style="margin-top:6px;padding:6px;border-radius:8px;background:#0b0b0b;color:var(--fg);border:1px solid #222">
+          <option>8</option>
+          <option selected>16</option>
+          <option>32</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="card" style="padding:12px">
+      <div class="small">Pattern (Klicke, um Noten an/aus zu schalten)</div>
+      <div id="grid" class="grid" role="grid" aria-label="Sequencer grid"></div>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex:1">
+        <div class="small">Skala</div>
+        <select id="scale" style="margin-top:6px;padding:6px;border-radius:8px;background:#0b0b0b;color:var(--fg);border:1px solid #222">
+          <option value="c_major">C Major</option>
+          <option value="a_minor">A Minor</option>
+          <option value="g_major">G Major</option>
+        </select>
+
+        <div class="piano" id="piano"></div>
+        <div class="small" style="margin-top:8px">Klicke eine Taste, um die Note zu hören.</div>
+      </div>
+
+      <div class="card" style="width:260px;padding:12px">
+        <div class="small">Speichern / Laden</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="save">Save .octmm</button>
+          <label class="ghost" style="padding:8px 10px;cursor:pointer">
+            <input id="filein" type="file" accept=".octmm" />Load
+          </label>
+        </div>
+        <div style="margin-top:10px" class="small">Datei enthält Pattern + BPM + Instrument. Kann in deinem Mini‑Office geöffnet werden.</div>
+      </div>
+    </div>
+
+    <div class="footer">Hinweis: Das ist ein rein browserbasierter Generator (Web Audio API). Für KI‑Musik/Audio‑Rendering brauchst du später ein Backend und APIs.</div>
+  </div>
+
+  <script>
+    // --- einfache Sequencer-Logik ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let isPlaying = false;
+    let currentStep = 0;
+    let timerId = null;
+
+    const defaultState = () => ({
+      steps: 16,
+      bpm: 120,
+      oscType: 'sine',
+      scale: 'c_major',
+      pattern: Array(16).fill(false).map((_,i)=> Math.random() < 0.2 ? {note: i%7+0} : null)
+    });
+    let state = defaultState();
+
+    const scales = {
+      c_major: [0,2,4,5,7,9,11],
+      a_minor: [0,2,3,5,7,8,10],
+      g_major: [0,2,4,5,7,9,11]
+    };
+
+    // map notes to frequencies (C4 = 261.63)
+    function noteToFreq(rootOffset){
+      const C4 = 261.6256;
+      return C4 * Math.pow(2, rootOffset/12);
+    }
+
+    // UI refs
+    const gridEl = document.getElementById('grid');
+    const playBtn = document.getElementById('play');
+    const stopBtn = document.getElementById('stop');
+    const randomBtn = document.getElementById('random');
+    const bpmIn = document.getElementById('bpm');
+    const bpmVal = document.getElementById('bpmVal');
+    const oscType = document.getElementById('oscType');
+    const stepsCount = document.getElementById('stepsCount');
+    const scaleSel = document.getElementById('scale');
+    const piano = document.getElementById('piano');
+    const saveBtn = document.getElementById('save');
+    const fileIn = document.getElementById('filein');
+
+    function buildGrid(){
+      gridEl.innerHTML = '';
+      const steps = state.steps;
+      gridEl.style.gridTemplateColumns = `repeat(${steps},1fr)`;
+      for(let i=0;i<steps;i++){
+        const s = document.createElement('div');
+        s.className = 'step' + (state.pattern[i] ? ' on' : '');
+        s.dataset.idx = i;
+        s.textContent = i+1;
+        s.addEventListener('click', ()=>{
+          if(state.pattern[i]) state.pattern[i] = null; else state.pattern[i] = {note: Math.floor(Math.random()*7)};
+          s.classList.toggle('on');
+        });
+        gridEl.appendChild(s);
+      }
+    }
+
+    function playNoteAt(stepIndex, time){
+      const cell = state.pattern[stepIndex];
+      if(!cell) return;
+      // pick scale note offset
+      const scale = scales[state.scale] || scales.c_major;
+      const degree = (cell.note || 0) % scale.length;
+      const octave = 0 + (cell.octave || 0);
+      const semitoneOffset = scale[degree] + 12*octave + 0; // root C4
+      const freq = noteToFreq(semitoneOffset);
+
+      const o = audioCtx.createOscillator();
+      o.type = state.oscType;
+      o.frequency.setValueAtTime(freq, time);
+      const g = audioCtx.createGain();
+      g.gain.setValueAtTime(0, time);
+      g.gain.linearRampToValueAtTime(0.14, time+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, time+0.3);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(time);
+      o.stop(time+0.5);
+    }
+
+    function scheduler(){
+      const secondsPerBeat = 60 / state.bpm;
+      const stepDuration = secondsPerBeat / 2; // eighth notes
+      const now = audioCtx.currentTime + 0.05;
+      for(let i=0;i<1;i++){
+        const t = now + i*stepDuration;
+        playNoteAt((currentStep + i) % state.steps, t);
+      }
+      // highlight UI
+      const prev = gridEl.querySelector('.step.active'); if(prev) prev.classList.remove('active');
+      const el = gridEl.querySelector(`.step[data-idx='${currentStep}']`);
+      if(el) el.classList.add('active');
+      currentStep = (currentStep + 1) % state.steps;
+    }
+
+    function start(){
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      if(isPlaying) return;
+      isPlaying = true;
+      playBtn.textContent = 'Playing';
+      const stepDuration = (60/state.bpm)/2 * 1000;
+      timerId = setInterval(scheduler, stepDuration);
+    }
+    function stop(){
+      if(!isPlaying) return;
+      clearInterval(timerId); timerId=null; isPlaying=false; playBtn.textContent='Play';
+      const act = gridEl.querySelector('.step.active'); if(act) act.classList.remove('active');
+      currentStep = 0;
+    }
+
+    // randomize pattern
+    function randomize(){
+      state.pattern = Array.from({length:state.steps}).map(()=> Math.random()<0.28 ? {note: Math.floor(Math.random()*7)} : null);
+      buildGrid();
+    }
+
+    // piano quick preview
+    const pianoNotes = [0,2,4,5,7,9,11,12]; // one octave
+    function buildPiano(){
+      piano.innerHTML='';
+      for(let i=0;i<8;i++){
+        const k = document.createElement('div'); k.className='key'; k.textContent=['C','D','E','F','G','A','B','C'][i];
+        k.dataset.note = pianoNotes[i];
+        k.addEventListener('click', ()=>{
+          const freq = noteToFreq(parseInt(k.dataset.note));
+          const o = audioCtx.createOscillator(); o.type = state.oscType; o.frequency.setValueAtTime(freq,audioCtx.currentTime);
+          const g = audioCtx.createGain(); g.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.14,audioCtx.currentTime+0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.5);
+          o.connect(g).connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.6);
+        });
+        piano.appendChild(k);
+      }
+    }
+
+    // save/load .octmm
+    function saveToFile(){
+      const payload = {
+        meta: {format:'.octmm',version:1,created:new Date().toISOString()},
+        state: {steps:state.steps,bpm:state.bpm,oscType:state.oscType,scale:state.scale,pattern:state.pattern}
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'mini-music.octmm'; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    fileIn.addEventListener('change', (e)=>{
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        try{
+          const data = JSON.parse(reader.result);
+          if(data && data.state){
+            state.steps = data.state.steps || state.steps;
+            state.bpm = data.state.bpm || state.bpm;
+            state.oscType = data.state.oscType || state.oscType;
+            state.scale = data.state.scale || state.scale;
+            state.pattern = data.state.pattern || state.pattern;
+            // update UI
+            bpmIn.value = state.bpm; bpmVal.textContent = state.bpm;
+            oscType.value = state.oscType; scaleSel.value = state.scale; stepsCount.value = state.steps;
+            buildGrid();
+            buildPiano();
+            alert('mini-music geladen.');
+          } else alert('Ungültiges .octmm');
+        }catch(err){alert('Fehler beim Laden: '+err)}
+      };
+      reader.readAsText(f);
+    });
+
+    // wire UI
+    playBtn.addEventListener('click', ()=>{ start(); });
+    stopBtn.addEventListener('click', ()=>{ stop(); });
+    randomBtn.addEventListener('click', ()=>{ randomize(); });
+    bpmIn.addEventListener('input', (e)=>{ state.bpm = +e.target.value; bpmVal.textContent = state.bpm; if(isPlaying){ stop(); start(); } });
+    oscType.addEventListener('change',(e)=>{ state.oscType = e.target.value; });
+    stepsCount.addEventListener('change',(e)=>{ state.steps = +e.target.value; // rebuild pattern preserving start
+      if(state.pattern.length < state.steps) state.pattern = state.pattern.concat(Array(state.steps - state.pattern.length).fill(null));
+      else state.pattern.length = state.steps;
+      buildGrid();
+    });
+    scaleSel.addEventListener('change',(e)=>{ state.scale = e.target.value; buildPiano(); });
+    saveBtn.addEventListener('click', saveToFile);
+
+    // initialize
+    function init(){
+      // apply defaults
+      state.steps = +stepsCount.value; state.bpm = +bpmIn.value; state.oscType = oscType.value; state.scale = scaleSel.value;
+      buildGrid(); buildPiano();
+    }
+    init();
+
+  </script>
+</body>
+</html>
