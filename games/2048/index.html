@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mini-2048 – BMG-Colors</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --panel:#071019;
+    --text:#e6eef6;
+    --tile-size:90px;
+    --gap:12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:linear-gradient(180deg,#031217,#07121a);
+    color:var(--text);font-family:Inter, system-ui, Arial;display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:24px;
+  }
+  .wrap{max-width:520px;width:100%}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  h1{font-family:'Bungee', sans-serif;font-size:1.45rem;margin:0}
+  .scores{display:flex;gap:8px;align-items:center}
+  .score-box{background:rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;font-weight:700}
+
+  .board {
+    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.12));
+    padding:var(--gap);
+    border-radius:16px;
+    display:grid;
+    grid-template-columns:repeat(4, var(--tile-size));
+    grid-template-rows:repeat(4, var(--tile-size));
+    gap:var(--gap);
+    justify-content:center;
+    box-shadow:0 12px 40px rgba(0,0,0,0.6);
+    margin-bottom:14px;
+  }
+  .cell {
+    width:var(--tile-size);height:var(--tile-size);
+    background:rgba(255,255,255,0.03);
+    border-radius:10px;
+  }
+
+  /* tile */
+  .tile {
+    position:absolute;
+    width:var(--tile-size);height:var(--tile-size);
+    display:flex;align-items:center;justify-content:center;
+    border-radius:10px;font-weight:800;font-size:1.15rem;
+    transition: transform 160ms ease, left 160ms ease, top 160ms ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    user-select:none;
+  }
+  .tile.new { transform: scale(0.2); animation:pop .14s ease forwards; }
+  .tile.merge { animation:merge .14s ease; }
+
+  @keyframes pop { to { transform: scale(1); } }
+  @keyframes merge { 0% { transform: scale(1.1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
+
+  /* color mapping */
+  .val-2{background:#e74c3c;color:#fff}
+  .val-4{background:#e67e22;color:#fff}
+  .val-8{background:#f6d55c;color:#111}
+  .val-16{background:#c7f464;color:#111}
+  .val-32{background:#6ec1e4;color:#111}
+  .val-64{background:#0b3d91;color:#fff}
+  .val-128{background:#ff69b4;color:#111}
+  .val-256{background:#8e44ad;color:#fff}
+  .val-512{background:#9b111e;color:#fff}
+  .val-1024{background:#2ecc71;color:#111}
+  .val-2048{
+    background:linear-gradient(135deg,#008c45,#006f3c);
+    color:#fff;border:2px solid rgba(0,0,0,0.2);
+  }
+
+  .controls {display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .btn{background:#0e6f3b;color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+  .hint{font-size:0.85rem;opacity:0.8}
+  .overlay{position:relative}
+  .msg{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);border-radius:12px;color:white;font-size:1.15rem;flex-direction:column;gap:10px}
+  .small{font-size:0.9rem;opacity:0.95}
+</style>
+<!-- optional Bungee font for header -->
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Mini-2048</h1>
+    <div class="scores">
+      <div class="score-box">Score <span id="score">0</span></div>
+      <div class="score-box">Best <span id="best">0</span></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button class="btn" id="newGame">Neues Spiel</button>
+    <button class="btn ghost" id="undo" title="Rückgängig (1 Schritt)">Undo</button>
+    <div class="hint small">Steuerung: Pfeile / W A S D / Swipe</div>
+  </div>
+
+  <div class="overlay">
+    <div id="board" class="board" aria-hidden="false"></div>
+    <div id="message" class="msg" style="display:none">
+      <div id="msgText">Du hast gewonnen!</div>
+      <div>
+        <button class="btn" id="continueBtn">Weiter spielen</button>
+        <button class="btn ghost" id="restartBtn">Neu starten</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 2048 logic with rendering and your color mapping */
+const SIZE = 4;
+const boardEl = document.getElementById('board');
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('best');
+const newBtn = document.getElementById('newGame');
+const message = document.getElementById('message');
+const msgText = document.getElementById('msgText');
+const continueBtn = document.getElementById('continueBtn');
+const restartBtn = document.getElementById('restartBtn');
+const undoBtn = document.getElementById('undo');
+
+let grid = [];
+let tiles = []; // DOM tiles
+let score = 0;
+let best = parseInt(localStorage.getItem('mini2048_best')||'0',10);
+let canUndo = null;
+bestEl.textContent = best;
+
+// board cell positions for placing absolute tiles
+const tileSize = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tile-size')) || 90;
+const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--gap')) || 12;
+const boardRectWidth = SIZE*tileSize + (SIZE-1)*gap;
+
+// create static cells
+for(let i=0;i<SIZE*SIZE;i++){
+  const c = document.createElement('div');
+  c.className='cell';
+  boardEl.appendChild(c);
+}
+
+// helpers
+function newGrid(){ return Array.from({length:SIZE},()=>Array(SIZE).fill(null)) }
+
+function spawnRandom(){
+  const empties = [];
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(!grid[r][c]) empties.push({r,c});
+  if(empties.length===0) return false;
+  const {r,c} = empties[Math.floor(Math.random()*empties.length)];
+  const val = Math.random() < 0.9 ? 2 : 4;
+  grid[r][c] = {value: val, id: idGen()};
+  render();
+  animateNew(grid[r][c].id);
+  return true;
+}
+
+let idCounter=1;
+function idGen(){ return 't'+(idCounter++) }
+
+function render(){
+  // clear old tiles
+  tiles.forEach(t=>t.el.remove());
+  tiles = [];
+  // for positioning we compute left/top per cell
+  for(let r=0;r<SIZE;r++){
+    for(let c=0;c<SIZE;c++){
+      const cell = grid[r][c];
+      if(cell){
+        const el = document.createElement('div');
+        el.className = 'tile val-'+cell.value + (cell.new? ' new':'');
+        el.dataset.id = cell.id;
+        el.innerText = cell.value;
+        // position absolute: compute left/top relative to board
+        const left = c*(tileSize + gap);
+        const top = r*(tileSize + gap);
+        el.style.left = left + 'px';
+        el.style.top = top + 'px';
+        // font-size adjust
+        if (cell.value >= 1024) el.style.fontSize = '0.95rem';
+        boardEl.appendChild(el);
+        tiles.push({id: cell.id, el: el, r, c});
+        // remove new flag after rendering for next spawn
+        delete cell.new;
+      }
+    }
+  }
+  scoreEl.textContent = score;
+  bestEl.textContent = best;
+}
+
+function animateNew(id){
+  const node = boardEl.querySelector('[data-id="'+id+'"]');
+  if(node) node.classList.add('new');
+  setTimeout(()=>{ if(node) node.classList.remove('new'); },300);
+}
+
+// movement utils
+function move(direction){
+  // direction: 'up','down','left','right'
+  saveUndo();
+  let moved = false;
+  const dir = {up:[-1,0],down:[1,0],left:[0,-1],right:[0,1]}[direction];
+  const [dr,dc] = dir;
+  const rangeR = dr===1 ? [...Array(SIZE).keys()].reverse() : [...Array(SIZE).keys()];
+  const rangeC = dc===1 ? [...Array(SIZE).keys()].reverse() : [...Array(SIZE).keys()];
+
+  const mergedThisMove = new Set();
+
+  // sliding depending on direction
+  if(direction==='left' || direction==='right'){
+    for(let r=0;r<SIZE;r++){
+      for(let c of rangeC){
+        if(!grid[r][c]) continue;
+        let cr=c, val = grid[r][c].value;
+        while(true){
+          const nc = cr + (dc===0? (direction==='left'?-1:1) : 0);
+          // but for left/right we only move in c axis
+          if(direction==='left') nc = cr-1;
+          if(direction==='right') nc = cr+1;
+          if(nc<0||nc>=SIZE) break;
+          if(!grid[r][nc]){
+            grid[r][nc] = grid[r][cr];
+            grid[r][cr] = null;
+            cr = nc; moved = true;
+          } else if(grid[r][nc].value === val && !mergedThisMove.has(grid[r][nc].id) && !mergedThisMove.has(grid[r][cr].id)){
+            // merge
+            grid[r][nc].value *= 2;
+            grid[r][nc].id = idGen();
+            grid[r][nc].new = true;
+            grid[r][cr] = null;
+            score += grid[r][nc].value;
+            if(score>best){ best=score; localStorage.setItem('mini2048_best',best); }
+            mergedThisMove.add(grid[r][nc].id);
+            moved = true;
+            break;
+          } else break;
+        }
+      }
+    }
+  } else {
+    // up/down: move along r
+    for(let c=0;c<SIZE;c++){
+      for(let r of rangeR){
+        if(!grid[r][c]) continue;
+        let rr=r, val = grid[r][c].value;
+        while(true){
+          const nr = rr + (direction==='up'? -1: 1);
+          if(nr<0||nr>=SIZE) break;
+          if(!grid[nr][c]){
+            grid[nr][c] = grid[rr][c];
+            grid[rr][c] = null;
+            rr = nr; moved = true;
+          } else if(grid[nr][c].value === val && !mergedThisMove.has(grid[nr][c].id) && !mergedThisMove.has(grid[rr][c].id)){
+            // merge
+            grid[nr][c].value *= 2;
+            grid[nr][c].id = idGen();
+            grid[nr][c].new = true;
+            grid[rr][c] = null;
+            score += grid[nr][c].value;
+            if(score>best){ best=score; localStorage.setItem('mini2048_best',best); }
+            mergedThisMove.add(grid[nr][c].id);
+            moved = true;
+            break;
+          } else break;
+        }
+      }
+    }
+  }
+
+  if(moved){
+    // mark new spawn positions later
+    spawnRandom();
+    render();
+    // check game over or win
+    if(checkWin()) {
+      showMessage('Glückwunsch — 2048 erreicht!');
+    } else if(!movesAvailable()){
+      showMessage('Game Over – keine Züge mehr');
+    }
+  } else {
+    // nothing moved -> revert undo state
+    canUndo = null;
+  }
+}
+
+// detect moves available
+function movesAvailable(){
+  for(let r=0;r<SIZE;r++){
+    for(let c=0;c<SIZE;c++){
+      if(!grid[r][c]) return true;
+      const v = grid[r][c].value;
+      if(r+1<SIZE && grid[r+1][c] && grid[r+1][c].value===v) return true;
+      if(c+1<SIZE && grid[r][c+1] && grid[r][c+1].value===v) return true;
+    }
+  }
+  return false;
+}
+
+function checkWin(){
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(grid[r][c] && grid[r][c].value===2048) return true;
+  return false;
+}
+
+// undo: store previous snapshot
+function saveUndo(){
+  canUndo = {grid: JSON.parse(JSON.stringify(grid)), score: score, idCounter: idCounter};
+  undoBtn.disabled = false;
+}
+undoBtn.addEventListener('click', ()=>{
+  if(!canUndo) return;
+  grid = JSON.parse(JSON.stringify(canUndo.grid));
+  score = canUndo.score;
+  idCounter = canUndo.idCounter;
+  canUndo = null;
+  undoBtn.disabled = true;
+  render();
+});
+
+// moves via keyboard
+window.addEventListener('keydown', (e)=>{
+  const map = {
+    'ArrowUp':'up','w':'up','W':'up',
+    'ArrowDown':'down','s':'down','S':'down',
+    'ArrowLeft':'left','a':'left','A':'left',
+    'ArrowRight':'right','d':'right','D':'right'
+  };
+  const dir = map[e.key];
+  if(dir){ e.preventDefault(); move(dir); }
+  // Ctrl/Cmd+R to restart? not intercepting
+});
+
+// swipe support (touch)
+let touchStart = null;
+document.addEventListener('touchstart',(e)=>{ if(e.touches.length===1) touchStart = {x:e.touches[0].clientX,y:e.touches[0].clientY}; });
+document.addEventListener('touchend',(e)=>{
+  if(!touchStart) return;
+  const end = e.changedTouches[0];
+  const dx = end.clientX - touchStart.x;
+  const dy = end.clientY - touchStart.y;
+  if(Math.abs(dx) < 20 && Math.abs(dy) < 20){ touchStart=null; return; }
+  if(Math.abs(dx) > Math.abs(dy)){
+    move(dx>0?'right':'left');
+  } else {
+    move(dy>0?'down':'up');
+  }
+  touchStart=null;
+});
+
+// new game
+newBtn.addEventListener('click', initGame);
+continueBtn.addEventListener('click', ()=> message.style.display='none');
+restartBtn.addEventListener('click', ()=> { message.style.display='none'; initGame(); });
+
+// show message
+function showMessage(text){
+  msgText.innerText = text;
+  message.style.display = 'flex';
+}
+
+// init and helpers
+function initGame(){
+  grid = newGrid();
+  score = 0;
+  idCounter = 1;
+  canUndo = null;
+  undoBtn.disabled = true;
+  // spawn two tiles
+  spawnRandom(); spawnRandom();
+  render();
+  message.style.display='none';
+  // center tiles container visually
+  boardEl.style.width = boardRectWidth + 'px';
+  boardEl.style.height = boardRectWidth + 'px';
+}
+
+function saveState(){
+  const simple = {grid: grid, score: score, best: best, idCounter:idCounter};
+  localStorage.setItem('mini2048_state', JSON.stringify(simple));
+}
+function loadState(){
+  const s = localStorage.getItem('mini2048_state');
+  if(!s) return false;
+  try{
+    const obj = JSON.parse(s);
+    grid = obj.grid;
+    score = obj.score;
+    best = obj.best || best;
+    idCounter = obj.idCounter || idCounter;
+    return true;
+  }catch(e){ return false; }
+}
+
+// persist on unload
+window.addEventListener('beforeunload', saveState);
+
+// try load
+if(!loadState()) initGame(); else render();
+
+// helper to clean up grid serialization (convert undefined to null)
+function normalizeGrid(){
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(!grid[r][c]) grid[r][c]=null;
+}
+normalizeGrid();
+render();
+</script>
+</body>
+</html>
