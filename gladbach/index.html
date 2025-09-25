@@ -9,11 +9,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
 
   <style>
-  /* === BMG Farbpalette === */
   :root {
     --bmg-black: #000000;
     --bmg-white: #ffffff;
-    --bmg-green: #008c45; /* BMG-Grün */
+    --bmg-green: #008c45;
+    --bmg-green-dark: #006f3c;
   }
 
   body {
@@ -25,28 +25,103 @@
     padding: 0;
   }
 
+  /* ===== Header ===== */
   header {
     padding: 2rem;
-    background: var(--bmg-green);
-    color: var(--bmg-white);
+    background: linear-gradient(135deg, var(--bmg-green) 0%, var(--bmg-green-dark) 100%);
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   }
+  header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 2.2rem;
+  }
+  header p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
 
+  /* ===== Grid für Cards ===== */
   main {
     padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    justify-items: center;
+    max-width: 1100px;
+    margin: auto;
   }
 
-  .button {
-    display: inline-block;
-    margin: 1rem;
-    padding: 1rem 2rem;
-    background: var(--bmg-green);
+  /* ===== Card Design ===== */
+  .card {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    padding: 1.5rem 1rem;
+    background: var(--bmg-black);
+    border: 2px solid var(--bmg-green);
+    border-radius: 16px;
     color: var(--bmg-white);
     text-decoration: none;
-    border-radius: 12px;
-    transition: 0.3s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    transition: transform 0.25s, background 0.3s, color 0.3s;
   }
-  .button:hover {
+  .card h2 {
+    margin-bottom: 0.4rem;
+    font-size: 1.4rem;
+  }
+  .card p {
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+  .card:hover {
+    background: var(--bmg-green);
+    color: var(--bmg-white);
+    transform: translateY(-6px);
+  }
+
+  /* ===== Modal ===== */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.65);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-content {
+    background: var(--bmg-black);
+    border: 3px solid var(--bmg-green);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 340px;
+    text-align: center;
+    color: var(--bmg-white);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  .modal-content h2 {
+    margin-top: 0;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  .modal-buttons {
+    margin-top: 1.4rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .modal-buttons button {
+    font-family: 'Bungee', cursive;
+    background: var(--bmg-green);
+    color: var(--bmg-white);
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+  .modal-buttons button:hover {
     background: var(--bmg-white);
     color: var(--bmg-green);
   }
@@ -56,67 +131,85 @@
     padding: 1rem;
     background: var(--bmg-black);
     font-size: 0.9rem;
+    color: var(--bmg-white);
+  }
+  footer a {
+    color: var(--bmg-green);
+    text-decoration: underline;
+  }
+  footer a:hover {
+    color: var(--bmg-white);
   }
   </style>
 </head>
 <body>
+
   <header>
     <h1>🖤🤍💚 Mini-Office</h1>
     <p>Willkommen bei meiner BMG-Edition</p>
   </header>
 
   <main>
-<a class="card" href="https://dasfohlen1900.github.io/mini-word/">
-    <h2>Mini-Word</h2>
-    <p>Texteditor mit Formatierung</p> 
-</a>
-  <a class="card" href="https://dasfohlen1900.github.io/mini-uhr/">
-    <h2>Mini-Uhr</h2>
-    <p>Uhr in Echtzeit, Timer, Stoppuhr, Wecker</p>
-  </a>
-  <a class="card" href="https://dasfohlen1900.github.io/derminikicker/">
-    <h2>BMG-Ergebnisse</h2>
-    <p>Auf geht´s, glorreiche Borussia</p>
-  </a>
-   <a class="card" href="https://dasfohlen1900.github.io/derminikicker/fu%C3%9Fballsimulator/">
-    <h2>BMG-Ticker erstellen</h2>
-    <p>Für alle, die den Liveticker nicht genug finden</p>
-  </a> 
+    <a class="card" href="https://dasfohlen1900.github.io/mini-word/">
+      <h2>Mini-Word</h2>
+      <p>Texteditor mit Formatierung</p>
+    </a>
+    <a class="card" href="https://dasfohlen1900.github.io/mini-uhr/">
+      <h2>Mini-Uhr</h2>
+      <p>Uhrzeit, Timer, Stoppuhr</p>
+    </a>
+    <a class="card" href="https://dasfohlen1900.github.io/derminikicker/">
+      <h2>BMG-Ergebnisse</h2>
+      <p>Aktuelle Borussia-News</p>
+    </a>
+    <a class="card" href="https://dasfohlen1900.github.io/derminikicker/fu%C3%9Fballsimulator/">
+      <h2>BMG-Ticker erstellen</h2>
+      <p>Eigenen Liveticker bauen</p>
+    </a>
     <a class="card" href="fohlen-word/">
-    <h2>Fohlen-Word</h2>
-    <p>Mini Word im Borussia-Style</p>
-  </a><a class="card"
-   href="https://dasfohlen1900.github.io/"
-   onclick="return auswaertsHinweis(event)">
-  <h2> Zum normalen Startseite</h2>
-  <p>Öffnet die normale Startseite</p>
-</a>
-</main>
-  
-<script>
-function auswaertsHinweis(e){
-  e.preventDefault(); // Standard-Weiterleitung stoppen
-  const ziel = e.currentTarget.href; // Ziel-URL merken
+      <h2>Fohlen-Word</h2>
+      <p>Mini Word im Borussia-Style</p>
+    </a>
+    <a class="card"
+       href="https://dasfohlen1900.github.io/"
+       onclick="return auswaertsHinweis(event)">
+      <h2>Zur normalen Startseite</h2>
+      <p>Öffnet die Standard-Startseite</p>
+    </a>
+  </main>
 
-  // Benutzerabfrage (einfaches confirm) → Text anpassen
-  const warnung = "⚠️ Vorsicht – Auswärts!\n\n" +
-                  "Über diesen Link kommst du auf eine Seite außerhalb des Startmenüs.\n\n" +
-                  "Fortfahren?";
-  if (confirm(warnung)){
-    alert("⚽ Ja – mach ein Tor!");
-    window.location.href = ziel;   // weiterleiten
-  } else {
-    alert("⬅️ Nein – zurück zum Bökelberg!");
-    // nichts tun → bleibt auf aktueller Seite
-  }
-  return false; // Link selbst nicht folgen
-}
-</script>
-
-  
+  <!-- Auswärts-Modal -->
+  <div id="auswaertsModal" class="modal">
+    <div class="modal-content">
+      <h2>⚠️ Vorsicht – Auswärts!</h2>
+      <p>Über diesen Link kommst du auf eine Seite außerhalb des Startmenüs.<br>Fortfahren?</p>
+      <div class="modal-buttons">
+        <button id="jaTor">⚽ Ja – mach ein Tor!</button>
+        <button id="neinZurueck">⬅️ Nein – zurück zum Bökelberg!</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
-    <p>© 2025 DasFohlen1900</p>
+    © 2025 DasFohlen1900 – <a href="https://github.com/dasfohlen1900">GitHub</a>
   </footer>
+
+  <script>
+  let zielUrl = "";
+
+  function auswaertsHinweis(e){
+    e.preventDefault();
+    zielUrl = e.currentTarget.href;
+    document.getElementById("auswaertsModal").style.display = "flex";
+  }
+
+  document.getElementById("jaTor").onclick = () => {
+    window.location.href = zielUrl;
+  };
+  document.getElementById("neinZurueck").onclick = () => {
+    document.getElementById("auswaertsModal").style.display = "none";
+  };
+  </script>
+
 </body>
 </html>
