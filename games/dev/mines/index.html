@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini-Minesweeper</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #071019;
+    --accent: #00b060;
+    --bomb: #e74c3c;
+  }
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  h1 {
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  #game {
+    display: grid;
+    gap: 2px;
+    margin: 10px auto;
+    background: var(--panel);
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #0008;
+  }
+  .cell {
+    width: 32px;
+    height: 32px;
+    background: #1a2533;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .cell.revealed {
+    background: #34495e;
+    cursor: default;
+  }
+  .cell.flag { color: #f1c40f; }
+  #status { margin-top: 10px; font-size: 18px; }
+  button#restart {
+    margin-top: 10px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 5px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button#restart:hover { background: #00d070; }
+</style>
+</head>
+<body>
+<h1>Mini-Minesweeper</h1>
+<div id="status">Klicke ein Feld zum Start</div>
+<div id="game"></div>
+<button id="restart">Neu starten</button>
+
+<script>
+(function(){
+  const size = 8;         // Spielfeldgröße (8x8)
+  const bombs = 10;       // Anzahl Bomben
+  const game = document.getElementById('game');
+  const status = document.getElementById('status');
+  const restart = document.getElementById('restart');
+  let grid, revealed, flagged, gameOver;
+
+  function init() {
+    game.style.gridTemplateColumns = `repeat(${size}, 32px)`;
+    grid = [];
+    revealed = Array(size).fill().map(()=>Array(size).fill(false));
+    flagged = Array(size).fill().map(()=>Array(size).fill(false));
+    gameOver = false;
+    status.textContent = 'Viel Glück!';
+    game.innerHTML = '';
+
+    // Spielfeld erstellen
+    for(let r=0;r<size;r++){
+      grid[r] = [];
+      for(let c=0;c<size;c++){
+        const cell = document.createElement('button');
+        cell.className = 'cell';
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.addEventListener('click', leftClick);
+        cell.addEventListener('contextmenu', rightClick);
+        game.appendChild(cell);
+        grid[r][c] = {bomb:false,count:0,el:cell};
+      }
+    }
+
+    // Bomben setzen
+    let placed = 0;
+    while(placed < bombs){
+      let r = Math.floor(Math.random()*size);
+      let c = Math.floor(Math.random()*size);
+      if(!grid[r][c].bomb){
+        grid[r][c].bomb = true;
+        placed++;
+      }
+    }
+
+    // Zahlen berechnen
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        if(!grid[r][c].bomb){
+          let count = 0;
+          for(let dr=-1;dr<=1;dr++){
+            for(let dc=-1;dc<=1;dc++){
+              let nr=r+dr,nc=c+dc;
+              if(nr>=0&&nr<size&&nc>=0&&nc<size&&grid[nr][nc].bomb) count++;
+            }
+          }
+          grid[r][c].count = count;
+        }
+      }
+    }
+  }
+
+  function leftClick(e){
+    if(gameOver) return;
+    const r = +this.dataset.r;
+    const c = +this.dataset.c;
+    if(flagged[r][c]) return;
+    reveal(r,c);
+    checkWin();
+  }
+
+  function rightClick(e){
+    e.preventDefault();
+    if(gameOver) return;
+    const r = +this.dataset.r;
+    const c = +this.dataset.c;
+    if(revealed[r][c]) return;
+    flagged[r][c] = !flagged[r][c];
+    this.textContent = flagged[r][c] ? '🚩' : '';
+    this.classList.toggle('flag', flagged[r][c]);
+  }
+
+  function reveal(r,c){
+    if(r<0||c<0||r>=size||c>=size||revealed[r][c]) return;
+    const cell = grid[r][c];
+    revealed[r][c] = true;
+    cell.el.classList.add('revealed');
+    if(cell.bomb){
+      cell.el.textContent = '💣';
+      cell.el.style.background = 'var(--bomb)';
+      gameOver = true;
+      status.textContent = '💥 Boom! Game Over';
+      revealAll();
+      return;
+    }
+    if(cell.count>0){
+      cell.el.textContent = cell.count;
+      return;
+    }
+    // Leere Zellen automatisch aufdecken
+    for(let dr=-1;dr<=1;dr++){
+      for(let dc=-1;dc<=1;dc++){
+        if(dr||dc) reveal(r+dr,c+dc);
+      }
+    }
+  }
+
+  function revealAll(){
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        if(grid[r][c].bomb && !revealed[r][c]){
+          grid[r][c].el.textContent = '💣';
+          grid[r][c].el.classList.add('revealed');
+        }
+      }
+    }
+  }
+
+  function checkWin(){
+    let safe = size*size - bombs;
+    let count = 0;
+    for(let r=0;r<size;r++)
+      for(let c=0;c<size;c++)
+        if(revealed[r][c] && !grid[r][c].bomb) count++;
+    if(count === safe && !gameOver){
+      status.textContent = '🎉 Gewonnen!';
+      gameOver = true;
+      revealAll();
+    }
+  }
+
+  restart.onclick = init;
+  init();
+})();
+</script>
+</body>
+</html>
