@@ -1,148 +1,131 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<title>Mini-Draw 1.2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mini-Draw</title>
 <style>
-  body{margin:0;background:#f3f4f6;font-family:'Segoe UI',sans-serif;
-       display:flex;justify-content:center;padding:40px 0;}
-  .paper{background:#fff;width:820px;min-height:1000px;box-shadow:0 0 20px rgba(0,0,0,.1);
-         padding:30px;border-radius:16px;display:flex;flex-direction:column;align-items:center;}
-  h1{margin-top:0;font-size:28px;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:15px;justify-content:center;}
-  button,select,input[type=color]{padding:6px 10px;font-size:15px;border:none;border-radius:6px;background:#e5e7eb;cursor:pointer;}
-  button:hover,select:hover,input[type=color]:hover{background:#d1d5db;}
-  .active{background:#93c5fd !important;}
-  canvas{border:1px solid #ccc;border-radius:8px;cursor:crosshair;background:#fff;}
-  input[type=file]{display:none;}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;background:#eef4fb;padding:10px;}
+header{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;}
+canvas{border:1px solid #aaa;border-radius:8px;background:#fff;touch-action:none;}
+button,input,select{padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#f8fafc;cursor:pointer;}
+.color{width:36px;height:36px;padding:0;}
 </style>
 </head>
 <body>
-<div class="paper">
-  <h1>Mini-Draw</h1>
+<header>
+  <button id="drawMode">✏️ Zeichnen</button>
+  <button id="textMode">🔤 Text</button>
+  <input type="color" id="color" class="color" value="#000000">
+  <select id="size">
+    <option value="20">20px</option>
+    <option value="30" selected>30px</option>
+    <option value="40">40px</option>
+    <option value="60">60px</option>
+  </select>
+  <button id="saveImg">💾 PNG</button>
+  <button id="saveOct">💾 .octdr</button>
+  <input type="file" id="openOct" style="display:none;">
+  <button id="openBtn">📂 Öffnen</button>
+</header>
 
-  <div class="toolbar">
-    <label>Farbe:
-      <input type="color" id="color" value="#000000">
-    </label>
-    <select id="size">
-      <option value="2">2 px</option>
-      <option value="4">4 px</option>
-      <option value="6" selected>6 px</option>
-      <option value="10">10 px</option>
-      <option value="20">20 px</option>
-    </select>
-    <button id="penBtn" class="active" onclick="setMode('pen')">✏️ Stift</button>
-    <button id="eraserBtn" onclick="setMode('eraser')">🩹 Radierer</button>
-    <button onclick="clearCanvas()">🧹 Löschen</button>
-    <button onclick="saveDrawing()">💾 Speichern (.octdr)</button>
-    <button onclick="loadInput.click()">📂 Laden (.octdr)</button>
-    <button onclick="imgInput.click()">🖼️ Bild einfügen</button>
-    <input id="loadInput" type="file" accept=".octdr" onchange="loadDrawing(this.files)">
-    <input id="imgInput" type="file" accept="image/*" onchange="insertImage(this.files)">
-  </div>
-
-  <canvas id="canvas" width="760" height="500"></canvas>
-</div>
+<canvas id="canvas" width="800" height="500"></canvas>
 
 <script>
-const canvas=document.getElementById('canvas');
-const ctx=canvas.getContext('2d');
-const penBtn=document.getElementById('penBtn');
-const eraserBtn=document.getElementById('eraserBtn');
-let mode='pen', drawing=false, strokes=[], currentStroke=[];
+const c=document.getElementById('canvas');
+const ctx=c.getContext('2d');
+ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
 
-function setMode(m){
-  mode=m;
-  penBtn.classList.toggle('active',m==='pen');
-  eraserBtn.classList.toggle('active',m==='eraser');
-}
+let drawing=false, mode='draw', texts=[], currentColor=document.getElementById('color').value;
 
 function start(e){
-  drawing=true;
-  const col = mode==='eraser' ? '#ffffff' : color.value;
-  const wid = size.value;
-  currentStroke=[{x:e.offsetX,y:e.offsetY,c:col,w:wid}];
+  if(mode!=='draw') return;
+  drawing=true;draw(e);
 }
+function end(){drawing=false;ctx.beginPath();}
 function draw(e){
-  if(!drawing)return;
-  const col = mode==='eraser' ? '#ffffff' : color.value;
-  const wid = size.value;
-  ctx.strokeStyle=col;
-  ctx.lineWidth=wid;
+  if(!drawing) return;
+  const r=c.getBoundingClientRect();
+  const x=(e.clientX||e.touches[0].clientX)-r.left;
+  const y=(e.clientY||e.touches[0].clientY)-r.top;
+  ctx.strokeStyle=currentColor;
+  ctx.lineWidth=2;
   ctx.lineCap='round';
-  ctx.lineTo(e.offsetX,e.offsetY);
+  ctx.lineTo(x,y);
   ctx.stroke();
-  currentStroke.push({x:e.offsetX,y:e.offsetY,c:col,w:wid});
-}
-function end(){
-  if(!drawing)return;
-  drawing=false;
   ctx.beginPath();
-  if(currentStroke.length>1){strokes.push(currentStroke);}
-  currentStroke=[];
+  ctx.moveTo(x,y);
 }
+c.addEventListener('mousedown',start);
+c.addEventListener('touchstart',start);
+c.addEventListener('mouseup',end);
+c.addEventListener('touchend',end);
+c.addEventListener('mousemove',draw);
+c.addEventListener('touchmove',draw);
 
-canvas.addEventListener('mousedown',start);
-canvas.addEventListener('mousemove',draw);
-canvas.addEventListener('mouseup',end);
-canvas.addEventListener('mouseleave',end);
+document.getElementById('drawMode').onclick=()=>mode='draw';
+document.getElementById('textMode').onclick=()=>mode='text';
+document.getElementById('color').oninput=e=>currentColor=e.target.value;
 
-function redraw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  strokes.forEach(s=>{
-    ctx.beginPath();
-    for(let i=0;i<s.length;i++){
-      const p=s[i];
-      ctx.strokeStyle=p.c;
-      ctx.lineWidth=p.w;
-      ctx.lineCap='round';
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-  });
-  ctx.beginPath();
-}
+c.addEventListener('click',e=>{
+  if(mode!=='text') return;
+  const text=prompt("Text eingeben:");
+  if(!text) return;
+  const fontSize=document.getElementById('size').value;
+  ctx.fillStyle=currentColor;
+  ctx.font=`${fontSize} Signika,Arial,sans-serif`;
+  const r=c.getBoundingClientRect();
+  const x=e.clientX-r.left;
+  const y=e.clientY-r.top;
+  ctx.fillText(text,x,y);
+  texts.push({x,y,font:ctx.font,color:currentColor,text});
+});
 
-function clearCanvas(){
-  strokes=[];
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-}
-
-function saveDrawing(){
-  const blob=new Blob([JSON.stringify({createdAt:new Date().toISOString(),strokes},null,2)],
-                      {type:'application/json'});
+// PNG speichern
+document.getElementById('saveImg').onclick=()=>{
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='drawing.octdr';
+  a.download='mini-draw.png';
+  a.href=c.toDataURL();
   a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-}
+};
 
-function loadDrawing(files){
-  const f=files[0]; if(!f) return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const o=JSON.parse(e.target.result);
-      if(o.strokes){strokes=o.strokes;redraw();}
-    }catch{alert('Ungültige Datei');}
+// OCTDR speichern
+document.getElementById('saveOct').onclick=()=>{
+  const img=c.toDataURL();
+  const data={
+    type:'octdr',
+    version:1,
+    width:c.width,
+    height:c.height,
+    background:'#ffffff',
+    image:img,
+    texts
   };
-  reader.readAsText(f);
-}
+  const blob=new Blob([JSON.stringify(data)],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.download='drawing.octdr';
+  a.href=URL.createObjectURL(blob);
+  a.click();
+};
 
-function insertImage(files){
-  const f=files[0]; if(!f)return;
-  const img=new Image();
-  img.onload=()=>{
-    ctx.drawImage(img,0,0,canvas.width,canvas.height);
-    // als eigener Stroke speichern (Hintergrundbild)
-    strokes.push([{img:canvas.toDataURL()}]);
+// OCTDR öffnen
+document.getElementById('openBtn').onclick=()=>document.getElementById('openOct').click();
+document.getElementById('openOct').onchange=e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const obj=JSON.parse(r.result);
+    const img=new Image();
+    img.onload=()=>{
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.drawImage(img,0,0,c.width,c.height);
+      texts=obj.texts||[];
+    };
+    img.src=obj.image;
   };
-  img.src=URL.createObjectURL(f);
-}
+  r.readAsText(file);
+};
 </script>
 </body>
 </html>
-
