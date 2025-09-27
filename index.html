@@ -56,6 +56,18 @@ footer{
   text-align:center;
   padding-top:20px;
 }
+footer .next-btn{
+  display:inline-block;
+  margin-top:10px;
+  background:var(--accent);
+  color:#fff;
+  padding:10px 20px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:600;
+  transition:background .2s;
+}
+footer .next-btn:hover{background:#1e293b;}
 </style>
 </head>
 <body>
@@ -66,83 +78,32 @@ footer{
 </header>
 
 <main class="grid">
-  <a class="card" href="mini-word/">
-    <h2>Mini-Word</h2>
-    <p>Texteditor mit .octxt-Speicherung</p>
-  </a>
-
-  <a class="card" href="mini-draw/">
-    <h2>Mini-Draw</h2>
-    <p>Zeichnen und Bilder einfügen</p>
-  </a>
-
-  <a class="card" href="mini-calc/">
-    <h2>Mini-Calc</h2>
-    <p>Wissenschaftlicher Rechner mit Verlauf</p>
-  </a>
-
-  <a class="card" href="mini-table/">
-    <h2>Mini-Table</h2>
-    <p>Einfache Tabellenkalkulation</p>
-  </a>
-  <a class="card" href="mini-uhr/">
-    <h2>Mini-Uhr</h2>
-    <p>Live-Uhrzeit und Timer</p>
-  </a>
-  <a class="card" href="mini-notes/">
-    <h2>Mini-Tafel</h2>
-    <p>Ideal für's Board oder die ToDo Liste</p>
-  </a>
-  <a class="card" href="mini-convert/">
-    <h2>Mini-Converter</h2>
-    <p>Länge, Daten, Größe, Hohlmaße</p>
-  </a>
-  <a class="card" href="to-do/">
-    <h2>To-Do-Liste</h2>
-    <p>Kleine To-Do-Liste</p>
-  </a>
-    <a class="card" href="derminikicker/">
-    <h2>Der Mini-Kicker</h2>
-    <p>Aktuelle Fußball-News aus der Bundesliga</p>
-  </a>
-      <a class="card" href="derminikicker/fußballsimulator/">
-    <h2>Der Mini-Kicker-Report</h2>
-    <p>Eigenen Fußballticker erstellen und herunterladen</p>
-  </a>
-        <a class="card" href="mini-kalender/">
-    <h2>Der Mini-Kalender</h2>
-    <p>Kalender mit Teminerstellung</p>
-  </a>
-  <a class="card" href="mini-pp/">
-    <h2>Der Mini-Präsentator</h2>
-    <p>Hochwertige Präsentationen erstellen</p>
-  </a> 
-    <a class="card" href="mini-music/">
-    <h2>Der Mini-Musik</h2>
-    <p>Werde zum Komponisten</p>
-    </a>
-     <a class="card" href="mini-mindmap/">
-    <h2>Der Mini-MindMap</h2>
-    <p>Mindmap im Gladbach-Style</p>
-     </a>
- <a class="card" href="games/2048/">
-    <h2>2048</h2>
-    <p>Das bekannte Spiel mit den Zahlen</p>
-  </a>
-     <a class="card" href="games/penalty/">
-    <h2>Penalty</h2>
-    <p>Elfmeterschießen bis zum Pfostenbruch!</p>
-  </a>
+  <!-- Deine bisherigen Cards -->
+  <a class="card" href="mini-word/"><h2>Mini-Word</h2><p>Texteditor mit .octxt-Speicherung</p></a>
+  <a class="card" href="mini-draw/"><h2>Mini-Draw</h2><p>Zeichnen und Bilder einfügen</p></a>
+  <a class="card" href="mini-calc/"><h2>Mini-Calc</h2><p>Wissenschaftlicher Rechner mit Verlauf</p></a>
+  <a class="card" href="mini-table/"><h2>Mini-Table</h2><p>Einfache Tabellenkalkulation</p></a>
+  <a class="card" href="mini-uhr/"><h2>Mini-Uhr</h2><p>Live-Uhrzeit und Timer</p></a>
+  <a class="card" href="mini-notes/"><h2>Mini-Tafel</h2><p>Ideal für's Board oder die ToDo Liste</p></a>
+  <a class="card" href="mini-convert/"><h2>Mini-Converter</h2><p>Länge, Daten, Größe, Hohlmaße</p></a>
+  <a class="card" href="to-do/"><h2>To-Do-Liste</h2><p>Kleine To-Do-Liste</p></a>
+  <a class="card" href="derminikicker/"><h2>Der Mini-Kicker</h2><p>Aktuelle Fußball-News aus der Bundesliga</p></a>
+  <a class="card" href="derminikicker/fußballsimulator/"><h2>Der Mini-Kicker-Report</h2><p>Eigenen Fußballticker erstellen und herunterladen</p></a>
+  <a class="card" href="mini-kalender/"><h2>Der Mini-Kalender</h2><p>Kalender mit Teminerstellung</p></a>
+  <a class="card" href="mini-pp/"><h2>Der Mini-Präsentator</h2><p>Hochwertige Präsentationen erstellen</p></a>
+  <a class="card" href="mini-music/"><h2>Mini-Musik</h2><p>Werde zum Komponisten</p></a>
+  <a class="card" href="mini-mindmap/"><h2>Mini-MindMap</h2><p>Mindmap im Gladbach-Style</p></a>
+  <a class="card" href="games/2048/"><h2>2048</h2><p>Das bekannte Spiel mit den Zahlen</p></a>
+  <a class="card" href="games/penalty/"><h2>Penalty</h2><p>Elfmeterschießen bis zum Pfostenbruch!</p></a>
 </main>
 
 <footer>
-  &copy; 2025 Mini-Office –
-  <a href="https://github.com/dasfohlen1900" style="color:inherit;text-decoration:underline;">
-    dasfohlen1900
-  </a>
+  &copy; 2025 Mini-Office – 
+  <a href="https://github.com/dasfohlen1900" style="color:inherit;text-decoration:underline;">dasfohlen1900</a>
+  <br>
+  <!-- 🚀 Neuer Knopf -->
+  <a href="seite2.html" class="next-btn">Weitere Apps →</a>
 </footer>
 
 </body>
 </html>
-
-
