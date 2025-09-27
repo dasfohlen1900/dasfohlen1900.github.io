@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Mini-Wetter</title>
+<style>
+  body{font-family:sans-serif;background:#0b0f14;color:#fff;text-align:center;padding:30px;}
+  #wetter{background:#071019;padding:20px;border-radius:10px;max-width:400px;margin:auto;}
+  h1{color:#9f9;}
+</style>
+</head>
+<body>
+  <h1>Mini-Wetter</h1>
+  <div id="wetter">Lade Daten…</div>
+
+<script>
+async function ladeWetter(){
+  const url = "https://api.open-meteo.com/v1/forecast"
+    + "?latitude=52.52&longitude=6.54"
+    + "&daily=sunrise,sunset,rain_sum,showers_sum,precipitation_hours,temperature_2m_max,temperature_2m_min"
+    + "&hourly=temperature_2m,rain,showers,apparent_temperature,pressure_msl"
+    + "&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall"
+    + "&timezone=Europe%2FBerlin&past_days=1";
+
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log(data); // Alle Daten in der Konsole ansehen
+
+    const current = data.current;
+    const daily   = data.daily;
+
+    const html = `
+      <p><b>Aktuell:</b> ${current.temperature_2m} °C, 
+         Luftfeuchtigkeit ${current.relative_humidity_2m}%</p>
+      <p><b>Heute:</b> Max ${daily.temperature_2m_max[0]} °C / 
+         Min ${daily.temperature_2m_min[0]} °C</p>
+      <p>🌅 Sonnenaufgang: ${daily.sunrise[0]}<br>
+         🌇 Sonnenuntergang: ${daily.sunset[0]}</p>
+    `;
+    document.getElementById("wetter").innerHTML = html;
+
+  }catch(e){
+    document.getElementById("wetter").innerText = "⚠️ Fehler: "+e;
+  }
+}
+ladeWetter();
+</script>
+</body>
+</html>
