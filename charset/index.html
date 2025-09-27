@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>CharMap: Octo1 / Latin1</title>
+  <title>CharMap Modular</title>
   <style>
     body {
       font-family: monospace;
@@ -33,8 +33,6 @@
       background: #333;
     }
   </style>
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Carlito&family=Signika&family=Lilita+One&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -43,14 +41,12 @@
 
   <label for="fontSelect">Schriftart:</label>
   <select id="fontSelect">
-    <!-- Systemfonts -->
     <option value="Arial">Arial</option>
     <option value="Segoe UI">Segoe UI</option>
     <option value="Times">Times</option>
     <option value="Verdana">Verdana</option>
     <option value="Courier">Courier</option>
     <option value="Georgia">Georgia</option>
-    <!-- Google Fonts -->
     <option value="'Carlito', sans-serif">Carlito</option>
     <option value="'Signika', sans-serif">Signika</option>
     <option value="'Bungee', cursive">Bungee</option>
@@ -58,27 +54,30 @@
   </select>
 
   <label for="pageSelect">Codepage:</label>
-  <select id="pageSelect">
-    <option value="octo1">Octo1</option>
-    <option value="latin1">Latin1</option>
-  </select>
+  <select id="pageSelect"></select>
 
   <table id="charmap"></table>
 
   <script>
-    // --- Octo1 (deine Tabelle) ---
+    const table = document.getElementById("charmap");
+    const pageSelect = document.getElementById("pageSelect");
+
+    // Latin1
+    const latin1 = Array.from({length: 256}, (_, i) => String.fromCharCode(i));
+
+    // Octo1 (vollständig integriert)
     const octo1 = [
       "Null","←","↑","→","↓","↔","↕","═","║","╔","╗","╚","╝","🗕","🗖","🗗",
       "🗙","π","Δ","","😀","😢","‟","T́","t́","𝄞","🡰","🡱","🡲","🡳","↰","↱",
-      " ","!","\"","#","$","%","&","'","(",")","*","+","-",".",",","/",
-      "0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?",
+      "Sp","!","\"","#","$","%","&","'","(","*",")","+",",","-",".","/",
+      "0","1","2","3","4","5","6","7","8","9",":",";","<","="," >", "?",
       "@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O",
       "P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_",
       "`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
       "p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"," ",
       "€","‚","ƒ","„","…","†","‡","ˆ","‰","Š","‹","Œ","Î","Ž","ć","ð",
       "Ć","‘","’","“","”","•","–","—","˜","™","š","›","œ","î","ž","Ÿ",
-      "\xA0","¡","V̶","£","¤","¥","¦","§","¨","©","ª","«","¬","SHY","®","¯",
+      "NBSP","¡","V̶","£","¤","¥","¦","§","¨","©","ª","«","¬","SHY","®","¯",
       "°","±","²","³","´","µ","¶","·","¸","¹","º","»","¼","½","¾","¿",
       "À","Á","Â","Ã","Ä","Ą","Ä́","Ç","È","É","Ê","Ë","Ì","Í","Ě","Ï",
       "Ď","Ñ","Ò","Ó","Ô","Õ","Ö","×","Ř","Ù","Ú","Û","Ü","Ý","f̌","ß",
@@ -86,14 +85,65 @@
       "ď","ñ","ò","ó","ô","õ","ö","÷","ř","ù","ú","û","ü","ý","🐙","ÿ"
     ];
 
-    // --- Latin1 (ISO 8859-1, 0x00-0xFF) ---
-    const latin1 = [];
-    for (let i = 0; i < 256; i++) {
-      latin1.push(String.fromCharCode(i));
+    // Symbolblöcke
+    const symbolA = Array.from({length: 256}, (_, i) => String.fromCharCode(0x2600 + i));
+    const symbolB = Array.from({length: 256}, (_, i) => String.fromCharCode(0x2700 + i));
+    const symbolC = Array.from({length: 256}, (_, i) => String.fromCharCode(0x0370 + i));
+
+    // Emoji-Ranges
+    const emojiRanges = [
+      [0x1F300, 0x1F5FF],
+      [0x1F600, 0x1F64F],
+      [0x1F680, 0x1F6FF],
+      [0x1F700, 0x1F77F],
+      [0x1F780, 0x1F7FF],
+      [0x1F800, 0x1F8FF],
+      [0x1F900, 0x1F9FF],
+      [0x1FA00, 0x1FAFF],
+      [0x1FB00, 0x1FBFF]
+    ];
+
+    // Emojis sammeln
+    let allEmojis = [];
+    emojiRanges.forEach(([start, end]) => {
+      for (let i = start; i <= end; i++) {
+        const char = String.fromCodePoint(i);
+        if (/\p{Emoji}/u.test(char)) allEmojis.push(char);
+      }
+    });
+
+    // Emoji-Blöcke erzeugen
+    const emojiBlocks = {};
+    const blockCount = Math.ceil(allEmojis.length / 256);
+    for (let i = 0; i < blockCount; i++) {
+      const label = `emoji${String.fromCharCode(65 + i)}`; // emojiA, emojiB, …
+      emojiBlocks[label] = allEmojis.slice(i * 256, (i + 1) * 256);
     }
 
-    const table = document.getElementById("charmap");
+    // Dropdown füllen
+    const staticPages = {
+      octo1: "Octo1",
+      latin1: "Latin1",
+      symbolA: "Symbol A",
+      symbolB: "Symbol B",
+      symbolC: "Symbol C"
+    };
 
+    Object.entries(staticPages).forEach(([key, label]) => {
+      const opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = label;
+      pageSelect.appendChild(opt);
+    });
+
+    Object.keys(emojiBlocks).forEach(label => {
+      const opt = document.createElement("option");
+      opt.value = label;
+      opt.textContent = `Emoji ${label.slice(-1)}`;
+      pageSelect.appendChild(opt);
+    });
+
+    // Tabelle bauen
     function buildTable(page) {
       table.innerHTML = "";
       for (let row = 0; row < 16; row++) {
@@ -101,7 +151,7 @@
         for (let col = 0; col < 16; col++) {
           const idx = row * 16 + col;
           const td = document.createElement("td");
-          td.textContent = page[idx];
+          td.textContent = page[idx] || "";
           td.title = `Code: 0x${idx.toString(16).toUpperCase().padStart(2,'0')}`;
           td.onclick = () => {
             navigator.clipboard.writeText(page[idx]);
@@ -113,21 +163,31 @@
       }
     }
 
-    // --- Schriftartwechsel ---
+    // Schriftartwechsel
     document.getElementById("fontSelect").addEventListener("change", (e) => {
       table.style.fontFamily = e.target.value;
     });
 
-    // --- Codepagewechsel ---
-    const pageSelect = document.getElementById("pageSelect");
+    // Codepagewechsel
     pageSelect.addEventListener("change", (e) => {
-      if(e.target.value === "octo1") buildTable(octo1);
-      else buildTable(latin1);
+      const value = e.target.value;
+      if (emojiBlocks[value]) {
+        buildTable(emojiBlocks[value]);
+      } else if (value === "octo1") {
+        buildTable(octo1);
+      } else if (value === "latin1") {
+        buildTable(latin1);
+      } else if (value === "symbolA") {
+        buildTable(symbolA);
+      } else if (value === "symbolB") {
+        buildTable(symbolB);
+      } else if (value === "symbolC") {
+        buildTable(symbolC);
+      }
     });
 
-    // --- Initial ---
+    // Initiale Anzeige
     buildTable(octo1);
   </script>
-
 </body>
 </html>
