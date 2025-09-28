@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>🖋️ Mini Font Creator – PUA Glyphs</title>
+<title>Mini Font Creator – Strich-Lines</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{
@@ -58,7 +58,7 @@ button:hover{background:#28a;}
 </style>
 </head>
 <body>
-<h1>Mini Font Creator – PUA Glyphs</h1>
+<h1>Mini Font Creator – Strich-Lines</h1>
 
 <div id="glyphMap"></div>
 
@@ -78,22 +78,9 @@ button:hover{background:#28a;}
 // -----------------------------
 // Charset
 const charset = [
-"Null","←","↑","→","↓","↔","↕","═","║","╔","╗","╚","╝","🗕","🗖","🗗",
-"🗙","π","Δ","","😀","😢","‟","T́","t́","𝄞","🡰","🡱","🡲","🡳","↰","↱",
-"Sp","!","\"","#","$","%","&","'","(",")","+",
-",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?",
-"@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O",
-"P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_",
-"`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
-"p","q","r","s","t","u","v","w","x","y","z","{","|","}","~",
-"€","‚","ƒ","„","…","†","‡","ˆ","‰","Š","‹","Œ","Î","Ž","ć","ð",
-"Ć","‘","’","“","”","•","–","—","˜","™","š","›","œ","î","ž","Ÿ",
-"NBSP","¡","V̶","£","¤","¥","¦","§","¨","©","ª","«","¬","SHY","®","¯",
-"°","±","²","³","´","µ","¶","·","¸","¹","º","»","¼","½","¾","¿",
-"À","Á","Â","Ã","Ä","Ą","Ä́","Ç","È","É","Ê","Ë","Ì","Í","Ě","Ï",
-"Ď","Ñ","Ò","Ó","Ô","Õ","Ö","×","Ř","Ù","Ú","Û","Ü","Ý","f̌","ß",
-"à","á","â","ã","ä","ą","ä́","ç","è","é","ê","ë","ì","í","ě","ï",
-"ď","ñ","ò","ó","ô","õ","ö","÷","ř","ù","ú","û","ü","ý","🐙","ÿ"
+"T́","t́","F̌","Ä́","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O",
+"P","Q","R","S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i",
+"j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"
 ];
 
 // -----------------------------
@@ -108,7 +95,7 @@ const puaMap = {
 // Glyphen-Map & Canvas Setup
 const mapDiv = document.getElementById('glyphMap');
 let selectedGlyph = null;
-const savedPaths = {}; // Pfade bleiben persistent
+const savedPaths = {}; // Pfade persistent
 const glyphs = [];
 let path = [];
 let drawing = false;
@@ -222,11 +209,10 @@ document.getElementById('saveGlyph').onclick = () => {
   const opentypePath = new opentype.Path();
   for(let i=0;i<path.length;i++){
     const p = path[i];
-    const y = 400 - p.y;
+    const y = 400 - p.y; // invertieren
     if(i===0) opentypePath.moveTo(p.x, y);
     else opentypePath.lineTo(p.x, y);
   }
-  opentypePath.close();
 
   let codes;
   if(puaMap[selectedGlyph]){
@@ -240,6 +226,9 @@ document.getElementById('saveGlyph').onclick = () => {
   if(existingIndex>=0) glyphs[existingIndex]=newGlyph;
   else glyphs.push(newGlyph);
 
+  // Auto-Save LocalStorage
+  localStorage.setItem('miniFontSavedPaths', JSON.stringify(savedPaths));
+
   alert(`Glyph "${selectedGlyph}" gespeichert!`);
   updatePreview();
 };
@@ -248,6 +237,7 @@ document.getElementById('saveGlyph').onclick = () => {
 document.getElementById('clear').onclick = () => {
   if(selectedGlyph) savedPaths[selectedGlyph]=[];
   clearCanvas();
+  localStorage.setItem('miniFontSavedPaths', JSON.stringify(savedPaths));
 };
 
 // Undo/Redo Buttons
@@ -293,7 +283,6 @@ function updatePreview(){
     glyphs:glyphs
   });
   const fontUrl = tempFont.toDataURL();
-
   let style=document.getElementById('tempFontStyle');
   if(!style){
     style=document.createElement('style');
@@ -306,6 +295,22 @@ function updatePreview(){
 }
 
 previewInput.addEventListener('input', updatePreview);
+
+// -----------------------------
+// Auto-Load aus LocalStorage
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('miniFontSavedPaths');
+  if(saved){
+    try{
+      const obj = JSON.parse(saved);
+      for(const key in obj){
+        savedPaths[key] = obj[key];
+      }
+    } catch(e){
+      console.warn('Fehler beim Laden von LocalStorage:', e);
+    }
+  }
+});
 updatePreview();
 </script>
 </body>
