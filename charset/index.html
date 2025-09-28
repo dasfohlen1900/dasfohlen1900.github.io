@@ -51,13 +51,7 @@ const latinExtA = [];
 for(let i=0x0100;i<=0x017F;i++) latinExtA.push(String.fromCharCode(i));
 
 // Extra-Zeichen am Ende
-const extraBack = [
-  'ƒ',          // Florin
-  'Ș','ș','Ț','ț', // S und T mit Unter-Komma
-  '†',          // Dolchkreuz
-  '…',          // Ellipse
-  'π'           // Pi
-];
+const extraBack = ['ƒ','Ș','ș','Ț','ț','†','…','π'];
 
 // Endgültige Zeichentabelle
 const charset = [...win1252, ...latinExtA, ...extraBack];
@@ -127,15 +121,15 @@ document.getElementById('saveGlyph').onclick=()=>{
   const path=new opentype.Path();
   segments.forEach(seg=>{
     if(seg.length<2) return;
-    path.moveTo(seg[0].x,400-seg[0].y);
-    for(let i=1;i<seg.length;i++) path.lineTo(seg[i].x,400-seg[i].y);
+    path.moveTo(seg[0].x,1000-seg[0].y);
+    for(let i=1;i<seg.length;i++) path.lineTo(seg[i].x,1000-seg[i].y);
   });
 
   const code=selectedGlyph.charCodeAt(0);
   const newGlyph=new opentype.Glyph({
     name:'uni'+code.toString(16).toUpperCase(),
     unicodes:[code],
-    advanceWidth:400,
+    advanceWidth:600,
     path:path
   });
 
@@ -152,25 +146,62 @@ document.getElementById('clear').onclick=()=>{ if(selectedGlyph) savedPaths[sele
 document.getElementById('undoBtn').onclick=undo;
 document.getElementById('redoBtn').onclick=redo;
 
-// TTF Export mit .notdef
-document.getElementById('download').onclick=()=>{
+// TTF Export mit Fallback für leere ASCII-Glyphen
+document.getElementById('download').onclick = () => {
   if(!glyphs.length){ alert('Keine Glyphen vorhanden!'); return; }
 
-  // Notdef-Glyph hinzufügen
+  // Notdef-Glyph
   const notdef = new opentype.Glyph({
       name: '.notdef',
       unicode: 0,
-      advanceWidth: 400,
+      advanceWidth: 600,
       path: new opentype.Path()
   });
-  const allGlyphs = [notdef, ...glyphs];
+
+  // Standardbuchstabe A
+  const hasA = glyphs.some(g => g.unicodes.includes(65)); 
+  if(!hasA){
+      const pathA = new opentype.Path();
+      pathA.moveTo(150,0); pathA.lineTo(450,0); pathA.lineTo(300,700); pathA.close();
+      const glyphA = new opentype.Glyph({
+          name:'A',
+          unicode:[65],
+          advanceWidth:600,
+          path:pathA
+      });
+      glyphs.push(glyphA);
+  }
+
+  // Fallback: leere ASCII-Zeichen
+  const glyphsWithFallback = glyphs.map(g=>{
+      const code = g.unicodes[0];
+      if(code>=32 && code<=126){
+          if(!g.path.commands || !g.path.commands.length){
+              const p = new opentype.Path();
+              p.moveTo(200,200);
+              p.lineTo(400,200);
+              p.lineTo(400,400);
+              p.lineTo(200,400);
+              p.close();
+              return new opentype.Glyph({
+                  name: g.name,
+                  unicodes: g.unicodes,
+                  advanceWidth: 600,
+                  path: p
+              });
+          }
+      }
+      return g;
+  });
+
+  const allGlyphs = [notdef, ...glyphsWithFallback];
 
   const font = new opentype.Font({
       familyName: 'MyMiniFont',
       styleName: 'Regular',
-      unitsPerEm: 400,
-      ascender: 350,
-      descender: -50,
+      unitsPerEm: 1000,
+      ascender: 800,
+      descender: -200,
       glyphs: allGlyphs
   });
 
@@ -192,9 +223,9 @@ function updatePreview(){
   const tempFont=new opentype.Font({
     familyName:'TempFont',
     styleName:'Regular',
-    unitsPerEm:400,
-    ascender:350,
-    descender:-50,
+    unitsPerEm:1000,
+    ascender:800,
+    descender:-200,
     glyphs:glyphs
   });
   const fontUrl=tempFont.toDataURL();
@@ -209,7 +240,7 @@ previewInput.addEventListener('input',updatePreview);
 // Auto-Load
 window.addEventListener('load',()=>{
   const saved=localStorage.getItem('miniFontSavedPaths');
-  if(saved){ try{ const obj=JSON.parse(saved); for(const k in obj){ savedPaths[k]=obj[k]; } }catch(e){console.warn(e);} }
+  if(saved){ try{ const obj=JSON.parse(saved); for(const k in obj){ savedPaths[k]=obj[k]; } } catch(e){ console.warn(e); } }
   updatePreview();
 });
 </script>
