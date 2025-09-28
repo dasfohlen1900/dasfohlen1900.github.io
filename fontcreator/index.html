@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>🖋️ Mini Font Creator – Glyph Map</title>
+<title>🖋️ Mini Font Creator - Mach deine Dokumente zum Unikat</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{
@@ -58,7 +58,7 @@ button:hover{background:#28a;}
 </style>
 </head>
 <body>
-<h1>Mini Font Creator – Glyph Map</h1>
+<h1>Mini Font Creator – Persistente Glyphs</h1>
 
 <div id="glyphMap"></div>
 
@@ -74,7 +74,7 @@ button:hover{background:#28a;}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
 <script>
 // -----------------------------
-// Charset als Array (kein Template-Literal, keine Gravis-Probleme)
+// Teil 1: Charset & Glyph-Map
 const charset = [
 "Null","←","↑","→","↓","↔","↕","═","║","╔","╗","╚","╝","🗕","🗖","🗗",
 "🗙","π","Δ","","😀","😢","‟","T́","t́","𝄞","🡰","🡱","🡲","🡳","↰","↱",
@@ -94,82 +94,129 @@ const charset = [
 "ď","ñ","ò","ó","ô","õ","ö","÷","ř","ù","ú","û","ü","ý","🐙","ÿ"
 ];
 
-// -----------------------------
-// Build Glyph Map
-const mapDiv=document.getElementById('glyphMap');
-let selectedGlyph=null;
+const mapDiv = document.getElementById('glyphMap');
+let selectedGlyph = null;
+const savedPaths = {};
+const glyphs = [];
 
-charset.forEach(char=>{
-  const btn=document.createElement('div');
-  btn.className='glyphBtn';
-  btn.textContent=char;
-  btn.onclick=()=>{
-    document.querySelectorAll('.glyphBtn').forEach(b=>b.classList.remove('selected'));
+charset.forEach(char => {
+  const btn = document.createElement('div');
+  btn.className = 'glyphBtn';
+  btn.textContent = char;
+  btn.onclick = () => {
+    document.querySelectorAll('.glyphBtn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-    selectedGlyph=char;
+    selectedGlyph = char;
     clearCanvas();
+    if(savedPaths[selectedGlyph]){
+      path = [...savedPaths[selectedGlyph]];
+      redrawPath();
+    } else path = [];
   };
   mapDiv.appendChild(btn);
 });
-
 // -----------------------------
-// Canvas Drawing
-const cvs=document.getElementById('draw');
-const ctx=cvs.getContext('2d');
-let drawing=false, path=[];
+// Teil 2: Canvas Drawing
+const cvs = document.getElementById('draw');
+const ctx = cvs.getContext('2d');
+let drawing = false, path = [];
 
-function clearCanvas(){ ctx.clearRect(0,0,cvs.width,cvs.height); path=[]; }
-
-function getTouchPos(touch){
-  const rect=cvs.getBoundingClientRect();
-  return { x: touch.clientX-rect.left, y: touch.clientY-rect.top };
+function clearCanvas(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  path = [];
 }
 
-// Mouse
-cvs.onmousedown=e=>{ drawing=true; path=[{x:e.offsetX,y:e.offsetY}]; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); };
-cvs.onmousemove=e=>{ if(drawing){ path.push({x:e.offsetX,y:e.offsetY}); ctx.lineTo(e.offsetX,e.offsetY); ctx.stroke(); } };
-cvs.onmouseup=()=>{ drawing=false; };
+function getTouchPos(touch){
+  const rect = cvs.getBoundingClientRect();
+  return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+}
 
-// Touch
-cvs.addEventListener('touchstart', e=>{ e.preventDefault(); const t=getTouchPos(e.touches[0]); drawing=true; path=[t]; ctx.beginPath(); ctx.moveTo(t.x,t.y); });
-cvs.addEventListener('touchmove', e=>{ e.preventDefault(); if(drawing){ const t=getTouchPos(e.touches[0]); path.push(t); ctx.lineTo(t.x,t.y); ctx.stroke(); }});
-cvs.addEventListener('touchend', e=>{ drawing=false; });
+function redrawPath(){
+  if(!path || !path.length) return;
+  ctx.beginPath();
+  ctx.moveTo(path[0].x, path[0].y);
+  for(let i=1;i<path.length;i++) ctx.lineTo(path[i].x, path[i].y);
+  ctx.stroke();
+}
 
+// --- Maus Events ---
+cvs.onmousedown = e => {
+  drawing=true;
+  path.push({x:e.offsetX, y:e.offsetY});
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+};
+cvs.onmousemove = e => {
+  if(!drawing) return;
+  path.push({x:e.offsetX, y:e.offsetY});
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+};
+cvs.onmouseup = () => { drawing=false; };
+
+// --- Touch Events ---
+cvs.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = getTouchPos(e.touches[0]);
+  drawing=true;
+  path.push(t);
+  ctx.beginPath();
+  ctx.moveTo(t.x, t.y);
+});
+cvs.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if(!drawing) return;
+  const t = getTouchPos(e.touches[0]);
+  path.push(t);
+  ctx.lineTo(t.x, t.y);
+  ctx.stroke();
+});
+cvs.addEventListener('touchend', e => { drawing=false; });
 // -----------------------------
-// Glyph Storage
-const glyphs=[];
-document.getElementById('saveGlyph').onclick=()=>{
-  if(!selectedGlyph){ alert('Bitte Glyph aus Map wählen!'); return; }
+// Teil 3: Glyph speichern
+document.getElementById('saveGlyph').onclick = () => {
+  if(!selectedGlyph){ alert('Bitte Glyph auswählen!'); return; }
   if(!path.length){ alert('Bitte zeichnen!'); return; }
 
+  // Pfad für spätere Bearbeitung speichern
+  savedPaths[selectedGlyph] = [...path];
+
+  // OpenType Pfad erzeugen
   const opentypePath = new opentype.Path();
   for(let i=0;i<path.length;i++){
-    const p=path[i];
-    const y = 400 - p.y;
-    if(i===0) opentypePath.moveTo(p.x,y);
-    else opentypePath.lineTo(p.x,y);
+    const p = path[i];
+    const y = 400 - p.y; // Canvas-Koordinaten invertieren
+    if(i===0) opentypePath.moveTo(p.x, y);
+    else opentypePath.lineTo(p.x, y);
   }
   opentypePath.close();
 
-  glyphs.push(new opentype.Glyph({
+  // Prüfen, ob Glyph schon existiert → ersetzen
+  const existingIndex = glyphs.findIndex(g => g.name===selectedGlyph);
+  const newGlyph = new opentype.Glyph({
     name:selectedGlyph,
     unicode:selectedGlyph.charCodeAt(0),
     advanceWidth:400,
     path:opentypePath
-  }));
-  clearCanvas();
+  });
+  if(existingIndex >=0) glyphs[existingIndex] = newGlyph;
+  else glyphs.push(newGlyph);
+
   alert(`Glyph "${selectedGlyph}" gespeichert!`);
   updatePreview();
 };
 
 // Alles löschen Canvas
-document.getElementById('clear').onclick=clearCanvas;
+document.getElementById('clear').onclick = () => {
+  if(selectedGlyph) savedPaths[selectedGlyph] = [];
+  clearCanvas();
+};
 
 // -----------------------------
-// TTF Export
-document.getElementById('download').onclick=()=>{
+// Stabiler TTF Export
+document.getElementById('download').onclick = () => {
   if(!glyphs.length){ alert('Keine Glyphen vorhanden!'); return; }
-  const font=new opentype.Font({
+  const font = new opentype.Font({
     familyName:'MyMiniFont',
     styleName:'Regular',
     unitsPerEm:400,
@@ -177,15 +224,25 @@ document.getElementById('download').onclick=()=>{
     descender:-50,
     glyphs:glyphs
   });
-  font.download('MyMiniFont.ttf');
+
+  const arrayBuffer = font.toArrayBuffer();
+  const blob = new Blob([arrayBuffer], {type:'font/ttf'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'MyMiniFont.ttf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 // -----------------------------
 // Live Preview
-const previewInput=document.getElementById('previewText');
+const previewInput = document.getElementById('previewText');
+const previewDiv = document.getElementById('preview');
+
 function updatePreview(){
   if(!glyphs.length) return;
-  const tempFont=new opentype.Font({
+  const tempFont = new opentype.Font({
     familyName:'TempFont',
     styleName:'Regular',
     unitsPerEm:400,
@@ -193,13 +250,23 @@ function updatePreview(){
     descender:-50,
     glyphs:glyphs
   });
-  const fontUrl=tempFont.toDataURL();
+  const fontUrl = tempFont.toDataURL();
+  
+  // Style erstellen oder updaten
   let style=document.getElementById('tempFontStyle');
-  if(!style){ style=document.createElement('style'); style.id='tempFontStyle'; document.head.appendChild(style); }
-  style.innerHTML=`@font-face{font-family:'TempFont';src:url(${fontUrl});} #preview{font-family:'TempFont';}`;
-  document.getElementById('preview').textContent = previewInput.value;
+  if(!style){
+    style=document.createElement('style');
+    style.id='tempFontStyle';
+    document.head.appendChild(style);
+  }
+  style.innerHTML = `@font-face { font-family:'TempFont'; src:url(${fontUrl}); }`;
+  
+  previewDiv.style.fontFamily='TempFont';
+  previewDiv.textContent = previewInput.value;
 }
-previewInput.oninput=()=>{ document.getElementById('preview').textContent = previewInput.value; };
+
+previewInput.addEventListener('input', updatePreview);
+updatePreview();
 </script>
 </body>
 </html>
