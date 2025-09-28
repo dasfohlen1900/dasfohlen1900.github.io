@@ -114,7 +114,6 @@ charset.forEach(ch=>{
 // Glyph speichern
 document.getElementById('saveGlyph').onclick=()=>{
   if(!selectedGlyph){ alert('Bitte Glyph auswählen!'); return; }
-  if(!segments.length){ alert('Bitte zeichnen!'); return; }
 
   savedPaths[selectedGlyph]=segments.map(seg=>[...seg]);
 
@@ -146,51 +145,35 @@ document.getElementById('clear').onclick=()=>{ if(selectedGlyph) savedPaths[sele
 document.getElementById('undoBtn').onclick=undo;
 document.getElementById('redoBtn').onclick=redo;
 
-// TTF Export mit Fallback für leere ASCII-Glyphen
+// TTF Export – Windows-kompatibel
 document.getElementById('download').onclick = () => {
-  if(!glyphs.length){ alert('Keine Glyphen vorhanden!'); return; }
+  // Notdef
+  const notdef = new opentype.Glyph({name:'.notdef', unicode:0, advanceWidth:600, path:new opentype.Path()});
 
-  // Notdef-Glyph
-  const notdef = new opentype.Glyph({
-      name: '.notdef',
-      unicode: 0,
-      advanceWidth: 600,
-      path: new opentype.Path()
-  });
-
-  // Standardbuchstabe A
-  const hasA = glyphs.some(g => g.unicodes.includes(65)); 
+  // Sicherstellen: mindestens ein A
+  const hasA = glyphs.some(g => g.unicodes.includes(65));
   if(!hasA){
       const pathA = new opentype.Path();
       pathA.moveTo(150,0); pathA.lineTo(450,0); pathA.lineTo(300,700); pathA.close();
-      const glyphA = new opentype.Glyph({
-          name:'A',
-          unicode:[65],
-          advanceWidth:600,
-          path:pathA
-      });
+      const glyphA = new opentype.Glyph({name:'A', unicode:[65], advanceWidth:600, path:pathA});
       glyphs.push(glyphA);
   }
 
-  // Fallback: leere ASCII-Zeichen
+  // Fallback für leere ASCII (32–126)
   const glyphsWithFallback = glyphs.map(g=>{
-      const code = g.unicodes[0];
+      const code = g.unicodes[0] || 32;
       if(code>=32 && code<=126){
-          if(!g.path.commands || !g.path.commands.length){
+          if(!g.path || !g.path.commands.length){
               const p = new opentype.Path();
               p.moveTo(200,200);
               p.lineTo(400,200);
               p.lineTo(400,400);
               p.lineTo(200,400);
               p.close();
-              return new opentype.Glyph({
-                  name: g.name,
-                  unicodes: g.unicodes,
-                  advanceWidth: 600,
-                  path: p
-              });
+              g.path = p;
           }
       }
+      if(!g.unicodes || !g.unicodes.length) g.unicodes = [code];
       return g;
   });
 
