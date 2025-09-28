@@ -1,187 +1,205 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <title>🖋️ Mini Font Creator</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #f4f4f4;
-      margin: 2rem;
-      text-align: center;
-    }
-    h1 {
-      margin-bottom: 1rem;
-    }
-    canvas {
-      border: 1px solid #ccc;
-      background: #fff;
-      cursor: crosshair;
-      touch-action: none;
-    }
-    label, input, button {
-      margin-top: 1rem;
-      display: inline-block;
-    }
-    button {
-      padding: .5rem 1rem;
-      margin: 0 .3rem;
-      background: #2c7;
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #28a;
-    }
-    #preview {
-      margin-top: 1rem;
-      font-size: 48px;
-    }
-  </style>
+<meta charset="utf-8">
+<title>🖋️ Mini Font Creator – Glyph Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{
+  font-family:system-ui,sans-serif;
+  background:#f4f4f4;
+  margin:1rem;
+  text-align:center;
+}
+h1,h2{margin:0.5rem 0;}
+canvas{
+  border:1px solid #ccc;
+  background:#fff;
+  cursor:crosshair;
+  touch-action:none;
+}
+#glyphMap{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(30px,1fr));
+  gap:2px;
+  max-height:200px;
+  overflow:auto;
+  margin:1rem 0;
+  border:1px solid #ccc;
+  padding:5px;
+  background:#fff;
+}
+.glyphBtn{
+  padding:5px;
+  border:1px solid #888;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:18px;
+  user-select:none;
+  background:#eee;
+}
+.glyphBtn.selected{
+  background:#2c7;
+  color:#fff;
+  font-weight:bold;
+}
+button{
+  margin:.3rem;
+  padding:.5rem 1rem;
+  background:#2c7;
+  border:none;
+  border-radius:4px;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:hover{background:#28a;}
+#preview{margin-top:1rem;font-size:48px;}
+</style>
 </head>
 <body>
-  <h1>Mini Font Creator</h1>
+<h1>Mini Font Creator – Glyph Map</h1>
 
-  <canvas id="draw" width="400" height="400"></canvas><br>
-  <label>Unicode (Hex, z. B. 0041 für A):
-    <input id="codepoint" value="0041">
-  </label><br>
-  <button id="add">Glyph hinzufügen</button>
-  <button id="clear">Alles löschen</button>
-  <button id="download">TTF exportieren</button>
+<div id="glyphMap"></div>
 
-  <h2>Live-Preview</h2>
-  <input id="previewText" value="ABC" style="width:300px;"><br>
-  <div id="preview"></div>
+<canvas id="draw" width="400" height="400"></canvas><br>
+<button id="saveGlyph">Glyph speichern</button>
+<button id="clear">Alles löschen</button>
+<button id="download">TTF exportieren</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
-  <script>
-    const cvs = document.getElementById('draw');
-    const ctx = cvs.getContext('2d');
-    let drawing = false, path = [];
+<h2>Live-Preview</h2>
+<input id="previewText" value="ABC" style="width:300px;"><br>
+<div id="preview"></div>
 
-    // Hilfsfunktion für Touch-Koordinaten
-    function getTouchPos(touch) {
-      const rect = cvs.getBoundingClientRect();
-      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
+<script>
+// -----------------------------
+// Charset als Array (kein Template-Literal, keine Gravis-Probleme)
+const charset = [
+"Null","←","↑","→","↓","↔","↕","═","║","╔","╗","╚","╝","🗕","🗖","🗗",
+"🗙","π","Δ","","😀","😢","‟","T́","t́","𝄞","🡰","🡱","🡲","🡳","↰","↱",
+"Sp","!","\"","#","$","%","&","'","(",")","+",
+",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?",
+"@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O",
+"P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_",
+"`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
+"p","q","r","s","t","u","v","w","x","y","z","{","|","}","~",
+"€","‚","ƒ","„","…","†","‡","ˆ","‰","Š","‹","Œ","Î","Ž","ć","ð",
+"Ć","‘","’","“","”","•","–","—","˜","™","š","›","œ","î","ž","Ÿ",
+"NBSP","¡","V̶","£","¤","¥","¦","§","¨","©","ª","«","¬","SHY","®","¯",
+"°","±","²","³","´","µ","¶","·","¸","¹","º","»","¼","½","¾","¿",
+"À","Á","Â","Ã","Ä","Ą","Ä́","Ç","È","É","Ê","Ë","Ì","Í","Ě","Ï",
+"Ď","Ñ","Ò","Ó","Ô","Õ","Ö","×","Ř","Ù","Ú","Û","Ü","Ý","f̌","ß",
+"à","á","â","ã","ä","ą","ä́","ç","è","é","ê","ë","ì","í","ě","ï",
+"ď","ñ","ò","ó","ô","õ","ö","÷","ř","ù","ú","û","ü","ý","🐙","ÿ"
+];
 
-    // Maus-Events (Freihand)
-    cvs.onmousedown = e => {
-      drawing = true;
-      path = [{ x: e.offsetX, y: e.offsetY }];
-      ctx.beginPath();
-      ctx.moveTo(e.offsetX, e.offsetY);
-    };
-    cvs.onmousemove = e => {
-      if (drawing) {
-        path.push({ x: e.offsetX, y: e.offsetY });
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-      }
-    };
-    cvs.onmouseup = () => {
-      drawing = false;
-    };
+// -----------------------------
+// Build Glyph Map
+const mapDiv=document.getElementById('glyphMap');
+let selectedGlyph=null;
 
-    // Touch-Events (Freihand)
-    cvs.addEventListener('touchstart', e => {
-      e.preventDefault();
-      const t = getTouchPos(e.touches[0]);
-      drawing = true;
-      path = [t];
-      ctx.beginPath();
-      ctx.moveTo(t.x, t.y);
-    });
-    cvs.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (drawing) {
-        const t = getTouchPos(e.touches[0]);
-        path.push(t);
-        ctx.lineTo(t.x, t.y);
-        ctx.stroke();
-      }
-    });
-    cvs.addEventListener('touchend', e => {
-      drawing = false;
-    });
+charset.forEach(char=>{
+  const btn=document.createElement('div');
+  btn.className='glyphBtn';
+  btn.textContent=char;
+  btn.onclick=()=>{
+    document.querySelectorAll('.glyphBtn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedGlyph=char;
+    clearCanvas();
+  };
+  mapDiv.appendChild(btn);
+});
 
-    // Alles löschen
-    document.getElementById('clear').onclick = () => {
-      ctx.clearRect(0, 0, cvs.width, cvs.height);
-      path = [];
-    };
+// -----------------------------
+// Canvas Drawing
+const cvs=document.getElementById('draw');
+const ctx=cvs.getContext('2d');
+let drawing=false, path=[];
 
-    // Glyphen-Sammlung
-    const glyphs = [];
+function clearCanvas(){ ctx.clearRect(0,0,cvs.width,cvs.height); path=[]; }
 
-    // Glyph hinzufügen
-    document.getElementById('add').onclick = () => {
-      const code = parseInt(document.getElementById('codepoint').value, 16);
-      if (!path.length) {
-        alert('Bitte erst zeichnen!');
-        return;
-      }
-      const d = path.map((p, i) => (i ? 'L' : 'M') + p.x + ' ' + (400 - p.y)).join(' ') + ' Z';
-      glyphs.push(new opentype.Glyph({
-        name: 'uni' + code.toString(16),
-        unicode: code,
-        advanceWidth: 400,
-        path: new opentype.Path().fromSVG(d)
-      }));
-      ctx.clearRect(0, 0, cvs.width, cvs.height);
-      path = [];
-      alert('Glyph U+' + code.toString(16).toUpperCase() + ' hinzugefügt!');
-      updatePreview();
-    };
+function getTouchPos(touch){
+  const rect=cvs.getBoundingClientRect();
+  return { x: touch.clientX-rect.left, y: touch.clientY-rect.top };
+}
 
-    // TTF exportieren
-    document.getElementById('download').onclick = () => {
-      if (!glyphs.length) {
-        alert('Keine Glyphen vorhanden!');
-        return;
-      }
-      const font = new opentype.Font({
-        familyName: 'MyMiniFont',
-        styleName: 'Regular',
-        unitsPerEm: 400,
-        ascender: 350,
-        descender: -50,
-        glyphs: glyphs
-      });
-      font.download('MyMiniFont.ttf');
-    };
+// Mouse
+cvs.onmousedown=e=>{ drawing=true; path=[{x:e.offsetX,y:e.offsetY}]; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); };
+cvs.onmousemove=e=>{ if(drawing){ path.push({x:e.offsetX,y:e.offsetY}); ctx.lineTo(e.offsetX,e.offsetY); ctx.stroke(); } };
+cvs.onmouseup=()=>{ drawing=false; };
 
-    // Live-Preview
-    function updatePreview() {
-      if (!glyphs.length) return;
-      const tempFont = new opentype.Font({
-        familyName: 'TempFont',
-        styleName: 'Regular',
-        unitsPerEm: 400,
-        ascender: 350,
-        descender: -50,
-        glyphs: glyphs
-      });
-      const fontUrl = tempFont.toDataURL();
-      let style = document.getElementById('tempFontStyle');
-      if (!style) {
-        style = document.createElement('style');
-        style.id = 'tempFontStyle';
-        document.head.appendChild(style);
-      }
-      style.innerHTML = `@font-face{font-family:'TempFont';src:url(${fontUrl});} #preview{font-family:'TempFont';}`;
-      document.getElementById('preview').textContent = document.getElementById('previewText').value;
-    }
+// Touch
+cvs.addEventListener('touchstart', e=>{ e.preventDefault(); const t=getTouchPos(e.touches[0]); drawing=true; path=[t]; ctx.beginPath(); ctx.moveTo(t.x,t.y); });
+cvs.addEventListener('touchmove', e=>{ e.preventDefault(); if(drawing){ const t=getTouchPos(e.touches[0]); path.push(t); ctx.lineTo(t.x,t.y); ctx.stroke(); }});
+cvs.addEventListener('touchend', e=>{ drawing=false; });
 
-    // Textfeld Preview
-    document.getElementById('previewText').oninput = () => {
-      document.getElementById('preview').textContent = document.getElementById('previewText').value;
-    };
-  </script>
+// -----------------------------
+// Glyph Storage
+const glyphs=[];
+document.getElementById('saveGlyph').onclick=()=>{
+  if(!selectedGlyph){ alert('Bitte Glyph aus Map wählen!'); return; }
+  if(!path.length){ alert('Bitte zeichnen!'); return; }
+
+  const opentypePath = new opentype.Path();
+  for(let i=0;i<path.length;i++){
+    const p=path[i];
+    const y = 400 - p.y;
+    if(i===0) opentypePath.moveTo(p.x,y);
+    else opentypePath.lineTo(p.x,y);
+  }
+  opentypePath.close();
+
+  glyphs.push(new opentype.Glyph({
+    name:selectedGlyph,
+    unicode:selectedGlyph.charCodeAt(0),
+    advanceWidth:400,
+    path:opentypePath
+  }));
+  clearCanvas();
+  alert(`Glyph "${selectedGlyph}" gespeichert!`);
+  updatePreview();
+};
+
+// Alles löschen Canvas
+document.getElementById('clear').onclick=clearCanvas;
+
+// -----------------------------
+// TTF Export
+document.getElementById('download').onclick=()=>{
+  if(!glyphs.length){ alert('Keine Glyphen vorhanden!'); return; }
+  const font=new opentype.Font({
+    familyName:'MyMiniFont',
+    styleName:'Regular',
+    unitsPerEm:400,
+    ascender:350,
+    descender:-50,
+    glyphs:glyphs
+  });
+  font.download('MyMiniFont.ttf');
+};
+
+// -----------------------------
+// Live Preview
+const previewInput=document.getElementById('previewText');
+function updatePreview(){
+  if(!glyphs.length) return;
+  const tempFont=new opentype.Font({
+    familyName:'TempFont',
+    styleName:'Regular',
+    unitsPerEm:400,
+    ascender:350,
+    descender:-50,
+    glyphs:glyphs
+  });
+  const fontUrl=tempFont.toDataURL();
+  let style=document.getElementById('tempFontStyle');
+  if(!style){ style=document.createElement('style'); style.id='tempFontStyle'; document.head.appendChild(style); }
+  style.innerHTML=`@font-face{font-family:'TempFont';src:url(${fontUrl});} #preview{font-family:'TempFont';}`;
+  document.getElementById('preview').textContent = previewInput.value;
+}
+previewInput.oninput=()=>{ document.getElementById('preview').textContent = previewInput.value; };
+</script>
 </body>
 </html>
