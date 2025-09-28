@@ -2,22 +2,26 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>Mini Font Creator – Strich-Lines</title>
+<title>Mini Font Creator – 1252 + Latin-Ext-A</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{font-family:system-ui,sans-serif;background:#f4f4f4;margin:1rem;text-align:center;}
 h1,h2{margin:0.5rem 0;}
 canvas{border:1px solid #ccc;background:#fff;cursor:crosshair;touch-action:none;}
-#glyphMap{display:grid;grid-template-columns:repeat(auto-fill, minmax(30px,1fr));gap:2px;max-height:200px;overflow:auto;margin:1rem 0;border:1px solid #ccc;padding:5px;background:#fff;}
-.glyphBtn{padding:5px;border:1px solid #888;border-radius:4px;cursor:pointer;font-size:18px;user-select:none;background:#eee;}
+#glyphMap{display:grid;grid-template-columns:repeat(auto-fill,minmax(30px,1fr));
+  gap:2px;max-height:220px;overflow:auto;margin:1rem 0;border:1px solid #ccc;
+  padding:5px;background:#fff;}
+.glyphBtn{padding:5px;border:1px solid #888;border-radius:4px;cursor:pointer;
+  font-size:18px;user-select:none;background:#eee;}
 .glyphBtn.selected{background:#2c7;color:#fff;font-weight:bold;}
-button{margin:.3rem;padding:.5rem 1rem;background:#2c7;border:none;border-radius:4px;color:#fff;font-weight:bold;cursor:pointer;}
+button{margin:.3rem;padding:.5rem 1rem;background:#2c7;border:none;
+  border-radius:4px;color:#fff;font-weight:bold;cursor:pointer;}
 button:hover{background:#28a;}
 #preview{margin-top:1rem;font-size:48px;}
 </style>
 </head>
 <body>
-<h1>Mini Font Creator – Strich-Lines</h1>
+<h1>Mini Font Creator – Windows-1252 + Latin-Extended-A</h1>
 
 <div id="glyphMap"></div>
 
@@ -32,171 +36,165 @@ button:hover{background:#28a;}
 <input id="previewText" value="ABC" style="width:300px;"><br>
 <div id="preview"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js"></script>
 <script>
 // -----------------------------
-// Vollständiges Charset
-const charset = [
-"Null","←","↑","→","↓","↔","↕","═","║","╔","╗","╚","╝","🗕","🗖","🗗",
-"🗙","π","Δ","","😀","😢","‟","T́","t́","𝄞","🡰","🡱","🡲","🡳","↰","↱",
-"Sp","!","\"","#","$","%","&","'","(",")","+","-",".","/",
-"0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?",
-"@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O",
-"P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_",
-"`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
-"p","q","r","s","t","u","v","w","x","y","z","{","|","}","~",
-"€","‚","ƒ","„","…","†","‡","ˆ","‰","Š","‹","Œ","Î","Ž","ć","ð",
-"Ć","‘","’","“","”","•","–","—","˜","™","š","›","œ","î","ž","Ÿ",
-"NBSP","¡","V̶","£","¤","¥","¦","§","¨","©","ª","«","¬","SHY","®","¯",
-"°","±","²","³","´","µ","¶","·","¸","¹","º","»","¼","½","¾","¿",
-"À","Á","Â","Ã","Ä","Ą","Ä́","Ç","È","É","Ê","Ë","Ì","Í","Ě","Ï",
-"Ď","Ñ","Ò","Ó","Ô","Õ","Ö","×","Ř","Ù","Ú","Û","Ü","Ý","f̌","ß",
-"à","á","â","ã","ä","ą","ä́","ç","è","é","ê","ë","ì","í","ě","ï",
-"ď","ñ","ò","ó","ô","õ","ö","÷","ř","ù","ú","û","ü","ý","🐙","ÿ"
+// 1️⃣ Windows-1252 Zeichen
+const charset = [];
+for (let i=32;i<=255;i++){
+  if(i===127) continue;
+  charset.push(String.fromCharCode(i));
+}
+
+// 2️⃣ Latin-Extended-A (wichtige Buchstaben)
+const latinExtA = [
+  "Ā","ā","Ă","ă","Ą","ą","Ć","ć","Ĉ","ĉ","Ċ","ċ","Č","č",
+  "Ď","ď","Đ","đ","Ē","ē","Ĕ","ĕ","Ė","ė","Ę","ę","Ě","ě",
+  "Ĝ","ĝ","Ğ","ğ","Ġ","ġ","Ģ","ģ","Ĥ","ĥ","Ħ","ħ","Ĩ","ĩ",
+  "Ī","ī","Ĭ","ĭ","Į","į","İ","ı","Ĳ","ĳ","Ĵ","ĵ","Ķ","ķ",
+  "ĸ","Ĺ","ĺ","Ļ","ļ","Ľ","ľ","Ŀ","ŀ","Ł","ł","Ń","ń","Ņ","ņ",
+  "Ň","ň","ŉ","Ŋ","ŋ","Ō","ō","Ŏ","ŏ","Ő","ő","Œ","œ","Ŕ","ŕ",
+  "Ŗ","ŗ","Ř","ř","Ś","ś","Ŝ","ŝ","Ş","ş","Š","š","Ţ","ţ",
+  "Ť","ť","Ŧ","ŧ","Ũ","ũ","Ū","ū","Ŭ","ŭ","Ů","ů","Ű","ű",
+  "Ų","ų","Ŵ","ŵ","Ŷ","ŷ","Ÿ","Ź","ź","Ż","ż","Ž","ž"
 ];
+latinExtA.forEach(c => charset.push(c));
 
 // -----------------------------
-// PUA Mapping
-const puaMap = {
-  "T́": { upper: 0xE000, lower: 0xE001 },
-  "F̌": { upper: null, lower: 0xE002 },
-  "Ä́": { upper: 0xE003, lower: 0xE004 }
-};
-
-// -----------------------------
-// Glyphen-Map & Canvas Setup
-const mapDiv = document.getElementById('glyphMap');
-let selectedGlyph = null;
-const savedPaths = {}; // Pfade persistent
-const glyphs = [];
-let segments = []; // Alle Linien-Segmente der aktuellen Glyph
-let currentSegment = [];
-let drawing = false;
+const mapDiv=document.getElementById('glyphMap');
+let selectedGlyph=null;
+const savedPaths={};
+const glyphs=[];
+let segments=[];
+let currentSegment=[];
+let drawing=false;
 
 // Undo/Redo
-let undoStack = [];
-let redoStack = [];
-function pushUndo(){ undoStack.push(segments.map(seg=>[...seg])); if(undoStack.length>50) undoStack.shift(); }
-function undo(){ if(!undoStack.length) return; redoStack.push(segments.map(seg=>[...seg])); segments=undoStack.pop(); redrawPath(); }
-function redo(){ if(!redoStack.length) return; undoStack.push(segments.map(seg=>[...seg])); segments=redoStack.pop(); redrawPath(); }
+let undoStack=[];let redoStack=[];
+function pushUndo(){undoStack.push(segments.map(s=>[...s]));if(undoStack.length>50)undoStack.shift();}
+function undo(){if(!undoStack.length)return;redoStack.push(segments.map(s=>[...s]));segments=undoStack.pop();redrawPath();}
+function redo(){if(!redoStack.length)return;undoStack.push(segments.map(s=>[...s]));segments=redoStack.pop();redrawPath();}
 
-// -----------------------------
 // Canvas
-const cvs = document.getElementById('draw');
-const ctx = cvs.getContext('2d');
-function clearCanvas(){ ctx.clearRect(0,0,cvs.width,cvs.height); segments=[]; currentSegment=[]; }
-
-function getTouchPos(touch){ const rect=cvs.getBoundingClientRect(); return { x: touch.clientX - rect.left, y: touch.clientY - rect.top }; }
-
+const cvs=document.getElementById('draw');
+const ctx=cvs.getContext('2d');
+function clearCanvas(){ctx.clearRect(0,0,cvs.width,cvs.height);segments=[];currentSegment=[];}
+function getTouchPos(t){const r=cvs.getBoundingClientRect();return{x:t.clientX-r.left,y:t.clientY-r.top};}
 function redrawPath(){
   ctx.clearRect(0,0,cvs.width,cvs.height);
   segments.forEach(seg=>{
-    if(!seg.length) return;
+    if(!seg.length)return;
     ctx.beginPath();
-    ctx.moveTo(seg[0].x, seg[0].y);
-    for(let i=1;i<seg.length;i++) ctx.lineTo(seg[i].x, seg[i].y);
+    ctx.moveTo(seg[0].x,seg[0].y);
+    for(let i=1;i<seg.length;i++)ctx.lineTo(seg[i].x,seg[i].y);
     ctx.stroke();
   });
 }
 
-// Maus & Touch Events
-cvs.onmousedown = e => { drawing=true; pushUndo(); currentSegment=[{x:e.offsetX,y:e.offsetY}]; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); };
-cvs.onmousemove = e => { if(!drawing) return; currentSegment.push({x:e.offsetX,y:e.offsetY}); ctx.lineTo(e.offsetX,e.offsetY); ctx.stroke(); };
-cvs.onmouseup = () => { if(drawing) {drawing=false; segments.push([...currentSegment]); currentSegment=[];} };
+// Maus & Touch
+cvs.onmousedown=e=>{drawing=true;pushUndo();currentSegment=[{x:e.offsetX,y:e.offsetY}];ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY);};
+cvs.onmousemove=e=>{if(!drawing)return;currentSegment.push({x:e.offsetX,y:e.offsetY});ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();};
+cvs.onmouseup=()=>{if(drawing){drawing=false;segments.push([...currentSegment]);currentSegment=[];}};
 
-cvs.addEventListener('touchstart', e => { e.preventDefault(); const t=getTouchPos(e.touches[0]); drawing=true; pushUndo(); currentSegment=[t]; ctx.beginPath(); ctx.moveTo(t.x,t.y); });
-cvs.addEventListener('touchmove', e => { e.preventDefault(); if(!drawing) return; const t=getTouchPos(e.touches[0]); currentSegment.push(t); ctx.lineTo(t.x,t.y); ctx.stroke(); });
-cvs.addEventListener('touchend', e => { if(drawing) {drawing=false; segments.push([...currentSegment]); currentSegment=[];} });
+cvs.addEventListener('touchstart',e=>{e.preventDefault();const t=getTouchPos(e.touches[0]);drawing=true;pushUndo();currentSegment=[t];ctx.beginPath();ctx.moveTo(t.x,t.y);});
+cvs.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const t=getTouchPos(e.touches[0]);currentSegment.push(t);ctx.lineTo(t.x,t.y);ctx.stroke();});
+cvs.addEventListener('touchend',e=>{if(drawing){drawing=false;segments.push([...currentSegment]);currentSegment=[];}});
 
-// -----------------------------
-// Glyphen-Map erstellen
-mapDiv.innerHTML='';
-charset.forEach(char => {
-  const btn = document.createElement('div');
+// Glyph-Buttons
+charset.forEach(ch=>{
+  const btn=document.createElement('div');
   btn.className='glyphBtn';
-  btn.textContent=char;
-  if(puaMap[char]){ btn.style.borderColor='#d33'; btn.title='PUA Glyph'; }
-  btn.onclick = () => {
+  btn.textContent=ch;
+  btn.onclick=()=>{
     document.querySelectorAll('.glyphBtn').forEach(b=>b.classList.remove('selected'));
     btn.classList.add('selected');
-    selectedGlyph=char; redoStack=[]; undoStack=[]; clearCanvas();
-    if(savedPaths[selectedGlyph]){ segments=savedPaths[selectedGlyph].map(seg=>[...seg]); redrawPath(); }
-    else segments=[];
-    btn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
+    selectedGlyph=ch;redoStack=[];undoStack=[];clearCanvas();
+    if(savedPaths[ch]){segments=savedPaths[ch].map(s=>[...s]);redrawPath();}else segments=[];
+    btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
   };
   mapDiv.appendChild(btn);
 });
 
-// -----------------------------
-// Speichern Glyph
-document.getElementById('saveGlyph').onclick = () => {
-  if(!selectedGlyph){ alert('Bitte Glyph auswählen!'); return; }
-  if(!segments.length){ alert('Bitte zeichnen!'); return; }
+// Glyph speichern
+document.getElementById('saveGlyph').onclick=()=>{
+  if(!selectedGlyph){alert('Bitte Glyph auswählen!');return;}
+  if(!segments.length){alert('Bitte zeichnen!');return;}
 
-  savedPaths[selectedGlyph] = segments.map(seg=>[...seg]);
-
-  const opentypePath = new opentype.Path();
+  savedPaths[selectedGlyph]=segments.map(s=>[...s]);
+  const path=new opentype.Path();
   segments.forEach(seg=>{
-    if(seg.length<2) return;
-    opentypePath.moveTo(seg[0].x, 400 - seg[0].y);
-    for(let i=1;i<seg.length;i++) opentypePath.lineTo(seg[i].x, 400 - seg[i].y);
+    if(seg.length<2)return;
+    path.moveTo(seg[0].x,400-seg[0].y);
+    for(let i=1;i<seg.length;i++)path.lineTo(seg[i].x,400-seg[i].y);
   });
 
-  let codes;
-  if(puaMap[selectedGlyph]){
-    if(selectedGlyph === selectedGlyph.toUpperCase() && puaMap[selectedGlyph].upper) codes=[puaMap[selectedGlyph].upper];
-    else if(puaMap[selectedGlyph].lower) codes=[puaMap[selectedGlyph].lower];
-    else codes=[selectedGlyph.charCodeAt(0)];
-  } else codes=[selectedGlyph.charCodeAt(0)];
+  const code=selectedGlyph.codePointAt(0);
+  const newGlyph=new opentype.Glyph({
+    name:'uni'+code.toString(16).toUpperCase(),
+    unicodes:[code],
+    advanceWidth:400,
+    path:path
+  });
 
-  const existingIndex = glyphs.findIndex(g => g.name===selectedGlyph);
-  const newGlyph = new opentype.Glyph({ name:selectedGlyph, unicodes:codes, advanceWidth:400, path:opentypePath });
-  if(existingIndex>=0) glyphs[existingIndex]=newGlyph;
-  else glyphs.push(newGlyph);
+  const idx=glyphs.findIndex(g=>g.unicodes[0]===code);
+  if(idx>=0)glyphs[idx]=newGlyph;else glyphs.push(newGlyph);
 
-  localStorage.setItem('miniFontSavedPaths', JSON.stringify(savedPaths));
+  localStorage.setItem('miniFontSavedPaths',JSON.stringify(savedPaths));
   alert(`Glyph "${selectedGlyph}" gespeichert!`);
   updatePreview();
 };
 
-// Alles löschen
-document.getElementById('clear').onclick = () => { if(selectedGlyph) savedPaths[selectedGlyph]=[]; clearCanvas(); localStorage.setItem('miniFontSavedPaths', JSON.stringify(savedPaths)); };
+// Buttons
+document.getElementById('clear').onclick=()=>{if(selectedGlyph)savedPaths[selectedGlyph]=[];clearCanvas();localStorage.setItem('miniFontSavedPaths',JSON.stringify(savedPaths));};
+document.getElementById('undoBtn').onclick=undo;
+document.getElementById('redoBtn').onclick=redo;
 
-// Undo/Redo
-document.getElementById('undoBtn').onclick = undo;
-document.getElementById('redoBtn').onclick = redo;
-
-// -----------------------------
 // TTF Export
-document.getElementById('download').onclick = () => {
-  if(!glyphs.length){ alert('Keine Glyphen vorhanden!'); return; }
-  const font = new opentype.Font({ familyName:'MyMiniFont', styleName:'Regular', unitsPerEm:400, ascender:350, descender:-50, glyphs:glyphs });
-  const arrayBuffer = font.toArrayBuffer();
-  const blob = new Blob([arrayBuffer], {type:'font/ttf'});
-  const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download='MyMiniFont.ttf';
-  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+document.getElementById('download').onclick=()=>{
+  if(!glyphs.length){alert('Keine Glyphen vorhanden!');return;}
+  const font=new opentype.Font({
+    familyName:'MyMiniFont',
+    styleName:'Regular',
+    fullName:'MyMiniFont Regular',
+    postScriptName:'MyMiniFont-Regular',
+    designer:'Mini Font Creator',
+    unitsPerEm:1000,
+    ascender:800,
+    descender:-200,
+    glyphs:glyphs
+  });
+  const arrayBuffer=font.toArrayBuffer();
+  const blob=new Blob([arrayBuffer],{type:'font/ttf'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='MyMiniFont.ttf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
-// -----------------------------
 // Live Preview
 const previewInput=document.getElementById('previewText');
 const previewDiv=document.getElementById('preview');
 function updatePreview(){
-  if(!glyphs.length) return;
-  const tempFont = new opentype.Font({ familyName:'TempFont', styleName:'Regular', unitsPerEm:400, ascender:350, descender:-50, glyphs:glyphs });
-  const fontUrl = tempFont.toDataURL();
+  if(!glyphs.length)return;
+  const tempFont=new opentype.Font({
+    familyName:'TempFont',styleName:'Regular',
+    unitsPerEm:1000,ascender:800,descender:-200,glyphs:glyphs
+  });
+  const url=tempFont.toDataURL();
   let style=document.getElementById('tempFontStyle');
-  if(!style){ style=document.createElement('style'); style.id='tempFontStyle'; document.head.appendChild(style); }
-  style.innerHTML = `@font-face { font-family:'TempFont'; src:url(${fontUrl}); }`;
-  previewDiv.style.fontFamily='TempFont'; previewDiv.textContent=previewInput.value;
+  if(!style){style=document.createElement('style');style.id='tempFontStyle';document.head.appendChild(style);}
+  style.innerHTML=`@font-face{font-family:'TempFont';src:url(${url});}`;
+  previewDiv.style.fontFamily='TempFont';
+  previewDiv.textContent=previewInput.value;
 }
-previewInput.addEventListener('input', updatePreview);
+previewInput.addEventListener('input',updatePreview);
 
-// -----------------------------
-// Auto-Load aus LocalStorage
-window.addEventListener('load', () => {
-  const saved = localStorage.getItem('miniFontSavedPaths');
-  if(saved){ try{ const obj=JSON.parse(saved); for(const key in obj){ savedPaths[key]=obj[key]; } } catch(e){ console.warn(e); } }
+// Auto-Load
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('miniFontSavedPaths');
+  if(saved){try{const obj=JSON.parse(saved);for(const k in obj){savedPaths[k]=obj[k];}}catch(e){console.warn(e);}}
   updatePreview();
 });
 </script>
