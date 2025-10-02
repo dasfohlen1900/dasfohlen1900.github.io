@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini-Office Store (Login)</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; background:#f4f7fa; padding:20px; }
+    h1 { text-align:center; }
+    form, #store, #logoutBtn, #loginContainer { max-width:400px; margin:20px auto; display:flex; flex-direction:column; gap:10px; }
+    input, button { padding:10px; font-size:16px; border-radius:6px; border:1px solid #ccc; }
+    button { background:#2d7d46; color:white; border:none; cursor:pointer; }
+    button:hover { background:#226636; }
+    #store ul { list-style:none; padding:0; }
+    #store li { background:#fff; margin:8px 0; padding:12px; border-radius:8px; 
+                box-shadow:0 3px 6px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; }
+    #store a { color:white; text-decoration:none; background:#2d7d46; padding:6px 12px; border-radius:6px; }
+    #store a:hover { background:#226636; }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { 
+      getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+      signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4vkDRFGgoHZ8lyGY8VeYYtP6oA-PqaNs",
+      authDomain: "lukovic-store.firebaseapp.com",
+      projectId: "lukovic-store",
+      storageBucket: "lukovic-store.firebasestorage.app",
+      messagingSenderId: "519122370011",
+      appId: "1:519122370011:web:d7bc0ec5cb066d4f033bfe"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const loginGoogleBtn = document.getElementById("loginGoogle");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const storeContent = document.getElementById("store");
+
+      // Login mit E-Mail
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        signInWithEmailAndPassword(auth, email, password)
+          .catch(err => alert("Login fehlgeschlagen: " + err.message));
+      });
+
+      // Registrierung mit E-Mail
+      registerForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(() => alert("Registrierung erfolgreich! Sie sind jetzt angemeldet."))
+          .catch(err => alert("Registrierung fehlgeschlagen: " + err.message));
+      });
+
+      // Login mit Google
+      loginGoogleBtn.addEventListener("click", () => {
+        signInWithPopup(auth, googleProvider).catch(err => alert("Fehler: " + err.message));
+      });
+
+      // Logout
+      logoutBtn.addEventListener("click", () => {
+        signOut(auth);
+      });
+
+      // Auth-State überwachen
+      onAuthStateChanged(auth, (user) => {
+        if(user){
+          loginForm.style.display = "none";
+          registerForm.style.display = "none";
+          loginGoogleBtn.style.display = "none";
+          logoutBtn.style.display = "block";
+          storeContent.style.display = "block";
+        } else {
+          loginForm.style.display = "flex";
+          registerForm.style.display = "flex";
+          loginGoogleBtn.style.display = "block";
+          logoutBtn.style.display = "none";
+          storeContent.style.display = "none";
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Mini-Office Store</h1>
+
+  <!-- Login mit E-Mail -->
+  <form id="loginForm">
+    <h2>Anmelden</h2>
+    <input type="email" name="email" placeholder="E-Mail-Adresse" required>
+    <input type="password" name="password" placeholder="Passwort" required>
+    <button type="submit">Anmelden</button>
+  </form>
+
+  <!-- Registrierung mit E-Mail -->
+  <form id="registerForm">
+    <h2>Registrieren</h2>
+    <input type="email" name="email" placeholder="E-Mail-Adresse" required>
+    <input type="password" name="password" placeholder="Passwort (min. 6 Zeichen)" required>
+    <button type="submit">Registrieren</button>
+  </form>
+
+  <!-- Login mit Google -->
+  <div id="loginContainer">
+    <button id="loginGoogle">Mit Google anmelden</button>
+  </div>
+
+  <!-- Logout Button -->
+  <button id="logoutBtn" style="display:none;">Abmelden</button>
+
+  <!-- Store Inhalte -->
+  <div id="store" style="display:none;">
+    <h2>Downloads (nur für angemeldete Benutzer)</h2>
+    <ul>
+      <li>
+        <span>ZIP 1</span>
+        <a href="downloads/zip1.zip">Herunterladen</a>
+      </li>
+      <li>
+        <span>ZIP 2</span>
+        <a href="downloads/zip2.zip">Herunterladen</a>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>
