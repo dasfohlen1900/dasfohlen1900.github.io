@@ -2,143 +2,40 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Mini-Office Store – Gladbach Edition</title>
+<title>Mini-Office Store</title>
 
 <!-- Bungee Font -->
 <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
 
 <style>
-  body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background:#e6f2e6;
-    margin:0;
-    padding:0;
-  }
-
-  header {
-    background:#000000;
-    color:white;
-    text-align:center;
-    padding:20px;
-    font-family: 'Bungee', cursive;
-    font-size:32px;
-    font-weight:bold;
-  }
-
-  main {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:30px 10px;
-  }
-
-  form, #store, #loginContainer, #logoutBtn {
-    width:100%;
-    max-width:500px;
-    background:white;
-    padding:20px;
-    margin:10px 0;
-    border-radius:12px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.2);
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-
-  input, button {
-    padding:12px;
-    font-size:16px;
-    border-radius:8px;
-    border:1px solid #ccc;
-  }
-
-  button {
-    background:#00703C;
-    color:white;
-    border:none;
-    cursor:pointer;
-    font-family: 'Bungee', cursive;
-    font-weight:normal;
-  }
-
-  button:hover { background:#005f2b; }
-
-  h2 {
-    text-align:center;
-    color:#000000;
-    font-family: 'Bungee', cursive;
-  }
-
-  #store ul {
-    list-style:none;
-    padding:0;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-  }
-
-  #store li {
-    display:flex;
-    align-items:flex-start;
-    gap:16px;
-    padding:16px;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 5px 10px rgba(0,0,0,0.1);
-  }
-
-  #store img {
-    width:48px;
-    height:48px;
-  }
-
-  .zip-info { flex:1; }
-  .zip-info span { display:block; }
-
-  #store a {
-    position:relative;
-    color:white;
-    text-decoration:none;
-    background:#00703C;
-    padding:8px 16px;
-    border-radius:6px;
-    font-family: 'Bungee', cursive;
-    align-self:center;
-    transition: all 0.3s ease;
-    overflow:hidden;
-  }
-
-  #store a:hover {
-    background:#005f2b;
-    transform: translateY(-3px) scale(1.05);
-    box-shadow:0 5px 15px rgba(0,0,0,0.3);
-  }
-
-  /* Glanz-Animation */
-  #store a::after {
-    content: "";
-    position: absolute;
-    top:0;
-    left:-75%;
-    width:50%;
-    height:100%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
-    transform: skewX(-25deg);
-    transition: all 0.5s ease;
-  }
-
-  #store a:hover::after { left:125%; }
-
-  .zip-desc { font-size:14px; color:#333; }
-
-  #logoutBtn { max-width:200px; align-self:center; }
+body { font-family:"Segoe UI", Arial, sans-serif; background:#e6f2e6; margin:0; padding:0; }
+header { background:#000; color:white; text-align:center; padding:20px; font-family:'Bungee', cursive; font-size:32px; font-weight:bold; }
+main { display:flex; flex-direction:column; align-items:center; padding:30px 10px; }
+form, #store, #loginContainer, #codeLoginForm, #logoutBtn { width:100%; max-width:500px; background:white; padding:20px; margin:10px 0; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.2); display:flex; flex-direction:column; gap:10px; }
+input, button { padding:12px; font-size:16px; border-radius:8px; border:1px solid #ccc; }
+button { background:#00703C; color:white; border:none; cursor:pointer; font-family:'Bungee', cursive; font-weight:normal; transition:all 0.3s ease; }
+button:hover { background:#005f2b; }
+h2 { text-align:center; color:#000; font-family:'Bungee', cursive; }
+#store ul { list-style:none; padding:0; display:flex; flex-direction:column; gap:16px; }
+#store li { display:flex; align-items:flex-start; gap:16px; padding:16px; background:white; border-radius:12px; box-shadow:0 5px 10px rgba(0,0,0,0.1); }
+#store img { width:48px; height:48px; }
+.zip-info { flex:1; } .zip-info span { display:block; }
+#store a { position:relative; color:white; text-decoration:none; background:#00703C; padding:8px 16px; border-radius:6px; font-family:'Bungee', cursive; align-self:center; transition: all 0.3s ease; overflow:hidden; }
+#store a:hover { background:#005f2b; transform:translateY(-3px) scale(1.05); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
+#store a::after { content:""; position:absolute; top:0; left:-75%; width:50%; height:100%; background:linear-gradient(120deg, rgba(255,255,255,0.3), rgba(255,255,255,0)); transform:skewX(-25deg); transition: all 0.5s ease; }
+#store a:hover::after { left:125%; }
+.zip-desc { font-size:14px; color:#333; }
+#logoutBtn { max-width:200px; align-self:center; }
+#forgotPassword { text-align:center; color:#00703C; font-weight:bold; margin-top:8px; display:block; cursor:pointer; }
+#forgotPassword:hover { text-decoration:underline; }
 </style>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { 
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged
+  signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -154,13 +51,31 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
+// 100 Einmal-Codes
+let validCodes = [
+"8egN4?","3oU+&6","#9#iLy","k7M$2q","Fg5!pA","rH2&9w","z!X4cD","1Yv+3B","nQ8$hR","Pm6&zK",
+"d4#Jt9","sW2!gF","7X+vLq","E3$yP8","cH5&nZ","u9!Qw1","k2#Rj6","T7$hS4","bL8&fM","g1!Zx9",
+"o5#Vc2","W6$yB7","p9&kD3","j4!Nq8","A3+vL1","s6#Hf7","r8$Tw2","m1&Yp5","z7!Rc4","K2#Gj9",
+"H8*Lm1","y5!Dx7","U2&kP6","n4#Rq9","V1$Bc8","q7!Ws3","F9+Gt2","L3$Zj5","m6&Qh4","k8!Vp0",
+"D2#Ln7","t4$Kw1","R5&Xy3","o6!Bj8","C9+Hs2","p3$Vd6","j7&Qw0","G1!Fx5","u2#Pm9","S4$Zk6",
+"a6&Lj3","K7!Wd1","v8#Gt4","B2$Rq7","e5&Xy2","H9!Nz3","c3+Vb8","M4$Yt5","r1&Fk7","q6!Ws0",
+"L8#Dp4","j2$Kh9","T5&Nz1","o7!Bc6","F3+Gq2","k9$Xy4","m0&Pl5","D6!Rs7","u1#Vt8","G2$Wk3",
+"p8&Zj6","C5!Xn2","s7+Qt1","R4$Fm9","a0&Vb5","H6!Lx3","q9#Pk2","J3$Wt7","m2&Dn8","L5!Gy1",
+"o4+Bc6","K7$Hs0","v3&Qf2","T8!Nx5","e1#Wp7","F6$Zj4","c9&Vb3","R2!Lt6","u5+Gk1","M7$Px2",
+"k0&Qy8","s3!Dh4","J6#Vn9","m8$Lb1","t1&Fk5","H4!Wq3"
+];
+
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
   const loginGoogleBtn = document.getElementById("loginGoogle");
   const logoutBtn = document.getElementById("logoutBtn");
   const storeContent = document.getElementById("store");
+  const forgotPassword = document.getElementById("forgotPassword");
+  const codeLoginForm = document.getElementById("codeLoginForm");
+  const codeInput = document.getElementById("codeInput");
 
+  // E-Mail Login
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -169,44 +84,77 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(err => alert("Login fehlgeschlagen: " + err.message));
   });
 
+  // Registrierung
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
     createUserWithEmailAndPassword(auth, email, password)
-      .then(() => alert("Registrierung erfolgreich! Sie sind jetzt angemeldet."))
+      .then(() => alert("Registrierung erfolgreich! Du kannst dich nun anmelden."))
       .catch(err => alert("Registrierung fehlgeschlagen: " + err.message));
   });
 
+  // Google Login
   loginGoogleBtn.addEventListener("click", () => {
     signInWithPopup(auth, googleProvider).catch(err => alert("Fehler: " + err.message));
   });
 
-  logoutBtn.addEventListener("click", () => {
-    signOut(auth).catch(err => alert("Fehler beim Abmelden: " + err.message));
+  // Passwort vergessen
+  forgotPassword.addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = prompt("Bitte gib deine E-Mail-Adresse ein, um das Passwort zurückzusetzen:");
+    if(email){
+      const actionCodeSettings = { url: 'https://dasfohlen1900.github.io/store/passwort', handleCodeInApp: true };
+      sendPasswordResetEmail(auth, email, actionCodeSettings)
+        .then(() => alert("Link zum Zurücksetzen des Passworts wurde gesendet."))
+        .catch(err => alert("Fehler: " + err.message));
+    }
   });
 
+  // Einmal-Code Login
+  codeLoginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const code = codeInput.value.trim();
+    if(validCodes.includes(code)){
+      alert("Login erfolgreich!");
+      storeContent.style.display = "block";
+      logoutBtn.style.display = "block";
+      codeLoginForm.style.display = "none";
+      validCodes = validCodes.filter(c => c !== code);
+    } else { alert("Ungültiger Code!"); }
+  });
+
+  // Auth State
   onAuthStateChanged(auth, (user) => {
     if(user){
       loginForm.style.display = "none";
       registerForm.style.display = "none";
       loginGoogleBtn.style.display = "none";
-      logoutBtn.style.display = "block";
+      codeLoginForm.style.display = "none";
       storeContent.style.display = "block";
+      logoutBtn.style.display = "block";
     } else {
       loginForm.style.display = "flex";
       registerForm.style.display = "flex";
       loginGoogleBtn.style.display = "block";
-      logoutBtn.style.display = "none";
+      codeLoginForm.style.display = "flex";
       storeContent.style.display = "none";
+      logoutBtn.style.display = "none";
     }
+  });
+
+  // Abmelden
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth).catch(err => alert("Fehler beim Abmelden: " + err.message));
+    storeContent.style.display = "none";
+    codeLoginForm.style.display = "flex";
   });
 });
 </script>
 </head>
 
 <body>
-<header>Mini-Office Store – Gladbach Edition</header>
+<header>Mini-Office Store</header>
 <main>
 
 <form id="loginForm">
@@ -214,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <input type="email" name="email" placeholder="E-Mail-Adresse" required>
   <input type="password" name="password" placeholder="Passwort" required>
   <button type="submit">Anmelden</button>
+  <a id="forgotPassword">Passwort vergessen?</a>
 </form>
 
 <form id="registerForm">
@@ -227,6 +176,12 @@ document.addEventListener("DOMContentLoaded", () => {
   <button id="loginGoogle">Mit Google anmelden</button>
 </div>
 
+<form id="codeLoginForm">
+  <h2>Mit Code anmelden</h2>
+  <input type="text" id="codeInput" placeholder="6-stelliger Code" maxlength="6" required>
+  <button type="submit">Anmelden</button>
+</form>
+
 <button id="logoutBtn" style="display:none;">Abmelden</button>
 
 <div id="store" style="display:none;">
@@ -236,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" alt="Download-Icon">
       <div class="zip-info">
         <span>HTML.zip</span>
-        <span class="zip-desc">Enthält alle HTML-Dateien für Mini-Office – direkt im Browser nutzbar</span>
+        <span class="zip-desc">Alle HTML-Dateien – direkt im Browser nutzbar</span>
       </div>
       <a href="download/HTML.zip">Herunterladen</a>
     </li>
@@ -244,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" alt="Download-Icon">
       <div class="zip-info">
         <span>EXE.zip</span>
-        <span class="zip-desc">Fertige EXE-Datei für Windows – direkt installieren und starten</span>
+        <span class="zip-desc">Windows EXE – direkt installieren</span>
       </div>
       <a href="download/EXE.zip">Herunterladen</a>
     </li>
@@ -260,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Download-Icon">
       <div class="zip-info">
         <span>FONT1.zip</span>
-        <span class="zip-desc">Sans Serif-Bundle</span>
+        <span class="zip-desc">Sans Serif Bundle</span>
       </div>
       <a href="download/FONT1.zip">Herunterladen</a>
     </li>
@@ -268,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Download-Icon">
       <div class="zip-info">
         <span>FONT2.zip</span>
-        <span class="zip-desc">Retro Bundle</span>
+        <span class="zip-desc">Retro-Bundle</span>
       </div>
       <a href="download/FONT2.zip">Herunterladen</a>
     </li>
