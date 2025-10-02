@@ -1,137 +1,213 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini-Office Store (Login)</title>
-  <style>
-    body { font-family: Segoe UI, Arial, sans-serif; background:#f4f7fa; padding:20px; }
-    h1 { text-align:center; }
-    form, #store, #logoutBtn, #loginContainer { max-width:400px; margin:20px auto; display:flex; flex-direction:column; gap:10px; }
-    input, button { padding:10px; font-size:16px; border-radius:6px; border:1px solid #ccc; }
-    button { background:#2d7d46; color:white; border:none; cursor:pointer; }
-    button:hover { background:#226636; }
-    #store ul { list-style:none; padding:0; }
-    #store li { background:#fff; margin:8px 0; padding:12px; border-radius:8px; 
-                box-shadow:0 3px 6px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; }
-    #store a { color:white; text-decoration:none; background:#2d7d46; padding:6px 12px; border-radius:6px; }
-    #store a:hover { background:#226636; }
-  </style>
+<meta charset="UTF-8">
+<title>Mini-Office Store – Gladbach Edition</title>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { 
-      getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-      signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+<!-- Bungee Font -->
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC4vkDRFGgoHZ8lyGY8VeYYtP6oA-PqaNs",
-      authDomain: "lukovic-store.firebaseapp.com",
-      projectId: "lukovic-store",
-      storageBucket: "lukovic-store.firebasestorage.app",
-      messagingSenderId: "519122370011",
-      appId: "1:519122370011:web:d7bc0ec5cb066d4f033bfe"
-    };
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:#e6f2e6; /* sanftes Grün */
+    margin:0;
+    padding:0;
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
+  header {
+    background:#000000; /* Schwarz */
+    color:white;
+    text-align:center;
+    padding:20px;
+    font-family: 'Bungee', cursive;
+    font-size:32px;
+    font-weight:bold;
+  }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const loginForm = document.getElementById("loginForm");
-      const registerForm = document.getElementById("registerForm");
-      const loginGoogleBtn = document.getElementById("loginGoogle");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const storeContent = document.getElementById("store");
+  main {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:30px 10px;
+  }
 
-      // Login mit E-Mail
-      loginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        signInWithEmailAndPassword(auth, email, password)
-          .catch(err => alert("Login fehlgeschlagen: " + err.message));
-      });
+  form, #store, #loginContainer, #logoutBtn {
+    width:100%;
+    max-width:400px;
+    background:white;
+    padding:20px;
+    margin:10px 0;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
 
-      // Registrierung mit E-Mail
-      registerForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        createUserWithEmailAndPassword(auth, email, password)
-          .then(() => alert("Registrierung erfolgreich! Sie sind jetzt angemeldet."))
-          .catch(err => alert("Registrierung fehlgeschlagen: " + err.message));
-      });
+  input, button {
+    padding:12px;
+    font-size:16px;
+    border-radius:8px;
+    border:1px solid #ccc;
+  }
 
-      // Login mit Google
-      loginGoogleBtn.addEventListener("click", () => {
-        signInWithPopup(auth, googleProvider).catch(err => alert("Fehler: " + err.message));
-      });
+  button {
+    background:#00703C; /* Gladbach-Grün */
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-family: 'Bungee', cursive;
+    font-weight:normal;
+  }
 
-      // Logout
-      logoutBtn.addEventListener("click", () => {
-        signOut(auth);
-      });
+  button:hover { background:#005f2b; }
 
-      // Auth-State überwachen
-      onAuthStateChanged(auth, (user) => {
-        if(user){
-          loginForm.style.display = "none";
-          registerForm.style.display = "none";
-          loginGoogleBtn.style.display = "none";
-          logoutBtn.style.display = "block";
-          storeContent.style.display = "block";
-        } else {
-          loginForm.style.display = "flex";
-          registerForm.style.display = "flex";
-          loginGoogleBtn.style.display = "block";
-          logoutBtn.style.display = "none";
-          storeContent.style.display = "none";
-        }
-      });
-    });
-  </script>
+  h2 {
+    text-align:center;
+    color:#000000;
+    font-family: 'Bungee', cursive;
+  }
+
+  #store ul { list-style:none; padding:0; }
+
+  #store li {
+    background:#ffffff;
+    margin:8px 0;
+    padding:12px;
+    border-radius:8px;
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  #store a {
+    color:white;
+    text-decoration:none;
+    background:#00703C;
+    padding:6px 12px;
+    border-radius:6px;
+    font-family: 'Bungee', cursive;
+  }
+
+  #store a:hover { background:#005f2b; }
+</style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4vkDRFGgoHZ8lyGY8VeYYtP6oA-PqaNs",
+  authDomain: "lukovic-store.firebaseapp.com",
+  projectId: "lukovic-store",
+  storageBucket: "lukovic-store.firebasestorage.app",
+  messagingSenderId: "519122370011",
+  appId: "1:519122370011:web:d7bc0ec5cb066d4f033bfe"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  const loginGoogleBtn = document.getElementById("loginGoogle");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const storeContent = document.getElementById("store");
+
+  // Login mit E-Mail
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    signInWithEmailAndPassword(auth, email, password)
+      .catch(err => alert("Login fehlgeschlagen: " + err.message));
+  });
+
+  // Registrierung mit E-Mail
+  registerForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => alert("Registrierung erfolgreich! Sie sind jetzt angemeldet."))
+      .catch(err => alert("Registrierung fehlgeschlagen: " + err.message));
+  });
+
+  // Google Login
+  loginGoogleBtn.addEventListener("click", () => {
+    signInWithPopup(auth, googleProvider).catch(err => alert("Fehler: " + err.message));
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth);
+  });
+
+  // Auth-State überwachen
+  onAuthStateChanged(auth, (user) => {
+    if(user){
+      loginForm.style.display = "none";
+      registerForm.style.display = "none";
+      loginGoogleBtn.style.display = "none";
+      logoutBtn.style.display = "block";
+      storeContent.style.display = "block";
+    } else {
+      loginForm.style.display = "flex";
+      registerForm.style.display = "flex";
+      loginGoogleBtn.style.display = "block";
+      logoutBtn.style.display = "none";
+      storeContent.style.display = "none";
+    }
+  });
+});
+</script>
 </head>
+
 <body>
-  <h1>Mini-Office Store</h1>
+<header>Mini-Office Store – Gladbach Edition</header>
+<main>
 
-  <!-- Login mit E-Mail -->
-  <form id="loginForm">
-    <h2>Anmelden</h2>
-    <input type="email" name="email" placeholder="E-Mail-Adresse" required>
-    <input type="password" name="password" placeholder="Passwort" required>
-    <button type="submit">Anmelden</button>
-  </form>
+<form id="loginForm">
+  <h2>Anmelden</h2>
+  <input type="email" name="email" placeholder="E-Mail-Adresse" required>
+  <input type="password" name="password" placeholder="Passwort" required>
+  <button type="submit">Anmelden</button>
+</form>
 
-  <!-- Registrierung mit E-Mail -->
-  <form id="registerForm">
-    <h2>Registrieren</h2>
-    <input type="email" name="email" placeholder="E-Mail-Adresse" required>
-    <input type="password" name="password" placeholder="Passwort (min. 6 Zeichen)" required>
-    <button type="submit">Registrieren</button>
-  </form>
+<form id="registerForm">
+  <h2>Registrieren</h2>
+  <input type="email" name="email" placeholder="E-Mail-Adresse" required>
+  <input type="password" name="password" placeholder="Passwort (min. 6 Zeichen)" required>
+  <button type="submit">Registrieren</button>
+</form>
 
-  <!-- Login mit Google -->
-  <div id="loginContainer">
-    <button id="loginGoogle">Mit Google anmelden</button>
-  </div>
+<div id="loginContainer">
+  <button id="loginGoogle">Mit Google anmelden</button>
+</div>
 
-  <!-- Logout Button -->
-  <button id="logoutBtn" style="display:none;">Abmelden</button>
+<button id="logoutBtn" style="display:none;">Abmelden</button>
 
-  <!-- Store Inhalte -->
-  <div id="store" style="display:none;">
-    <h2>Downloads (nur für angemeldete Benutzer)</h2>
-    <ul>
-      <li>
-        <span>ZIP 1</span>
-        <a href="downloads/zip1.zip">Herunterladen</a>
-      </li>
-      <li>
-        <span>ZIP 2</span>
-        <a href="downloads/zip2.zip">Herunterladen</a>
-      </li>
-    </ul>
-  </div>
+<div id="store" style="display:none;">
+  <h2>Downloads (nur für angemeldete Benutzer)</h2>
+  <ul>
+    <li>
+      <span>HTML-Version</span>
+      <a href="/download/HTML.zip">Herunterladen</a>
+    </li>
+    <li>
+      <span>EXE-Version</span>
+      <a href="/download/EXE.zip">Herunterladen</a>
+    </li>
+  </ul>
+</div>
+
+</main>
 </body>
 </html>
