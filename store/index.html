@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Mini-Office Store</title>
+<title>Mini-Office Store – Gladbach Edition</title>
 
 <!-- Bungee Font -->
 <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
@@ -10,13 +10,13 @@
 <style>
   body {
     font-family: "Segoe UI", Arial, sans-serif;
-    background:#e6f2e6; /* sanftes Grün */
+    background:#e6f2e6;
     margin:0;
     padding:0;
   }
 
   header {
-    background:#000000; /* Schwarz */
+    background:#000000;
     color:white;
     text-align:center;
     padding:20px;
@@ -34,7 +34,7 @@
 
   form, #store, #loginContainer, #logoutBtn {
     width:100%;
-    max-width:400px;
+    max-width:500px;
     background:white;
     padding:20px;
     margin:10px 0;
@@ -53,7 +53,7 @@
   }
 
   button {
-    background:#00703C; /* Gladbach-Grün */
+    background:#00703C;
     color:white;
     border:none;
     cursor:pointer;
@@ -69,29 +69,69 @@
     font-family: 'Bungee', cursive;
   }
 
-  #store ul { list-style:none; padding:0; }
-
-  #store li {
-    background:#ffffff;
-    margin:8px 0;
-    padding:12px;
-    border-radius:8px;
-    box-shadow:0 3px 6px rgba(0,0,0,0.1);
+  #store ul {
+    list-style:none;
+    padding:0;
     display:flex;
-    justify-content:space-between;
-    align-items:center;
+    flex-direction:column;
+    gap:16px;
   }
 
+  #store li {
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    padding:16px;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 5px 10px rgba(0,0,0,0.1);
+  }
+
+  #store img {
+    width:48px;
+    height:48px;
+  }
+
+  .zip-info { flex:1; }
+  .zip-info span { display:block; }
+
   #store a {
+    position:relative;
     color:white;
     text-decoration:none;
     background:#00703C;
-    padding:6px 12px;
+    padding:8px 16px;
     border-radius:6px;
     font-family: 'Bungee', cursive;
+    align-self:center;
+    transition: all 0.3s ease;
+    overflow:hidden;
   }
 
-  #store a:hover { background:#005f2b; }
+  #store a:hover {
+    background:#005f2b;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  }
+
+  /* Glanz-Animation */
+  #store a::after {
+    content: "";
+    position: absolute;
+    top:0;
+    left:-75%;
+    width:50%;
+    height:100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
+    transform: skewX(-25deg);
+    transition: all 0.5s ease;
+  }
+
+  #store a:hover::after { left:125%; }
+
+  .zip-desc { font-size:14px; color:#333; }
+
+  #logoutBtn { max-width:200px; align-self:center; }
 </style>
 
 <script type="module">
@@ -121,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const storeContent = document.getElementById("store");
 
-  // Login mit E-Mail
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -130,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(err => alert("Login fehlgeschlagen: " + err.message));
   });
 
-  // Registrierung mit E-Mail
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -140,17 +178,14 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(err => alert("Registrierung fehlgeschlagen: " + err.message));
   });
 
-  // Google Login
   loginGoogleBtn.addEventListener("click", () => {
     signInWithPopup(auth, googleProvider).catch(err => alert("Fehler: " + err.message));
   });
 
-  // Logout
   logoutBtn.addEventListener("click", () => {
-    signOut(auth);
+    signOut(auth).catch(err => alert("Fehler beim Abmelden: " + err.message));
   });
 
-  // Auth-State überwachen
   onAuthStateChanged(auth, (user) => {
     if(user){
       loginForm.style.display = "none";
@@ -195,15 +230,47 @@ document.addEventListener("DOMContentLoaded", () => {
 <button id="logoutBtn" style="display:none;">Abmelden</button>
 
 <div id="store" style="display:none;">
-  <h2>Lade dir hier die Apps herunter</h2>
+  <h2>Downloads (nur für eingeloggte Benutzer)</h2>
   <ul>
     <li>
-      <span>HTML-Version</span>
-      <a href="/download/HTML.zip">Herunterladen</a>
+      <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" alt="Download-Icon">
+      <div class="zip-info">
+        <span>HTML.zip</span>
+        <span class="zip-desc">Enthält alle HTML-Dateien für Mini-Office – direkt im Browser nutzbar</span>
+      </div>
+      <a href="download/HTML.zip">Herunterladen</a>
     </li>
     <li>
-      <span>EXE-Version</span>
-      <a href="/download/EXE.zip">Herunterladen</a>
+      <img src="https://cdn-icons-png.flaticon.com/512/109/109612.png" alt="Download-Icon">
+      <div class="zip-info">
+        <span>EXE.zip</span>
+        <span class="zip-desc">Fertige EXE-Datei für Windows – direkt installieren und starten</span>
+      </div>
+      <a href="download/EXE.zip">Herunterladen</a>
+    </li>
+    <li>
+      <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png" alt="Download-Icon">
+      <div class="zip-info">
+        <span>APK.zip</span>
+        <span class="zip-desc">Für Android-Geräte – direkt installieren</span>
+      </div>
+      <a href="download/APK.zip">Herunterladen</a>
+    </li>
+    <li>
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Download-Icon">
+      <div class="zip-info">
+        <span>FONT1.zip</span>
+        <span class="zip-desc">Sans Serif-Bundle</span>
+      </div>
+      <a href="download/FONT1.zip">Herunterladen</a>
+    </li>
+    <li>
+      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Download-Icon">
+      <div class="zip-info">
+        <span>FONT2.zip</span>
+        <span class="zip-desc">Retro Bundle</span>
+      </div>
+      <a href="download/FONT2.zip">Herunterladen</a>
     </li>
   </ul>
 </div>
