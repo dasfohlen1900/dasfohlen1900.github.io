@@ -15,6 +15,43 @@ h1{font-size:2rem;color:#0f172a;margin-bottom:6px;}
 footer{margin-top:auto;text-align:center;color:#6b7280;font-size:0.85rem;padding-top:20px;}
 footer .back-btn{display:inline-block;margin-top:10px;background:#0f172a;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;}
 footer .back-btn:hover{background:#1e293b;}
+
+/* --- Overlay Dialog --- */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.dialog {
+  background:#fff;
+  padding:24px;
+  border-radius:16px;
+  max-width:360px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+.dialog h2 {margin-bottom:10px;color:#0f172a;}
+.dialog p {margin-bottom:20px;color:#334155;}
+.dialog .btns {
+  display:flex;
+  justify-content:center;
+  gap:12px;
+}
+.dialog button {
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn-yes {background:#0f172a;color:#fff;}
+.btn-no {background:#e5e7eb;color:#0f172a;}
+.btn-yes:hover {background:#1e293b;}
+.btn-no:hover {background:#cbd5e1;}
 </style>
 </head>
 <body>
@@ -25,17 +62,61 @@ footer .back-btn:hover{background:#1e293b;}
 </header>
 
 <main class="grid">
-  <a class="card" href="games/dev/astrorush"><h2>Astro-Rush</h2><p>Schieße die Kometen ab, bevor sie dich treffen</p></a>
+  <a class="card" href="https://example.com"><h2>Externe App</h2><p>Führt zu einer externen Seite</p></a>
   <a class="card" href="wetter/"><h2>Wetter</h2><p>Das Wetter für heute</p></a>
   <a class="card" href="games/dev/mines/"><h2>Retro-Minesweeper</h2><p>Das gutbekannte Spiel jetzt auch hier</p></a>
   <a class="card" href="charset/"><h2>Character Map</h2><p>Copy + Paste</p></a>
-  </main>
+</main>
 
 <footer>
   &copy; 2025 Mini-Office  
   <br>
   <a href="index.html" class="back-btn">← Zurück zur Startseite</a>
 </footer>
+
+<!-- Overlay -->
+<div id="overlay">
+  <div class="dialog">
+    <h2>Achtung – Auswärts</h2>
+    <p>Du verlässt jetzt Mini-Office.<br>Der Link führt dich auf eine externe Seite.<br>Möchtest du fortfahren?</p>
+    <div class="btns">
+      <button class="btn-yes">JA</button>
+      <button class="btn-no">NEIN</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const overlay = document.getElementById("overlay");
+const btnYes = overlay.querySelector(".btn-yes");
+const btnNo = overlay.querySelector(".btn-no");
+
+let targetUrl = "";
+
+// alle Links überprüfen
+document.querySelectorAll("a").forEach(link => {
+  link.addEventListener("click", e => {
+    const url = new URL(link.href, window.location.href);
+    // prüfen ob Domain gleich ist
+    if (url.hostname !== window.location.hostname) {
+      e.preventDefault();
+      targetUrl = link.href;
+      overlay.style.display = "flex";
+    }
+  });
+});
+
+btnYes.addEventListener("click", () => {
+  window.open(targetUrl, "_blank"); // im neuen Tab öffnen
+  overlay.style.display = "none";
+  targetUrl = "";
+});
+
+btnNo.addEventListener("click", () => {
+  overlay.style.display = "none";
+  targetUrl = "";
+});
+</script>
 
 </body>
 </html>
