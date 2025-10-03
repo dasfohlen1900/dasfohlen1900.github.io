@@ -11,7 +11,7 @@
 
 body {
   background-color: #101010;
-  color: #00ff00;
+  color: #fff;
   font-family: 'RetroStylePro', monospace;
   margin: 0;
   padding: 0;
@@ -25,33 +25,51 @@ body {
   width: 90%;
   height: 80%;
   background-color: #101010;
-  border: 2px solid #00ff00;
+  border: 2px solid #fff;
   padding: 10px;
   overflow-y: auto;
 }
 
 #input-line {
   display: flex;
+  align-items: center;
+  white-space: pre;
 }
 
-#input-line span {
-  margin-right: 5px;
+#prompt {
+  position: relative;
+}
+
+/* Blinkender Cursor hinter Prompt */
+#prompt::after {
+  content: "|";
+  color: #fff;
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  0%,50% {opacity:1;}
+  51%,100% {opacity:0;}
 }
 
 #cmd-input {
   background: none;
   border: none;
-  color: #00ff00;
+  color: #fff;
   outline: none;
   flex: 1;
   font-family: 'RetroStylePro', monospace;
 }
 
-.link {
-  color: #0ff;
-  cursor: pointer;
-  text-decoration: underline;
-}
+/* Farbliche Klassifizierung */
+.keyword-cd { color: #FFD700; font-weight: bold; }
+.keyword-dir { color: #FFD700; font-weight: bold; }
+.keyword-start { color: #00FF00; font-weight: bold; }
+.keyword-tree { color: #00BFFF; font-weight: bold; }
+.keyword-home { color: #800080; font-weight: bold; }
+.keyword-other { color: #FFA500; font-weight: bold; }
+.error { color: #FF0000; font-weight: bold; }
+.link { color: #0ff; cursor: pointer; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -68,98 +86,136 @@ body {
 const input = document.getElementById("cmd-input");
 const output = document.getElementById("output");
 const prompt = document.getElementById("prompt");
-const baseURL = "https://dasfohlen1900.github.io/";
-
-// Aktueller Pfad
+const githubUser = "dasfohlen1900";
+const githubRepo = "dasfohlen1900.github.io";
 let currentPath = "";
 
-// GitHub-Tree als verschachteltes Objekt
-const fs = {
-  "charset": { "index.html": null },
-  "console": { "index.html": null },
-  "derminikicker": { "fußballsimulator": { "index.html": null }, "index.html": null },
-  "dev": { "minidoc": { "index.html": null }, "egn": { "index.html": null }, "fontcreator": { "index.html": null } },
-  "games": { "2048": { "index.html": null }, "dev": { "astrorush": { "index.html": null }, "mines": { "index.html": null } }, "index.html": null },
-  "penalty": { "index.html": null },
-  "gladbach": { "fohlen-word": { "index.html": null }, "index.html": null },
-  "mini-calc": { "index.html": null },
-  "mini-convert": { "index.html": null },
-  "mini-draw": { "index.html": null },
-  "mini-kalender": { "index.html": null },
-  "mini-mindmap": { "index.html": null },
-  "mini-music": { "index.html": null },
-  "mini-notes": { "index.html": null },
-  "mini-pp": { "index.html": null },
-  "mini-table": { "index.html": null },
-  "mini-uhr": { "index.html": null },
-  "mini-word": { "index.html": null },
-  "premium": { "randomizer": { "index.html": null }, "index.html": null },
-  "store": { "download": { "APK.zip": null, "EXE.zip": null, "FONT1.zip": null, "FONT2.zip": null, "HTML.zip": null, "text.txt": null }, "passwort": { "index.html": null }, "index.html": null },
-  "to-do": { "index.html": null },
-  "wetter": { "index.html": null },
-  "README.md": null,
-  "index.html": null,
-  "mini_word_hilfe.pdf": null,
-  "seite2.html": null
-};
-
-// Prompt updaten
-function updatePrompt() { prompt.textContent = `B:\\${currentPath}>`; }
-
-// Pfad traversieren
-function traversePath(path) {
-  if(!path) return fs;
-  const parts = path.split("\\");
-  let node = fs;
-  for(const p of parts){ if(node[p]) node = node[p]; else return null; }
-  return node;
+// Farbliche Hervorhebung
+function colorKeyword(text){
+  const mapping = {
+    "cd": "keyword-cd",
+    "dir": "keyword-dir",
+    "start": "keyword-start",
+    "tree": "keyword-tree",
+    "home": "keyword-home",
+    "help": "keyword-other",
+    "FOHLEN": "keyword-other",
+    "reload": "keyword-other",
+    "winver": "keyword-other",
+    "charmap": "keyword-other"
+  };
+  for(const key in mapping){
+    const regex = new RegExp(`\\b${key}\\b`,"gi");
+    text = text.replace(regex, `<span class="${mapping[key]}">${key}</span>`);
+  }
+  return text;
 }
 
-// Volle URL für open
-function getFullPath(path) { return baseURL + path.replace(/\\/g,"/"); }
+// Scrollfunktion
+function scrollConsole(){
+  const consoleDiv = document.getElementById("console");
+  consoleDiv.scrollTo({ top: consoleDiv.scrollHeight, behavior: "smooth" });
+}
 
-input.addEventListener("keydown", function(e){
+function updatePrompt() { prompt.textContent = `B:\\${currentPath}>`; }
+updatePrompt();
+
+// GitHub API: Verzeichnis abfragen
+async function fetchGitHubDir(path="") {
+  const url = `https://api.github.com/repos/${githubUser}/${githubRepo}/contents/${path}`;
+  try {
+    const response = await fetch(url);
+    if(!response.ok) throw new Error(`GitHub API Fehler: ${response.status}`);
+    const data = await response.json();
+    return data;
+  } catch(err) { console.error(err); return []; }
+}
+
+// GitHub Auto-Update
+async function autoUpdateGitHubDir() {
+  const data = await fetchGitHubDir(currentPath);
+  if(data.length === 0) return;
+
+  // Anzeige aktualisieren
+  const html = data.map(item => {
+    if(item.type === "file") return `<span class='link' onclick='window.open("${item.html_url}")'>${item.name}</span>`;
+    if(item.type === "dir") return `<span style="color:#FFA500">${item.name}</span>`;
+  }).join("<br>");
+  output.innerHTML += `<div style="color:#0ff;">[Auto-Update GitHub] Verzeichnis aktualisiert:</div><div>${html}</div>`;
+  scrollConsole();
+}
+
+// Alle 3 Sekunden prüfen
+setInterval(autoUpdateGitHubDir, 3000);
+
+// CMD Input Listener
+input.addEventListener("keydown", async function(e){
   if(e.key === "Enter"){
     const cmdLine = input.value.trim();
     const args = cmdLine.split(" ");
     const cmd = args[0].toLowerCase();
+    output.innerHTML += `<div>${colorKeyword(cmdLine)}</div>`;
 
-    if(cmd==="help"){
-      output.innerHTML += "<div>Verfügbare Befehle: help, cd, dir, open, clear</div>";
-    } else if(cmd==="clear"){
-      output.innerHTML = "";
-    } else if(cmd==="dir"){
-      const node = traversePath(currentPath);
-      if(node){
-        let display = Object.keys(node).map(k=>{
-          if(node[k]===null) return `<span class='link' onclick='window.open("${getFullPath(currentPath?(currentPath+"\\\\"+k):k)}")'>${k}</span>`;
-          return k;
-        });
-        output.innerHTML += `<div>${display.join("<br>")}</div>`;
-      }
-    } else if(cmd==="cd"){
-      const target = args[1];
-      if(!target){ output.innerHTML += `<div>${currentPath||'\\'}</div>`; }
-      else if(target===".."){ const parts=currentPath.split("\\").filter(Boolean); parts.pop(); currentPath=parts.join("\\"); }
-      else {
-        const node = traversePath(currentPath);
-        if(node && node[target]) currentPath = currentPath? currentPath+"\\"+target:target;
-        else output.innerHTML += `<div>Verzeichnis nicht gefunden: ${target}</div>`;
-      }
-      updatePrompt();
-    } else if(cmd==="open"){
-      const file=args[1];
-      if(file) window.open(getFullPath(currentPath?(currentPath+"\\"+file):file));
-      else output.innerHTML += "<div>Datei angeben</div>";
-    } else {
-      output.innerHTML += `<div>Befehl nicht gefunden: ${cmd}</div>`;
+    switch(cmd){
+      case "help":
+        output.innerHTML += "<div>Verfügbare Befehle: <span class='keyword-cd'>cd</span>, <span class='keyword-dir'>dir</span>, <span class='keyword-start'>start</span>, <span class='keyword-tree'>tree</span>, <span class='keyword-home'>home</span>, <span class='keyword-other'>help</span>, <span class='keyword-other'>FOHLEN</span>, <span class='keyword-other'>reload</span>, <span class='keyword-other'>winver</span>, <span class='keyword-other'>charmap</span></div>";
+        break;
+      case "clear": output.innerHTML = ""; break;
+
+      case "dir":
+        const dirData = await fetchGitHubDir(currentPath);
+        const dirHtml = dirData.map(item => {
+          if(item.type==="file") return `<span class='link' onclick='window.open("${item.html_url}")'>${item.name}</span>`;
+          if(item.type==="dir") return `<span style="color:#FFA500">${item.name}</span>`;
+        }).join("<br>");
+        output.innerHTML += `<div>${dirHtml}</div>`;
+        break;
+
+      case "tree":
+        async function printTree(path="", indent=""){
+          const data = await fetchGitHubDir(path);
+          let lines = [];
+          for(const item of data){
+            lines.push(indent + item.name);
+            if(item.type==="dir") lines.push(...await printTree(path?path+"/"+item.name:item.name, indent+"  "));
+          }
+          return lines;
+        }
+        const treeLines = await printTree(currentPath);
+        output.innerHTML += `<div>${treeLines.join("<br>")}</div>`;
+        break;
+
+      case "cd":
+        const target = args[1];
+        if(!target){ output.innerHTML += `<div>${currentPath||'\\'}</div>`; }
+        else if(target===".."){ const parts=currentPath.split("/").filter(Boolean); parts.pop(); currentPath = parts.join("/"); }
+        else {
+          const data = await fetchGitHubDir(currentPath);
+          if(data.find(f => f.name===target && f.type==="dir")) currentPath = currentPath?currentPath+"/"+target:target;
+          else output.innerHTML += `<div class="error">Verzeichnis nicht gefunden: ${target}</div>`;
+        }
+        updatePrompt();
+        break;
+
+      case "open":
+        const file=args[1];
+        if(file){
+          if(file.toLowerCase()==="start") window.open(`https://dasfohlen1900.github.io/index.html`);
+          else window.open(`https://dasfohlen1900.github.io/${currentPath?currentPath+"/"+file:file}`);
+        } else output.innerHTML += `<div class="error">Datei angeben</div>`;
+        break;
+
+      case "home": currentPath=""; updatePrompt(); break;
+      case "FOHLEN": currentPath="gladbach/fohlen-word"; updatePrompt(); break;
+      case "reload": location.reload(); break;
+      case "winver": window.open("https://dasfohlen1900.github.io/info/index.html"); break;
+      case "charmap": window.open("https://dasfohlen1900.github.io/charmap/index.html"); break;
+      default: if(cmd!=="") output.innerHTML += `<div class="error">Befehl nicht gefunden: ${cmd}</div>`;
     }
-    output.scrollTop = output.scrollHeight;
+    scrollConsole();
     input.value="";
   }
 });
-
-updatePrompt();
 </script>
 
 </body>
