@@ -4,10 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mini-Office – Startseite</title>
-
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
-
 <style>
 :root{
   --bg:#eef4fb;
@@ -22,9 +19,6 @@ body{
   display:flex;flex-direction:column;align-items:center;
   min-height:100vh;padding:40px 20px;
 }
-header{text-align:center;margin-bottom:40px;}
-h1{font-size:2.2rem;color:var(--accent);margin-bottom:6px;}
-p.tagline{color:var(--muted);font-size:1.1rem;}
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -72,13 +66,20 @@ footer .next-btn:hover{background:#1e293b;}
 </head>
 <body>
 
-<header>
-  <h1>🚀 Mini-Office</h1>
-  <p class="tagline">Alle deine Mini-Apps auf einen Blick</p>
+<!-- Neuer Header -->
+<header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;width:100%;max-width:960px;">
+  <a href="premium/" style="text-decoration:none;color:#0f172a;font-size:1.8rem;">👤</a>
+  <div style="text-align:center;flex-grow:1;">
+    <h1 style="margin:0;font-size:2.2rem;color:#0f172a;">🚀 Mini-Office</h1>
+    <p class="tagline" style="margin:0;color:#6b7280;font-size:1.1rem;">Alle deine Mini-Apps auf einen Blick</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;">
+    <input id="search-input" type="text" placeholder="Suche..." style="padding:6px 10px;border-radius:8px;border:1px solid #ccc;font-size:0.95rem;">
+    <button id="search-btn" style="padding:6px 10px;border-radius:8px;border:none;background:#0f172a;color:#fff;cursor:pointer;font-size:0.95rem;">🔍</button>
+  </div>
 </header>
 
 <main class="grid">
-  <!-- Deine bisherigen Cards -->
   <a class="card" href="mini-word/"><h2>Mini-Word</h2><p>Texteditor mit .octxt-Speicherung</p></a>
   <a class="card" href="mini-draw/"><h2>Mini-Draw</h2><p>Zeichnen und Bilder einfügen</p></a>
   <a class="card" href="mini-calc/"><h2>Mini-Calc</h2><p>Wissenschaftlicher Rechner mit Verlauf</p></a>
@@ -101,7 +102,6 @@ footer .next-btn:hover{background:#1e293b;}
   &copy; 2025 Mini-Office – 
   <a href="https://github.com/dasfohlen1900" style="color:inherit;text-decoration:underline;">dasfohlen1900</a>
   <br>
-  <!-- 🚀 Neuer Knopf -->
   <a href="seite2.html" class="next-btn">Weitere Apps →</a>
 </footer>
 
