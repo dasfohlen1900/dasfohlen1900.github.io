@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini.Pinball.Editor</title>
+  <style>
+    body { background: #222; color: #fff; font-family: sans-serif; text-align: center; }
+    canvas { background: #111; border: 2px solid #555; display: block; margin: 20px auto; }
+    .toolbar { margin: 10px; }
+    button { margin: 5px; padding: 8px 12px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Mini.Pinball.Editor</h1>
+  <div class="toolbar">
+    <button onclick="setTool('bumper')">💥 Bumper</button>
+    <button onclick="setTool('flipperLeft')">🕹️ Flipper Links</button>
+    <button onclick="setTool('flipperRight')">🕹️ Flipper Rechts</button>
+    <button onclick="exportLevel()">📦 Export</button>
+  </div>
+  <canvas id="editor" width="400" height="600"></canvas>
+  <pre id="output"></pre>
+
+  <script>
+    const canvas = document.getElementById('editor');
+    const ctx = canvas.getContext('2d');
+    const output = document.getElementById('output');
+    let tool = 'bumper';
+    let elements = [];
+
+    function setTool(t) {
+      tool = t;
+    }
+
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (tool === 'bumper') {
+        elements.push({type: 'bumper', x, y, r: 20});
+      } else if (tool === 'flipperLeft') {
+        elements.push({type: 'flipper', x, y, w: 60, h: 10, side: 'left'});
+      } else if (tool === 'flipperRight') {
+        elements.push({type: 'flipper', x, y, w: 60, h: 10, side: 'right'});
+      }
+
+      draw();
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      elements.forEach(el => {
+        if (el.type === 'bumper') {
+          ctx.fillStyle = 'red';
+          ctx.beginPath();
+          ctx.arc(el.x, el.y, el.r, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (el.type === 'flipper') {
+          ctx.fillStyle = el.side === 'left' ? '#0f0' : '#00f';
+          ctx.fillRect(el.x, el.y, el.w, el.h);
+        }
+      });
+    }
+
+    function exportLevel() {
+      const syntax = elements.map(el => {
+        if (el.type === 'bumper') {
+          return `bumper { x: ${el.x}, y: ${el.y}, r: ${el.r}, onHit: score.add(100) }`;
+        } else if (el.type === 'flipper') {
+          return `flipper.${el.side} { x: ${el.x}, y: ${el.y}, w: ${el.w}, h: ${el.h}, onActivate: ball.dy = -abs(ball.dy) }`;
+        }
+      }).join('\n');
+
+      output.textContent = `module Mini.Pinball.Level {\n${syntax}\n}`;
+    }
+  </script>
+</body>
+</html>
