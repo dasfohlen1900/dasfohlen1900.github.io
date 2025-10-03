@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mini-Office Zufallstools – Pro</title>
+
+<!-- Bungee Font -->
+<link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+
+<style>
+body{font-family:Segoe UI,sans-serif; padding:20px; background:#eef4fb; margin:0;}
+h1{font-family:'Bungee',cursive; text-align:center; color:#333;}
+section{margin-bottom:30px; padding:15px; background:#fff; border-radius:8px; box-shadow:0 0 5px rgba(0,0,0,0.1);}
+textarea, select, input[type=number], input[type=text], input[type=email], input[type=password]{width:100%; margin-bottom:10px; padding:8px; border-radius:6px; border:1px solid #ccc;}
+button{margin:5px 0; padding:10px 16px; cursor:pointer; background:#00703C; color:#fff; border:none; border-radius:8px; font-family:'Bungee',cursive;}
+button:hover{background:#005f2b;}
+#loginBox{max-width:400px; margin:30px auto;}
+#logoutBtn{display:none; margin:20px auto; display:block;}
+#appContent{display:none;}
+canvas{display:block; margin:auto; background:#fff; border-radius:50%;}
+</style>
+</head>
+<body>
+
+<h1>Mini-Office Zufallstools – Pro</h1>
+
+<!-- LOGIN -->
+<div id="loginBox">
+  <h2>Anmelden</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="E-Mail" required>
+    <input type="password" id="password" placeholder="Passwort" required>
+    <button type="submit">Login</button>
+  </form>
+  <button id="loginGoogle">Mit Google anmelden</button>
+</div>
+
+<button id="logoutBtn">Abmelden</button>
+
+<!-- TOOL -->
+<div id="appContent">
+  <!-- Abschnitt: Zufall aus Liste -->
+  <section>
+    <h2>Zufall aus Liste</h2>
+    <label>Vorgefertigte Listen:</label>
+    <select id="presetList">
+        <option value="">-- Bitte wählen --</option>
+        <option value="bundesliga">Bundesliga</option>
+        <option value="2bundesliga">2. Bundesliga</option>
+        <option value="monate">Monate</option>
+        <option value="programme">Computerprogramme</option>
+    </select>
+    <p><input type="checkbox" id="deleteAfterDraw"> Gezogene Elemente entfernen</p>
+    <button id="drawButton">Zufälliges Element ziehen</button>
+    <p>Gezogenes Element: <strong id="result">–</strong></p>
+    <div id="history"><strong>Historie:</strong><ul id="histList"></ul></div>
+  </section>
+
+  <!-- Abschnitt: Gruppen erstellen -->
+  <section>
+    <h2>Gruppen erstellen</h2>
+    <textarea id="groupInput" placeholder="Elemente eingeben, je eine Zeile"></textarea>
+    <input type="number" id="groupSize" placeholder="Anzahl pro Gruppe">
+    <p><input type="checkbox" id="distributeRest"> Rest verteilen</p>
+    <button id="createGroups">Gruppen erstellen</button>
+    <div id="groupResult"><strong>Ergebnis:</strong></div>
+  </section>
+
+  <!-- Abschnitt: Zufallszahl -->
+  <section>
+    <h2>Zufallszahl</h2>
+    <input type="number" id="numMin" placeholder="Min">
+    <input type="number" id="numMax" placeholder="Max">
+    <button id="genNumber">Zahl generieren</button>
+    <p>Ergebnis: <strong id="numResult">–</strong></p>
+  </section>
+
+  <!-- Abschnitt: Eigene Liste erstellen -->
+  <section>
+    <h2>Eigene Liste erstellen</h2>
+    <textarea id="newListInput" placeholder="Elemente eingeben, je eine Zeile"></textarea>
+    <input type="text" id="newListName" placeholder="Name der Liste (ohne .ocllh)">
+    <button id="saveList">Liste speichern (.ocllh)</button>
+  </section>
+
+  <!-- Abschnitt: Glücksrad -->
+  <section>
+    <h2>Glücksrad</h2>
+    <canvas id="wheel" width="400" height="400"></canvas>
+    <button id="spinWheel">Drehen</button>
+    <p>Gewonnenes Element: <strong id="wheelResult">–</strong></p>
+  </section>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { 
+  getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4vkDRFGgoHZ8lyGY8VeYYtP6oA-PqaNs",
+  authDomain: "lukovic-store.firebaseapp.com",
+  projectId: "lukovic-store",
+  storageBucket: "lukovic-store.firebasestorage.app",
+  messagingSenderId: "519122370011",
+  appId: "1:519122370011:web:d7bc0ec5cb066d4f033bfe"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Elemente
+const loginBox = document.getElementById("loginBox");
+const loginForm = document.getElementById("loginForm");
+const loginGoogleBtn = document.getElementById("loginGoogle");
+const logoutBtn = document.getElementById("logoutBtn");
+const appContent = document.getElementById("appContent");
+
+// Login mit E-Mail
+loginForm.addEventListener("submit", (e)=>{
+  e.preventDefault();
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  signInWithEmailAndPassword(auth,email,password)
+    .catch(err => alert("Login fehlgeschlagen: "+err.message));
+});
+
+// Login mit Google
+loginGoogleBtn.addEventListener("click", ()=>{
+  signInWithPopup(auth, googleProvider)
+    .catch(err=>alert("Fehler: "+err.message));
+});
+
+// Logout
+logoutBtn.addEventListener("click", ()=>{
+  signOut(auth).catch(err=>alert("Fehler: "+err.message));
+});
+
+// Auth-Status
+onAuthStateChanged(auth, (user)=>{
+  if(user){
+    loginBox.style.display="none";
+    logoutBtn.style.display="block";
+    appContent.style.display="block";
+  } else {
+    loginBox.style.display="block";
+    logoutBtn.style.display="none";
+    appContent.style.display="none";
+  }
+});
+
+// ==== Zufallstools ====
+const presets = {
+    bundesliga:["Gladbach","Dortmund","HSV","Bayern","Stuttgart"],
+    "2bundesliga":["Hamburg","Karlsruhe","Nürnberg","Düsseldorf","Paderborn"],
+    monate:["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
+    programme:["Mini-Word","Mini-Lists","Mini-Coder","Mini-Draw","Mini-Office Store","Zufallsgenerator"]
+};
+
+let currentList = [];
+
+// Zufall aus Liste
+document.getElementById("presetList").addEventListener("change", function(){
+    const val = this.value;
+    if(val && presets[val]){
+        currentList = [...presets[val]];
+        document.getElementById("result").innerText = "–";
+        document.getElementById("histList").innerHTML = "";
+    }
+});
+
+document.getElementById("drawButton").addEventListener("click", function(){
+    if(currentList.length===0){ alert("Liste ist leer!"); return; }
+    const index = Math.floor(Math.random()*currentList.length);
+    const item = currentList[index];
+    document.getElementById("result").innerText = item;
+    const li = document.createElement("li");
+    li.innerText = item;
+    document.getElementById("histList").appendChild(li);
+    if(document.getElementById("deleteAfterDraw").checked){
+        currentList.splice(index,1);
+    }
+});
+
+// Gruppen erstellen
+function shuffle(array){ return array.sort(()=>Math.random()-0.5); }
+
+document.getElementById("createGroups").addEventListener("click", function(){
+    let items = document.getElementById("groupInput").value.split("\n").map(l=>l.trim()).filter(l=>l);
+    let size = parseInt(document.getElementById("groupSize").value);
+    if(!size || size<=0){ alert("Ungültige Gruppengröße"); return; }
+    items = shuffle(items);
+    const distributeRest = document.getElementById("distributeRest").checked;
+    let groups = [];
+    for(let i=0; i<items.length; i+=size){
+        groups.push(items.slice(i,i+size));
+    }
+    if(distributeRest && groups.length>1){
+        let last = groups[groups.length-1];
+        if(last.length<size){
+            let idx = 0;
+            while(last.length>0){
+                groups[idx].push(last.shift());
+                idx = (idx+1)% (groups.length-1);
+            }
+            groups.pop();
+        }
+    }
+    const out = document.getElementById("groupResult");
+    out.innerHTML = "<strong>Ergebnis:</strong>";
+    const ul = document.createElement("ul");
+    groups.forEach((g,i)=>{
+        const li = document.createElement("li");
+        li.innerText = "Gruppe " + (i+1) + ": " + g.join(", ");
+        ul.appendChild(li);
+    });
+    out.appendChild(ul);
+});
+
+// Zufallszahl
+document.getElementById("genNumber").addEventListener("click", function(){
+    let min = parseInt(document.getElementById("numMin").value);
+    let max = parseInt(document.getElementById("numMax").value);
+    if(isNaN(min)||isNaN(max)||min>max){ alert("Ungültiger Bereich"); return; }
+    const num = Math.floor(Math.random()*(max-min+1))+min;
+    document.getElementById("numResult").innerText = num;
+});
+
+// Eigene Liste speichern
+document.getElementById("saveList").addEventListener("click", function(){
+    const elements = document.getElementById("newListInput").value.split("\n").map(l=>l.trim()).filter(l=>l);
+    if(elements.length === 0){ alert("Liste ist leer!"); return; }
+    const name = document.getElementById("newListName").value.trim();
+    if(!name){ alert("Bitte einen Listennamen eingeben!"); return; }
+
+    const blob = new Blob([elements.join("\n")], {type:"text/plain"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = name + ".ocllh";
+    link.click();
+});
+
+// Glücksrad
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const wheelRadius = 180;
+let wheelItems = [];
+let spinning = false;
+
+function updateWheelList(list){ wheelItems = [...list]; drawWheel(0); }
+
+function drawWheel(angle){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(wheelItems.length===0){ return; }
+    const step = 2*Math.PI / wheelItems.length;
+    wheelItems.forEach((item,i)=>{
+        const start = i*step + angle;
+        const end = start + step;
+        ctx.beginPath();
+        ctx.moveTo(200,200);
+        ctx.arc(200,200,wheelRadius,start,end);
+        ctx.fillStyle = i%2===0?"#90caf9":"#42a5f5";
+        ctx.fill();
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(200,200);
+        ctx.rotate(start + step/2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#fff";
+        ctx.font = "14px Arial";
+        ctx.fillText(item, wheelRadius-10, 0);
+        ctx.restore();
+    });
+    ctx.fillStyle="#f44336";
+    ctx.beginPath();
+    ctx.moveTo(200,10);
+    ctx.lineTo(190,30);
+    ctx.lineTo(210,30);
+    ctx.closePath();
+    ctx.fill();
+}
+
+document.getElementById("spinWheel").addEventListener("click", function(){
+    if(spinning){ return; }
+    if(currentList.length===0){ alert("Liste ist leer!"); return; }
+    spinning = true;
+    updateWheelList(currentList);
+    let angle = 0;
+    let spinTime = 0;
+    const spinTotal = 2000 + Math.random()*2000;
+    function animate(){
+        spinTime += 20;
+        const spinAngle = easeOut(spinTime, 0, Math.random()*10 + 10, spinTotal);
+        angle += spinAngle*Math.PI/180;
+        drawWheel(angle);
+        if(spinTime<spinTotal){ requestAnimationFrame(animate); }
+        else{
+            const step = 2*Math.PI / wheelItems.length;
+            const winnerIndex = Math.floor(((2*Math.PI - angle % (2*Math.PI)) / step)) % wheelItems.length;
+            const winner = wheelItems[winnerIndex];
+            document.getElementById("wheelResult").innerText = winner;
+            if(document.getElementById("deleteAfterDraw").checked){
+                const idx = currentList.indexOf(winner);
+                if(idx>=0){ currentList.splice(idx,1); }
+            }
+            spinning=false;
+        }
+    }
+    animate();
+});
+
+function easeOut(t,b,c,d){ t/=d; t--; return c*(t*t*t +1)+b; }
+
+drawWheel(0);
+</script>
+
+</body>
+</html>
