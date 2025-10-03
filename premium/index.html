@@ -18,6 +18,7 @@ header .profile { cursor:pointer; font-size:16px; }
 .tile:hover { transform: scale(1.05); box-shadow:0 8px 20px rgba(0,0,0,0.3); }
 .tile[data-size="2x2"] { grid-column: span 2; grid-row: span 2; font-size:22px; }
 .tile[data-size="2x1"] { grid-column: span 2; font-size:20px; }
+
 #charmbar { position:fixed; right:-300px; top:0; width:250px; height:100%; background:rgba(0,0,0,0.85); color:white; display:flex; flex-direction:column; padding:20px; transition:right 0.3s ease; z-index:1000; }
 #charmbar.show { right:0; }
 #charmbar h3 { font-family:'Bungee',cursive; margin-top:0; }
@@ -28,7 +29,7 @@ header .profile { cursor:pointer; font-size:16px; }
 <body>
 <header>
   Mini-Office Dashboard
-  <span class="profile" onclick="toggleCharmbar()">☰</span>
+  <span class="profile">☰</span>
 </header>
 
 <form id="loginForm">
@@ -43,9 +44,9 @@ header .profile { cursor:pointer; font-size:16px; }
 <div id="charmbar">
   <h3>Charmbar</h3>
   <label>Suche Mini-Apps:</label>
-  <input type="text" id="searchApp" placeholder="Suche..." oninput="filterTiles()">
+  <input type="text" id="searchApp" placeholder="Suche...">
   <button onclick="document.getElementById('bgUpload').click()">Hintergrund hochladen</button>
-  <input type="file" id="bgUpload" style="display:none" onchange="uploadBackground(event)">
+  <input type="file" id="bgUpload" style="display:none">
   <button onclick="setTheme('borussia')">Borussia Farbschema</button>
   <button onclick="setTheme('light')">Hell Farbschema</button>
   <button onclick="shareLink()">Teilen</button>
@@ -68,81 +69,89 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const loginForm = document.getElementById('loginForm');
-const dashboard = document.getElementById('dashboard');
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  const dashboard = document.getElementById('dashboard');
+  const charmbar = document.getElementById('charmbar');
+  const profileBtn = document.querySelector('.profile');
 
-// Kacheln definieren
-const tilesData = [
-  {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word"},
-  {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc"},
-  {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker"},
-  {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp"}
-];
+  const tilesData = [
+    {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word"},
+    {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc"},
+    {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker"},
+    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp"}
+  ];
 
-// Dashboard erstellen
-function renderTiles(){
-  dashboard.innerHTML="";
-  tilesData.forEach((t,i)=>{
-    const div=document.createElement('div');
-    div.className='tile';
-    div.dataset.size=t.size;
-    div.draggable=true;
-    div.innerText=t.name;
-    div.onclick=()=>{ if(t.url) window.open(t.url,'_blank'); else alert('Link fehlt!'); };
-    div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',i); });
-    div.addEventListener('dragover', e=>e.preventDefault());
-    div.addEventListener('drop', e=>{
-      e.preventDefault();
-      const fromIndex = e.dataTransfer.getData('text/plain');
-      tilesData.splice(i,0,tilesData.splice(fromIndex,1)[0]);
-      renderTiles();
+  function renderTiles(){
+    dashboard.innerHTML="";
+    tilesData.forEach((t,i)=>{
+      const div=document.createElement('div');
+      div.className='tile';
+      div.dataset.size=t.size;
+      div.draggable=true;
+      div.innerText=t.name;
+      div.onclick=()=>{ if(t.url) window.open(t.url,'_blank'); else alert('Link fehlt!'); };
+      div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',i); });
+      div.addEventListener('dragover', e=>e.preventDefault());
+      div.addEventListener('drop', e=>{
+        e.preventDefault();
+        const fromIndex = e.dataTransfer.getData('text/plain');
+        tilesData.splice(i,0,tilesData.splice(fromIndex,1)[0]);
+        renderTiles();
+      });
+      dashboard.appendChild(div);
     });
-    dashboard.appendChild(div);
+  }
+
+  loginForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    signInWithEmailAndPassword(auth,email,password)
+      .then(()=>{ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); })
+      .catch(err=>alert("Login fehlgeschlagen: "+err.message));
   });
-}
 
-loginForm.addEventListener('submit', e=>{
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  signInWithEmailAndPassword(auth,email,password)
-    .then(()=>{ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); })
-    .catch(err=>alert("Login fehlgeschlagen: "+err.message));
-});
+  profileBtn.addEventListener('click', ()=>{ charmbar.classList.toggle('show'); });
 
-function toggleCharmbar(){ document.getElementById('charmbar').classList.toggle('show'); }
-function filterTiles(){
-  const term = document.getElementById('searchApp').value.toLowerCase();
-  dashboard.querySelectorAll('.tile').forEach(t=>{ t.style.display=t.innerText.toLowerCase().includes(term)?'flex':'none'; });
-}
-function uploadBackground(e){
-  const file=e.target.files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=function(evt){
-      document.body.style.backgroundImage=`url(${evt.target.result})`;
-      document.body.style.backgroundSize="cover";
-      document.body.style.backgroundRepeat="no-repeat";
-      document.body.style.backgroundPosition="center center";
-    };
-    reader.readAsDataURL(file);
-  }
-}
-function setTheme(theme){
-  if(theme==='borussia'){
-    document.body.style.background="#eef4fb";
-    dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#00703C");
-  } else {
-    document.body.style.background="#f5f5f5";
-    dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#888");
-  }
-}
-function shareLink(){ navigator.clipboard.writeText("https://dasfohlen1900.github.io/share"); alert("Link kopiert!"); }
-function showInfo(){ alert("Pro-Status: Premium\nBenutzer: "+(auth.currentUser?.email||"Gast")); }
-function logout(){ signOut(auth).then(()=>{ location.reload(); }); }
+  document.getElementById('searchApp').addEventListener('input', ()=>{
+    const term = document.getElementById('searchApp').value.toLowerCase();
+    dashboard.querySelectorAll('.tile').forEach(t=>{
+      t.style.display = t.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
+    });
+  });
 
-onAuthStateChanged(auth,user=>{
-  if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); }
+  document.getElementById('bgUpload').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        document.body.style.backgroundImage = `url(${evt.target.result})`;
+        document.body.style.backgroundSize="cover";
+        document.body.style.backgroundRepeat="no-repeat";
+        document.body.style.backgroundPosition="center center";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  window.setTheme = (theme)=>{
+    if(theme==='borussia'){
+      document.body.style.background="#eef4fb";
+      dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#00703C");
+    } else {
+      document.body.style.background="#f5f5f5";
+      dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#888");
+    }
+  };
+
+  window.shareLink = ()=>{ navigator.clipboard.writeText("https://dasfohlen1900.github.io/share"); alert("Link kopiert!"); };
+  window.showInfo = ()=>{ alert("Pro-Status: Premium\nBenutzer: "+(auth.currentUser?.email||"Gast")); };
+  window.logout = ()=>{ signOut(auth).then(()=>{ location.reload(); }); };
+
+  onAuthStateChanged(auth,user=>{
+    if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); }
+  });
 });
 </script>
 </body>
