@@ -1,1 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mini-CMD B:\</title>
+<style>
+@font-face {
+  font-family: 'RetroStylePro';
+  src: url('font/RetroStyleProReg.ttf') format('truetype');
+}
 
+body {
+  background-color: #101010;
+  color: #00ff00;
+  font-family: 'RetroStylePro', monospace;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#console {
+  width: 90%;
+  height: 80%;
+  background-color: #101010;
+  border: 2px solid #00ff00;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+#input-line {
+  display: flex;
+}
+
+#input-line span {
+  margin-right: 5px;
+}
+
+#cmd-input {
+  background: none;
+  border: none;
+  color: #00ff00;
+  outline: none;
+  flex: 1;
+  font-family: 'RetroStylePro', monospace;
+}
+
+.link {
+  color: #0ff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+<div id="console">
+  <div id="output"></div>
+  <div id="input-line">
+    <span id="prompt">B:\></span>
+    <input type="text" id="cmd-input" autofocus>
+  </div>
+</div>
+
+<script>
+const input = document.getElementById("cmd-input");
+const output = document.getElementById("output");
+const prompt = document.getElementById("prompt");
+const baseURL = "https://dasfohlen1900.github.io/";
+
+// Aktueller Pfad
+let currentPath = "";
+
+// GitHub-Tree als verschachteltes Objekt
+const fs = {
+  "charset": { "index.html": null },
+  "console": { "index.html": null },
+  "derminikicker": { "fußballsimulator": { "index.html": null }, "index.html": null },
+  "dev": { "minidoc": { "index.html": null }, "egn": { "index.html": null }, "fontcreator": { "index.html": null } },
+  "games": { "2048": { "index.html": null }, "dev": { "astrorush": { "index.html": null }, "mines": { "index.html": null } }, "index.html": null },
+  "penalty": { "index.html": null },
+  "gladbach": { "fohlen-word": { "index.html": null }, "index.html": null },
+  "mini-calc": { "index.html": null },
+  "mini-convert": { "index.html": null },
+  "mini-draw": { "index.html": null },
+  "mini-kalender": { "index.html": null },
+  "mini-mindmap": { "index.html": null },
+  "mini-music": { "index.html": null },
+  "mini-notes": { "index.html": null },
+  "mini-pp": { "index.html": null },
+  "mini-table": { "index.html": null },
+  "mini-uhr": { "index.html": null },
+  "mini-word": { "index.html": null },
+  "premium": { "randomizer": { "index.html": null }, "index.html": null },
+  "store": { "download": { "APK.zip": null, "EXE.zip": null, "FONT1.zip": null, "FONT2.zip": null, "HTML.zip": null, "text.txt": null }, "passwort": { "index.html": null }, "index.html": null },
+  "to-do": { "index.html": null },
+  "wetter": { "index.html": null },
+  "README.md": null,
+  "index.html": null,
+  "mini_word_hilfe.pdf": null,
+  "seite2.html": null
+};
+
+// Prompt updaten
+function updatePrompt() { prompt.textContent = `B:\\${currentPath}>`; }
+
+// Pfad traversieren
+function traversePath(path) {
+  if(!path) return fs;
+  const parts = path.split("\\");
+  let node = fs;
+  for(const p of parts){ if(node[p]) node = node[p]; else return null; }
+  return node;
+}
+
+// Volle URL für open
+function getFullPath(path) { return baseURL + path.replace(/\\/g,"/"); }
+
+input.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    const cmdLine = input.value.trim();
+    const args = cmdLine.split(" ");
+    const cmd = args[0].toLowerCase();
+
+    if(cmd==="help"){
+      output.innerHTML += "<div>Verfügbare Befehle: help, cd, dir, open, clear</div>";
+    } else if(cmd==="clear"){
+      output.innerHTML = "";
+    } else if(cmd==="dir"){
+      const node = traversePath(currentPath);
+      if(node){
+        let display = Object.keys(node).map(k=>{
+          if(node[k]===null) return `<span class='link' onclick='window.open("${getFullPath(currentPath?(currentPath+"\\\\"+k):k)}")'>${k}</span>`;
+          return k;
+        });
+        output.innerHTML += `<div>${display.join("<br>")}</div>`;
+      }
+    } else if(cmd==="cd"){
+      const target = args[1];
+      if(!target){ output.innerHTML += `<div>${currentPath||'\\'}</div>`; }
+      else if(target===".."){ const parts=currentPath.split("\\").filter(Boolean); parts.pop(); currentPath=parts.join("\\"); }
+      else {
+        const node = traversePath(currentPath);
+        if(node && node[target]) currentPath = currentPath? currentPath+"\\"+target:target;
+        else output.innerHTML += `<div>Verzeichnis nicht gefunden: ${target}</div>`;
+      }
+      updatePrompt();
+    } else if(cmd==="open"){
+      const file=args[1];
+      if(file) window.open(getFullPath(currentPath?(currentPath+"\\"+file):file));
+      else output.innerHTML += "<div>Datei angeben</div>";
+    } else {
+      output.innerHTML += `<div>Befehl nicht gefunden: ${cmd}</div>`;
+    }
+    output.scrollTop = output.scrollHeight;
+    input.value="";
+  }
+});
+
+updatePrompt();
+</script>
+
+</body>
+</html>
