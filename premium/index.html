@@ -8,6 +8,7 @@
 body { margin:0; padding:0; font-family:"Segoe UI",sans-serif; background:#eef4fb; overflow-x:hidden; }
 header { background:#000; color:white; padding:15px 20px; font-family:'Bungee',cursive; font-size:28px; display:flex; justify-content:space-between; align-items:center; }
 header .profile { cursor:pointer; font-size:16px; }
+
 #loginForm { display:flex; flex-direction:column; max-width:400px; margin:50px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.2); }
 #loginForm input { padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
 #loginForm button { padding:10px; background:#00703C; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Bungee',cursive; }
@@ -24,6 +25,7 @@ header .profile { cursor:pointer; font-size:16px; }
 #charmbar h3 { font-family:'Bungee',cursive; margin-top:0; }
 #charmbar button, #charmbar input { margin:8px 0; padding:8px; border:none; border-radius:6px; width:100%; font-size:14px; cursor:pointer; }
 #charmbar button:hover { background:#005f2b; }
+#closeCharm { align-self:flex-end; margin-bottom:10px; }
 </style>
 </head>
 <body>
@@ -42,6 +44,7 @@ header .profile { cursor:pointer; font-size:16px; }
 <div id="dashboard"></div>
 
 <div id="charmbar">
+  <button id="closeCharm">✖</button>
   <h3>Charmbar</h3>
   <label>Suche Mini-Apps:</label>
   <input type="text" id="searchApp" placeholder="Suche...">
@@ -74,13 +77,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const dashboard = document.getElementById('dashboard');
   const charmbar = document.getElementById('charmbar');
   const profileBtn = document.querySelector('.profile');
+  const closeCharmBtn = document.getElementById('closeCharm');
 
   const tilesData = [
     {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word"},
     {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc"},
     {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker"},
-    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp"}
+    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp"},
+    {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048"},
+    {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw"}
+    {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store"}
+    {name:"Konsole (DEV\)", size:"1x1", url:"https://dasfohlen1900.github.io/console"}
+    {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes"}
   ];
+
+  function saveLayout(){
+    const layout = Array.from(dashboard.querySelectorAll('.tile')).map(t=>t.innerText);
+    localStorage.setItem('dashboard_'+auth.currentUser.uid, JSON.stringify(layout));
+  }
+
+  function loadLayout(){
+    if(auth.currentUser){
+      const layout = JSON.parse(localStorage.getItem('dashboard_'+auth.currentUser.uid) || 'null');
+      if(layout){
+        const orderedTiles = [];
+        layout.forEach(name=>{
+          const t = tilesData.find(td=>td.name===name);
+          if(t) orderedTiles.push(t);
+        });
+        tilesData.forEach(td=>{ if(!orderedTiles.includes(td)) orderedTiles.push(td); });
+        tilesData.splice(0, tilesData.length, ...orderedTiles);
+      }
+    }
+  }
 
   function renderTiles(){
     dashboard.innerHTML="";
@@ -98,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fromIndex = e.dataTransfer.getData('text/plain');
         tilesData.splice(i,0,tilesData.splice(fromIndex,1)[0]);
         renderTiles();
+        saveLayout();
       });
       dashboard.appendChild(div);
     });
@@ -108,11 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     signInWithEmailAndPassword(auth,email,password)
-      .then(()=>{ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); })
+      .then(()=>{ 
+        loginForm.style.display='none'; 
+        dashboard.style.display='grid'; 
+        loadLayout();
+        renderTiles(); 
+      })
       .catch(err=>alert("Login fehlgeschlagen: "+err.message));
   });
 
   profileBtn.addEventListener('click', ()=>{ charmbar.classList.toggle('show'); });
+  closeCharmBtn.addEventListener('click', ()=>{ charmbar.classList.remove('show'); });
 
   document.getElementById('searchApp').addEventListener('input', ()=>{
     const term = document.getElementById('searchApp').value.toLowerCase();
@@ -141,16 +177,17 @@ document.addEventListener('DOMContentLoaded', () => {
       dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#00703C");
     } else {
       document.body.style.background="#f5f5f5";
-      dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#888");
+      dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#666");
     }
   };
 
-  window.shareLink = ()=>{ navigator.clipboard.writeText("https://dasfohlen1900.github.io/share"); alert("Link kopiert!"); };
-  window.showInfo = ()=>{ alert("Pro-Status: Premium\nBenutzer: "+(auth.currentUser?.email||"Gast")); };
+  window.shareLink = ()=>{ prompt("Teile diesen Link:", window.location.href); };
+  window.showInfo = ()=>{ alert("Mini-Office Premium Dashboard\nVersion 1.0"); };
   window.logout = ()=>{ signOut(auth).then(()=>{ location.reload(); }); };
 
-  onAuthStateChanged(auth,user=>{
-    if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); }
+  onAuthStateChanged(auth, user=>{
+    if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; loadLayout(); renderTiles(); }
+    else{ loginForm.style.display='flex'; dashboard.style.display='none'; }
   });
 });
 </script>
