@@ -1,43 +1,224 @@
 {
-  "index.html": "Startseite von dasfohlen1900.github.io",
-  "charset/index.html": "Charset App",
-  "console/index.html": "Console App",
-  "derminikicker/index.html": "Der Mini-Kicker App Hauptseite",
-  "derminikicker/fußballsimulator/index.html": "Fußball-Simulator",
-  "dev/minidoc/index.html": "MiniDoc App",
-  "egn/index.html": "EGN App",
-  "fontcreator/index.html": "Font Creator App",
-  "games/index.html": "Games Hauptseite",
-  "games/2048/index.html": "2048 Spiel",
-  "games/dev/astrorush/index.html": "AstroRush Spiel",
-  "games/dev/mines/index.html": "Mines Spiel",
-  "penalty/index.html": "Penalty Spiel",
-  "gladbach/index.html": "Gladbach Info",
-  "gladbach/fohlen-word/index.html": "Fohlen Word",
-  "mini-calc/index.html": "Mini-Calc",
-  "mini-convert/index.html": "Mini-Convert",
-  "mini-draw/index.html": "Mini-Draw",
-  "mini-kalender/index.html": "Mini-Kalender",
-  "mini-mindmap/index.html": "Mini-Mindmap",
-  "mini-music/index.html": "Mini-Music",
-  "mini-notes/index.html": "Mini-Notes",
-  "mini-pp/index.html": "Mini-PP",
-  "mini-table/index.html": "Mini-Table",
-  "mini-uhr/index.html": "Mini-Uhr",
-  "mini-word/index.html": "Mini-Word",
-  "premium/index.html": "Premium Übersicht",
-  "premium/randomizer/index.html": "Randomizer App",
-  "store/index.html": "Store Hauptseite",
-  "store/passwort/index.html": "Login-Seite",
-  "store/download/APK.zip": "APK Download",
-  "store/download/EXE.zip": "EXE Download",
-  "store/download/FONT1.zip": "Font1 Download",
-  "store/download/FONT2.zip": "Font2 Download",
-  "store/download/HTML.zip": "HTML Download",
-  "store/download/text.txt": "Textdatei Download",
-  "to-do/index.html": "To-Do App",
-  "wetter/index.html": "Wetter App",
-  "mini_word_hilfe.pdf": "Mini-Word Hilfe",
-  "seite2.html": "Seite2 Inhalte",
-  "README.md": "Projektbeschreibung"
+  "charset/index.html": {
+    "title": "Character Map",
+    "desc": "Copy + Paste",
+    "keywords": ["charset","characters","copy","paste"],
+    "premium": false
+  },
+  "console/index.html": {
+    "title": "Mini-Console",
+    "desc": "CMD-Fenster Simulation",
+    "keywords": ["console","cmd","terminal"],
+    "premium": false
+  },
+  "derminikicker/index.html": {
+    "title": "Der Mini-Kicker",
+    "desc": "Aktuelle Fußball-News aus der Bundesliga",
+    "keywords": ["fussball","news","bundesliga"],
+    "premium": false
+  },
+  "derminikicker/fußballsimulator/index.html": {
+    "title": "Der Mini-Kicker-Report",
+    "desc": "Eigenen Fußballticker erstellen und herunterladen",
+    "keywords": ["fussball","simulator","ticker"],
+    "premium": false
+  },
+  "dev/minidoc/index.html": {
+    "title": "Mini-Doc",
+    "desc": "Dokumentation erstellen",
+    "keywords": ["doc","dokumentation","editor"],
+    "premium": false
+  },
+  "egn/index.html": {
+    "title": "EGN",
+    "desc": "EGN App",
+    "keywords": ["egn"],
+    "premium": false
+  },
+  "fontcreator/index.html": {
+    "title": "Font Creator",
+    "desc": "Eigene Schriftarten erstellen",
+    "keywords": ["font","schriftart","creator"],
+    "premium": false
+  },
+  "games/2048/index.html": {
+    "title": "2048",
+    "desc": "Das bekannte Zahlen-Spiel",
+    "keywords": ["spiel","zahlen","game"],
+    "premium": false
+  },
+  "games/dev/astrorush/index.html": {
+    "title": "Astro-Rush",
+    "desc": "Schieße die Kometen ab, bevor sie dich treffen",
+    "keywords": ["spiel","astro","kometen"],
+    "premium": false
+  },
+  "games/dev/mines/index.html": {
+    "title": "Retro-Minesweeper",
+    "desc": "Das gutbekannte Spiel jetzt auch hier",
+    "keywords": ["spiel","minesweeper","retro"],
+    "premium": false
+  },
+  "games/index.html": {
+    "title": "Mini-Games",
+    "desc": "Alle Spiele auf einen Blick",
+    "keywords": ["spiele","games","mini"],
+    "premium": false
+  },
+  "penalty/index.html": {
+    "title": "Penalty",
+    "desc": "Elfmeterschießen bis zum Pfostenbruch!",
+    "keywords": ["spiel","fussball","penalty"],
+    "premium": false
+  },
+  "gladbach/index.html": {
+    "title": "Gladbach",
+    "desc": "Gladbach Infos",
+    "keywords": ["gladbach","fussball"],
+    "premium": false
+  },
+  "gladbach/fohlen-word/index.html": {
+    "title": "Fohlen-Word",
+    "desc": "Textbearbeitung im Gladbach-Stil",
+    "keywords": ["word","text","gladbach"],
+    "premium": false
+  },
+  "mini-calc/index.html": {
+    "title": "Mini-Calc",
+    "desc": "Wissenschaftlicher Rechner mit Verlauf",
+    "keywords": ["calculator","rechner","math"],
+    "premium": false
+  },
+  "mini-convert/index.html": {
+    "title": "Mini-Converter",
+    "desc": "Länge, Daten, Größe, Hohlmaße",
+    "keywords": ["converter","umrechner","mini"],
+    "premium": false
+  },
+  "mini-draw/index.html": {
+    "title": "Mini-Draw",
+    "desc": "Zeichnen und Bilder einfügen",
+    "keywords": ["zeichnen","draw","bilder"],
+    "premium": false
+  },
+  "mini-kalender/index.html": {
+    "title": "Mini-Kalender",
+    "desc": "Kalender mit Terminerstellung",
+    "keywords": ["kalender","termine","mini"],
+    "premium": false
+  },
+  "mini-mindmap/index.html": {
+    "title": "Mini-MindMap",
+    "desc": "Mindmap im Gladbach-Style",
+    "keywords": ["mindmap","gladbach","struktur"],
+    "premium": false
+  },
+  "mini-music/index.html": {
+    "title": "Mini-Musik",
+    "desc": "Werde zum Komponisten",
+    "keywords": ["musik","komponieren","mini"],
+    "premium": false
+  },
+  "mini-notes/index.html": {
+    "title": "Mini-Tafel",
+    "desc": "Ideal für's Board oder die ToDo Liste",
+    "keywords": ["notizen","todo","board"],
+    "premium": false
+  },
+  "mini-pp/index.html": {
+    "title": "Mini-Präsentator",
+    "desc": "Hochwertige Präsentationen erstellen",
+    "keywords": ["presentation","ppt","mini"],
+    "premium": false
+  },
+  "mini-table/index.html": {
+    "title": "Mini-Table",
+    "desc": "Einfache Tabellenkalkulation",
+    "keywords": ["table","kalkulation","excel"],
+    "premium": false
+  },
+  "mini-uhr/index.html": {
+    "title": "Mini-Uhr",
+    "desc": "Live-Uhrzeit und Timer",
+    "keywords": ["uhr","timer","mini"],
+    "premium": false
+  },
+  "mini-word/index.html": {
+    "title": "Mini-Word",
+    "desc": "Texteditor mit .octxt-Speicherung",
+    "keywords": ["word","texteditor","editor"],
+    "premium": false
+  },
+  "premium/index.html": {
+    "title": "Premium-Start",
+    "desc": "Startseite im neuen Design",
+    "keywords": ["premium","start","mini"],
+    "premium": true
+  },
+  "premium/randomizer/index.html": {
+    "title": "Mini-Zufallstools",
+    "desc": "Gruppenerstellung, Listen",
+    "keywords": ["random","liste","premium"],
+    "premium": true
+  },
+  "store/index.html": {
+    "title": "Mini-App-Store",
+    "desc": "Lade dir Mini-Office herunter",
+    "keywords": ["store","download","premium"],
+    "premium": true
+  },
+  "store/passwort/index.html": {
+    "title": "Passwort-Manager",
+    "desc": "Sichere Passwörter verwalten",
+    "keywords": ["passwort","security","store"],
+    "premium": false
+  },
+  "store/download/APK.zip": {
+    "title": "Mini-Office APK",
+    "desc": "Android-Installation",
+    "keywords": ["apk","android","download"],
+    "premium": true
+  },
+  "store/download/EXE.zip": {
+    "title": "Mini-Office EXE",
+    "desc": "Windows-Installation",
+    "keywords": ["exe","windows","download"],
+    "premium": true
+  },
+  "store/download/FONT1.zip": {
+    "title": "Mini-Office Font 1",
+    "desc": "Schriftart ZIP",
+    "keywords": ["font","zip","download"],
+    "premium": true
+  },
+  "store/download/FONT2.zip": {
+    "title": "Mini-Office Font 2",
+    "desc": "Schriftart ZIP",
+    "keywords": ["font","zip","download"],
+    "premium": true
+  },
+  "store/download/HTML.zip": {
+    "title": "Mini-Office HTML",
+    "desc": "HTML-Dateien ZIP",
+    "keywords": ["html","zip","download"],
+    "premium": true
+  },
+  "store/download/text.txt": {
+    "title": "Download Info",
+    "desc": "Textdatei mit Informationen",
+    "keywords": ["text","info","download"],
+    "premium": false
+  },
+  "to-do/index.html": {
+    "title": "To-Do-Liste",
+    "desc": "Kleine To-Do-Liste",
+    "keywords": ["todo","liste","mini"],
+    "premium": false
+  },
+  "wetter/index.html": {
+    "title": "Wetter",
+    "desc": "Das Wetter für heute",
+    "keywords": ["wetter","forecast","mini"],
+    "premium": false
+  }
 }
