@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini.Pinball</title>
+  <style>
+    canvas { background: #111; display: block; margin: auto; border: 2px solid #444; }
+    #score { text-align: center; font-family: sans-serif; color: #fff; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <canvas id="pinball" width="400" height="600"></canvas>
+  <div id="score">Score: 0</div>
+
+  <script>
+    const canvas = document.getElementById('pinball');
+    const ctx = canvas.getContext('2d');
+    let score = 0;
+
+    // 🎱 pinball.ball
+    const ball = {
+      x: 200, y: 300,
+      dx: 2, dy: -3,
+      r: 10,
+      color: 'orange'
+    };
+
+    // 🧱 pinball.wall
+    const walls = [
+      {x: 0, y: 0, w: 400, h: 10}, // top
+      {x: 0, y: 0, w: 10, h: 600}, // left
+      {x: 390, y: 0, w: 10, h: 600}, // right
+      {x: 0, y: 590, w: 400, h: 10}  // bottom
+    ];
+
+    // 💥 pinball.bumpers[]
+    const bumpers = [
+      {x: 100, y: 200, r: 20},
+      {x: 300, y: 250, r: 20}
+    ];
+
+    // 🕹️ pinball.flipper
+    let flipperLeft = {x: 120, y: 550, w: 60, h: 10, active: false};
+    let flipperRight = {x: 220, y: 550, w: 60, h: 10, active: false};
+
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      ctx.fillStyle = ball.color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawWalls() {
+      ctx.fillStyle = '#555';
+      walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
+    }
+
+    function drawBumpers() {
+      ctx.fillStyle = 'red';
+      bumpers.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+      });
+    }
+
+    function drawFlippers() {
+      ctx.fillStyle = flipperLeft.active ? '#0f0' : '#888';
+      ctx.fillRect(flipperLeft.x, flipperLeft.y, flipperLeft.w, flipperLeft.h);
+      ctx.fillStyle = flipperRight.active ? '#0f0' : '#888';
+      ctx.fillRect(flipperRight.x, flipperRight.y, flipperRight.w, flipperRight.h);
+    }
+
+    function updateBall() {
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      // 🧱 pinball.wall → Kollisionserkennung
+      if (ball.x < ball.r || ball.x > canvas.width - ball.r) ball.dx *= -1;
+      if (ball.y < ball.r || ball.y > canvas.height - ball.r) ball.dy *= -1;
+
+      // 💥 pinball.bumpers[] → Rückstoß + Score
+      bumpers.forEach(b => {
+        const dist = Math.hypot(ball.x - b.x, ball.y - b.y);
+        if (dist < ball.r + b.r) {
+          ball.dy *= -1;
+          ball.dx *= -1;
+          score += 100; // 🪄 pinball.score.add(100)
+          document.getElementById('score').textContent = 'Score: ' + score;
+        }
+      });
+
+      // 🕹️ pinball.flipper → einfache Kollision
+      [flipperLeft, flipperRight].forEach(f => {
+        if (ball.x > f.x && ball.x < f.x + f.w && ball.y + ball.r > f.y && ball.y < f.y + f.h) {
+          ball.dy = -Math.abs(ball.dy);
+        }
+      });
+
+      // 🪄 pinball.ball.move → frame-basiert
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawWalls();
+      drawBumpers();
+      drawFlippers();
+      drawBall();
+    }
+
+    function loop() {
+      updateBall();
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    // 🪄 pinball.flipper.left.activate → bei Tastendruck
+    document.addEventListener('keydown', e => {
+      if (e.key === 'a') flipperLeft.active = true;
+      if (e.key === 'l') flipperRight.active = true;
+    });
+
+    document.addEventListener('keyup', e => {
+      if (e.key === 'a') flipperLeft.active = false;
+      if (e.key === 'l') flipperRight.active = false;
+    });
+
+    loop();
+  </script>
+</body>
+</html>
