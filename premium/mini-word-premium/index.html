@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mini-Word Premium</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Crimson+Text&family=Carlito&family=Coming+Soon&family=Droid+Sans&family=Funnel+Sans&family=Outfit&family=Playfair+Display&family=Lilita+One&family=Signika&family=Roboto&display=swap" rel="stylesheet">
+
+<!-- jsPDF für PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- docx.js für DOCX Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.6.0/docx.min.js"></script>
+
+<style>
+@font-face { font-family: 'Lukovic'; src: url('./fonts/Lukovic2-Regular.ttf'); }
+@font-face { font-family: 'Lukovic Sans Serif'; src: url('./fonts/LukovicSans.ttf'); }
+@font-face { font-family: 'RetroStyle Pro'; src: url('./fonts/RetroStyleProReg.ttf'); }
+
+body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background:#eef4fb; }
+#ribbon { display:flex; background:#00703C; padding:5px; color:#fff; }
+#ribbon .tab { padding:8px 12px; cursor:pointer; user-select:none; }
+#ribbon .tab:hover { background:#005f2b; }
+.tabPage { display:none; padding:15px; background:#fff; }
+#editor { width:100%; height:400px; padding:10px; border:1px solid #ccc; border-radius:6px; margin-top:10px; resize:none; }
+select, input[type=color], button, input[type=text], input[type=email], input[type=password] { margin:5px; padding:5px; }
+</style>
+</head>
+<body>
+
+<div id="ribbon">
+  <div class="tab" data-tab="datei">Datei</div>
+  <div class="tab" data-tab="start">Start</div>
+  <div class="tab" data-tab="einfügen">Einfügen</div>
+  <div class="tab" data-tab="zeichnen">Zeichnen</div>
+  <div class="tab" data-tab="überprüfen">Überprüfen</div>
+  <div class="tab" data-tab="account">Account</div>
+</div>
+
+<div id="tabContent">
+  <div id="datei" class="tabPage">
+    <button id="saveMWPO">Speichern (.mwpo)</button>
+    <button id="exportPDF">Export PDF</button>
+    <button id="exportDOCX">Export DOCX</button>
+  </div>
+
+  <div id="start" class="tabPage">
+    <label>Schriftart:</label>
+    <select id="fontSelect">
+      <optgroup label="Web Fonts">
+        <option>Arial</option>
+        <option>Comic Sans MS</option>
+        <option>Courier New</option>
+        <option>Georgia</option>
+        <option>Times</option>
+        <option>Verdana</option>
+      </optgroup>
+      <optgroup label="Google Fonts">
+        <option>Bungee</option>
+        <option>Crimson Text</option>
+        <option>Carlito</option>
+        <option>Coming Soon</option>
+        <option>Droid Sans</option>
+        <option>Funnel Sans</option>
+        <option>Outfit</option>
+        <option>Playfair Display</option>
+        <option>Lilita One</option>
+        <option>Signika</option>
+        <option>Roboto</option>
+      </optgroup>
+      <optgroup label="Server Fonts">
+        <option>Lukovic</option>
+        <option>Lukovic Sans Serif</option>
+        <option>RetroStyle Pro</option>
+      </optgroup>
+    </select>
+
+    <label>Größe:</label>
+    <select id="fontSize">
+      <option value="10">Winzig</option>
+      <option value="12">Klein</option>
+      <option value="16" selected>Normal</option>
+      <option value="20">Mittel</option>
+      <option value="24">Groß</option>
+      <option value="32">Sehr groß</option>
+      <option value="64">Gigantisch</option>
+    </select>
+
+    <label>Farbe:</label>
+    <input type="color" id="fontColor" value="#000000">
+
+    <button id="boldBtn"><b>B</b></button>
+    <button id="italicBtn"><i>I</i></button>
+    <button id="underlineBtn"><u>U</u></button>
+    <button id="strikeBtn"><s>S</s></button>
+
+    <label>Textform:</label>
+    <select id="textForm">
+      <option>Header 1</option>
+      <option selected>Standard</option>
+      <option>Header 2</option>
+      <option>Header 3</option>
+    </select>
+
+    <textarea id="editor" placeholder="Schreibe hier..."></textarea>
+  </div>
+
+  <div id="einfügen" class="tabPage">
+    <input type="text" id="imgURL" placeholder="Bild-URL">
+    <button id="insertImage">Bild einfügen</button>
+    <button id="insertHr">Trennlinie</button>
+    <button id="insertDate">Datum</button>
+    <button id="insertTime">Uhrzeit</button>
+  </div>
+
+  <div id="zeichnen" class="tabPage">
+    <button id="openDraw">Mini-Draw öffnen</button>
+  </div>
+
+  <div id="überprüfen" class="tabPage">
+    <button id="checkSpelling">Rechtschreibung prüfen</button>
+  </div>
+
+  <div id="account" class="tabPage">
+    <input type="email" id="loginEmail" placeholder="E-Mail">
+    <input type="password" id="loginPass" placeholder="Passwort">
+    <button id="loginBtn">Login</button>
+    <button id="loginGoogleBtn">Google Login</button>
+    <input type="text" id="oneTimeCode" placeholder="Einmal-Code">
+    <button id="useCodeBtn">Code verwenden</button>
+  </div>
+</div>
+
+<script>
+// Tabs
+document.querySelectorAll("#ribbon .tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll(".tabPage").forEach(p=>p.style.display="none");
+    document.getElementById(tab.dataset.tab).style.display="block";
+  });
+});
+
+// Editor Format
+const editor = document.getElementById("editor");
+document.getElementById("fontSelect").addEventListener("change", ()=>{ editor.style.fontFamily = document.getElementById("fontSelect").value; });
+document.getElementById("fontSize").addEventListener("change", ()=>{ editor.style.fontSize = document.getElementById("fontSize").value+"px"; });
+document.getElementById("fontColor").addEventListener("change", ()=>{ editor.style.color = document.getElementById("fontColor").value; });
+document.getElementById("boldBtn").addEventListener("click", ()=>{ document.execCommand('bold'); });
+document.getElementById("italicBtn").addEventListener("click", ()=>{ document.execCommand('italic'); });
+document.getElementById("underlineBtn").addEventListener("click", ()=>{ document.execCommand('underline'); });
+document.getElementById("strikeBtn").addEventListener("click", ()=>{ document.execCommand('strikeThrough'); });
+
+// Einfügen
+document.getElementById("insertImage").addEventListener("click", ()=>{
+  const url = document.getElementById("imgURL").value;
+  if(url) document.execCommand('insertImage', false, url);
+});
+document.getElementById("insertHr").addEventListener("click", ()=>{ document.execCommand('insertHorizontalRule'); });
+document.getElementById("insertDate").addEventListener("click", ()=>{ document.execCommand('insertText', false, new Date().toLocaleDateString()); });
+document.getElementById("insertTime").addEventListener("click", ()=>{ document.execCommand('insertText', false, new Date().toLocaleTimeString()); });
+
+// Mini-Draw
+document.getElementById("openDraw").addEventListener("click", ()=>{ window.open("/root/mini-draw","MiniDraw","width=600,height=400"); });
+
+// Speichern
+document.getElementById("saveMWPO").addEventListener("click", ()=>{
+  const blob = new Blob([editor.value], {type:"text/plain"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "Dokument.mwpo";
+  link.click();
+});
+
+// PDF
+document.getElementById("exportPDF").addEventListener("click", ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  editor.value.split("\n").forEach((line,i)=>doc.text(line, 10, 10+i*10));
+  doc.save("Dokument.pdf");
+});
+
+// DOCX
+document.getElementById("exportDOCX").addEventListener("click", async ()=>{
+  const { Document, Packer, Paragraph, TextRun } = window.docx;
+  const doc = new Document();
+  editor.value.split("\n").forEach(line=>{
+    doc.addSection({ children:[new Paragraph({children:[new TextRun(line)]})] });
+  });
+  const blob = await Packer.toBlob(doc);
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "Dokument.docx";
+  link.click();
+});
+
+// Rechtschreibprüfung
+document.getElementById("checkSpelling").addEventListener("click", ()=>{
+  editor.setAttribute("spellcheck", "true");
+  alert("Rechtschreibprüfung aktiviert. Fehler werden rot unterstrichen.");
+});
+
+// ==== Einmal-Codes ====
+let oneTimeCodes = [
+"8egN4?","3oU+&6","#9#iLy","k7M$2q","Fg5!pA","rH2&9w","z!X4cD","1Yv+3B","nQ8$hR","Pm6&zK",
+"d4#Jt9","sW2!gF","7X+vLq","E3$yP8","cH5&nZ","u9!Qw1","k2#Rj6","T7$hS4","bL8&fM","g1!Zx9",
+"o5#Vc2","W6$yB7","p9&kD3","j4!Nq8","A3+vL1","s6#Hf7","r8$Tw2","m1&Yp5","z7!Rc4","K2#Gj9",
+"H8*Lm1","y5!Dx7","U2&kP6","n4#Rq9","V1$Bc8","q7!Ws3","F9+Gt2","L3$Zj5","m6&Qh4","k8!Vp0",
+"D2#Ln7","t4$Kw1","R5&Xy3","o6!Bj8","C9+Hs2","p3$Vd6","j7&Qw0","G1!Fx5","u2#Pm9","S4$Zk6",
+"a6&Lj3","K7!Wd1","v8#Gt4","B2$Rq7","e5&Xy2","H9!Nz3","c3+Vb8","M4$Yt5","r1&Fk7","q6!Ws0",
+"L8#Dp4","j2$Kh9","T5&Nz1","o7!Bc6","F3+Gq2","k9$Xy4","m0&Pl5","D6!Rs7","u1#Vt8","G2$Wk3",
+"p8&Zj6","C5!Xn2","s7+Qt1","R4$Fm9","a0&Vb5","H6!Lx3","q9#Pk2","J3$Wt7","m2&Dn8","L5!Gy1",
+"o4+Bc6","K7$Hs0","v3&Qf2","T8!Nx5","e1#Wp7","F6$Zj4","c9&Vb3","R2!Lt6","u5+Gk1","M7$Px2",
+"k0&Qy8","s3!Dh4","J6#Vn9","m8$Lb1","t1&Fk5","H4!Wq3"
+];
+let tempUsedCodes = [];
+document.getElementById("useCodeBtn").addEventListener("click", ()=>{
+  const code = document.getElementById("oneTimeCode").value.trim();
+  if(oneTimeCodes.includes(code) && !tempUsedCodes.includes(code)){
+    alert("Code akzeptiert! Premium freigeschaltet");
+    tempUsedCodes.push(code);
+    document.getElementById("oneTimeCode").value = "";
+  } else alert("Code ungültig oder bereits benutzt!");
+});
+</script>
+</body>
+</html>
 
