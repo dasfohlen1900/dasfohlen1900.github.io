@@ -7,47 +7,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
 body{font-family:'Work Sans',system-ui,Arial;background:#eef4fb;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:40px 20px;}
-header{text-align:center;margin-bottom:40px;}
-h1{font-size:2rem;color:#0f172a;margin-bottom:6px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;width:100%;max-width:960px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;width:100%;max-width:960px;margin-top:20px;}
 .card{background:#fff;padding:24px;border-radius:16px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.06);transition:transform .2s, box-shadow .2s;text-decoration:none;color:#0f172a;}
 .card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(0,0,0,0.08);}
 footer{margin-top:auto;text-align:center;color:#6b7280;font-size:0.85rem;padding-top:20px;}
 footer .back-btn{display:inline-block;margin-top:10px;background:#0f172a;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;}
 footer .back-btn:hover{background:#1e293b;}
-
-/* --- Overlay Dialog --- */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.dialog {
-  background:#fff;
-  padding:24px;
-  border-radius:16px;
-  max-width:360px;
-  text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
-}
+#overlay {position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;}
+.dialog {background:#fff; padding:24px; border-radius:16px; max-width:360px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.2);}
 .dialog h2 {margin-bottom:10px;color:#0f172a;}
 .dialog p {margin-bottom:20px;color:#334155;}
-.dialog .btns {
-  display:flex;
-  justify-content:center;
-  gap:12px;
-}
-.dialog button {
-  padding:10px 20px;
-  border:none;
-  border-radius:8px;
-  font-weight:600;
-  cursor:pointer;
-}
+.dialog .btns {display:flex;justify-content:center;gap:12px;}
+.dialog button {padding:10px 20px;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
 .btn-yes {background:#0f172a;color:#fff;}
 .btn-no {background:#e5e7eb;color:#0f172a;}
 .btn-yes:hover {background:#1e293b;}
@@ -56,9 +27,17 @@ footer .back-btn:hover{background:#1e293b;}
 </head>
 <body>
 
-<header>
-  <h1>Mini-Office</h1>
-  <p>Alle deine Mini-Apps auf einen Blick</p>
+<!-- Neuer Header -->
+<header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;width:100%;max-width:960px;">
+  <a href="premium/" style="text-decoration:none;color:#0f172a;font-size:1.8rem;">👤</a>
+  <div style="text-align:center;flex-grow:1;">
+    <h1 style="margin:0;font-size:2rem;color:#0f172a;">Mini-Office</h1>
+    <p style="margin:0;color:#6b7280;font-size:1.1rem;">Alle deine Mini-Apps auf einen Blick</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;">
+    <input id="search-input" type="text" placeholder="Suche..." style="padding:6px 10px;border-radius:8px;border:1px solid #ccc;font-size:0.95rem;">
+    <button id="search-btn" style="padding:6px 10px;border-radius:8px;border:none;background:#0f172a;color:#fff;cursor:pointer;font-size:0.95rem;">🔍</button>
+  </div>
 </header>
 
 <main class="grid">
@@ -79,7 +58,6 @@ footer .back-btn:hover{background:#1e293b;}
   <a href="index.html" class="back-btn">← Zurück zur Startseite</a>
 </footer>
 
-<!-- Overlay -->
 <div id="overlay">
   <div class="dialog">
     <h2>Achtung – Auswärts</h2>
@@ -95,14 +73,10 @@ footer .back-btn:hover{background:#1e293b;}
 const overlay = document.getElementById("overlay");
 const btnYes = overlay.querySelector(".btn-yes");
 const btnNo = overlay.querySelector(".btn-no");
-
 let targetUrl = "";
-
-// alle Links überprüfen
 document.querySelectorAll("a").forEach(link => {
   link.addEventListener("click", e => {
     const url = new URL(link.href, window.location.href);
-    // prüfen ob Domain gleich ist
     if (url.hostname !== window.location.hostname) {
       e.preventDefault();
       targetUrl = link.href;
@@ -110,17 +84,8 @@ document.querySelectorAll("a").forEach(link => {
     }
   });
 });
-
-btnYes.addEventListener("click", () => {
-  window.open(targetUrl, "_blank"); // im neuen Tab öffnen
-  overlay.style.display = "none";
-  targetUrl = "";
-});
-
-btnNo.addEventListener("click", () => {
-  overlay.style.display = "none";
-  targetUrl = "";
-});
+btnYes.addEventListener("click", () => { window.open(targetUrl, "_blank"); overlay.style.display = "none"; targetUrl = ""; });
+btnNo.addEventListener("click", () => { overlay.style.display = "none"; targetUrl = ""; });
 </script>
 
 </body>
