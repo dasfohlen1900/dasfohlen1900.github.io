@@ -86,21 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileBtn = document.querySelector('.profile');
   const closeCharmBtn = document.getElementById('closeCharm');
 
-  const tilesData = [
-    {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word", icon:"https://cdn-icons-png.flaticon.com/512/109/109612.png"},
-    {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828926.png"},
-    {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker", icon:"https://cdn-icons-png.flaticon.com/512/197/197564.png"},
-    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828970.png"},
-    {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048", icon:"https://cdn-icons-png.flaticon.com/512/102/102671.png"},
-    {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828884.png"},
-    {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store", icon:"https://cdn-icons-png.flaticon.com/512/992/992700.png"},
-    {name:"Konsole (DEV)", size:"1x1", url:"https://dasfohlen1900.github.io/console", icon:"https://cdn-icons-png.flaticon.com/512/1055/1055687.png"},
-    {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes", icon:"https://cdn-icons-png.flaticon.com/512/84/84380.png"},
-    {name:"Mini-Table", size:"1x2", url:"https://dasfohlen1900.github.io/mini-table", icon:"https://cdn-icons-png.flaticon.com/512/2910/2910767.png"},
-    {name:"Mini-Randomizer", size:"1x1", url:"https://dasfohlen1900.github.io/premium/randomizer", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135715.png"},
-    {name:"Penalty", size:"1x1", url:"https://dasfohlen1900.github.io/games/penalty", icon:"https://cdn-icons-png.flaticon.com/512/833/833472.png"},
-    {name:"Mini-Uhr", size:"2x2", url:"https://dasfohlen1900.github.io/mini-uhr", icon:"https://cdn-icons-png.flaticon.com/512/2910/2910768.png"}
-  ];
+ const tilesData = [
+  {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/file-text.svg"},
+  {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/calculator.svg"},
+  {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/activity.svg"},
+  {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/slideshow.svg"},
+  {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/grid.svg"},
+  {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/edit-2.svg"},
+  {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/shopping-cart.svg"},
+  {name:"Konsole (DEV)", size:"1x1", url:"https://dasfohlen1900.github.io/console", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/terminal.svg"},
+  {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/clipboard.svg"},
+  {name:"Mini-Table", size:"1x2", url:"https://dasfohlen1900.github.io/mini-table", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/grid.svg"},
+  {name:"Mini-Randomizer", size:"1x1", url:"https://dasfohlen1900.github.io/premium/randomizer", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/shuffle.svg"},
+  {name:"Penalty", size:"1x1", url:"https://dasfohlen1900.github.io/games/penalty", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/award.svg"},
+  {name:"Mini-Uhr", size:"2x2", url:"https://dasfohlen1900.github.io/mini-uhr", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/clock.svg"}
+];
 
   function saveLayout(){
     if(auth.currentUser){
