@@ -16,8 +16,30 @@
 body{
   font-family:'Work Sans',system-ui,Arial;
   background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;
-  min-height:100vh;padding:40px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding:40px 20px;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  width:100%;
+  max-width:960px;
+  margin-bottom:40px;
+}
+header h1{margin:0;font-size:2.2rem;color:var(--accent);}
+header p{margin:0;color:var(--muted);font-size:1.1rem;}
+header a.search-btn button{
+  padding:6px 10px;
+  border-radius:8px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  font-size:0.95rem;
 }
 .grid{
   display:grid;
@@ -62,27 +84,17 @@ footer .next-btn{
   transition:background .2s;
 }
 footer .next-btn:hover{background:#1e293b;}
-header{
-  display:flex;justify-content:space-between;align-items:center;
-  width:100%;max-width:960px;margin-bottom:40px;
-}
-header h1{margin:0;font-size:2.2rem;color:var(--accent);}
-header p{margin:0;color:var(--muted);font-size:1.1rem;}
-header a.search-btn button{
-  padding:6px 10px;border-radius:8px;border:none;
-  background:var(--accent);color:#fff;cursor:pointer;font-size:0.95rem;
-}
 </style>
 </head>
 <body>
 
 <header>
-  <a href="premium/" style="font-size:1.8rem;">👤</a>
+  <a href="premium/" style="font-size:1.8rem;">Profil</a>
   <div style="text-align:center;flex-grow:1;">
-    <h1>🚀 Mini-Office</h1>
+    <h1>Mini-Office</h1>
     <p>Alle deine Mini-Apps auf einen Blick</p>
   </div>
-  <a href="/suche/" class="search-btn"><button>🔍 Suche</button></a>
+  <a href="/suche/" class="search-btn"><button>Suche</button></a>
 </header>
 
 <main class="grid">
