@@ -3,36 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <title>Mini-Office Premium Dashboard</title>
-<!-- Bungee Font -->
 <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
 <style>
-body { margin:0; padding:0; font-family: "Segoe UI", sans-serif; background:#eef4fb; overflow-x:hidden; }
-header { background:#000; color:white; padding:15px 20px; font-family:'Bungee', cursive; font-size:28px; display:flex; justify-content:space-between; align-items:center; }
+body { margin:0; padding:0; font-family:"Segoe UI",sans-serif; background:#eef4fb; overflow-x:hidden; }
+header { background:#000; color:white; padding:15px 20px; font-family:'Bungee',cursive; font-size:28px; display:flex; justify-content:space-between; align-items:center; }
 header .profile { cursor:pointer; font-size:16px; }
-
-/* Login Formular */
 #loginForm { display:flex; flex-direction:column; max-width:400px; margin:50px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.2); }
 #loginForm input { padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
-#loginForm button { padding:10px; background:#00703C; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Bungee', cursive; }
+#loginForm button { padding:10px; background:#00703C; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Bungee',cursive; }
 #loginForm button:hover { background:#005f2b; }
 
-/* Dashboard Grid */
-#dashboard { display:none; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); grid-auto-rows:120px; gap:15px; padding:20px; }
-.tile { background:#00703C; color:white; display:flex; justify-content:center; align-items:center; text-align:center; font-family:'Bungee', cursive; font-size:18px; border-radius:12px; cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; }
+#dashboard { display:none; display:grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); grid-auto-rows:120px; gap:15px; padding:20px; }
+.tile { background:#00703C; color:white; display:flex; justify-content:center; align-items:center; text-align:center; font-family:'Bungee',cursive; font-size:18px; border-radius:12px; cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; }
 .tile:hover { transform: scale(1.05); box-shadow:0 8px 20px rgba(0,0,0,0.3); }
 .tile[data-size="2x2"] { grid-column: span 2; grid-row: span 2; font-size:22px; }
 .tile[data-size="2x1"] { grid-column: span 2; font-size:20px; }
-
-/* Charmbar */
-#charmbar { position:fixed; right:-250px; top:0; width:250px; height:100%; background:rgba(0,0,0,0.85); color:white; display:flex; flex-direction:column; padding:20px; transition:right 0.3s ease; z-index:1000; }
+#charmbar { position:fixed; right:-300px; top:0; width:250px; height:100%; background:rgba(0,0,0,0.85); color:white; display:flex; flex-direction:column; padding:20px; transition:right 0.3s ease; z-index:1000; }
 #charmbar.show { right:0; }
-#charmbar h3 { font-family:'Bungee', cursive; margin-top:0; }
+#charmbar h3 { font-family:'Bungee',cursive; margin-top:0; }
 #charmbar button, #charmbar input { margin:8px 0; padding:8px; border:none; border-radius:6px; width:100%; font-size:14px; cursor:pointer; }
 #charmbar button:hover { background:#005f2b; }
-
-/* Overlay Background for uploads */
-#uploadBg { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:900; }
-
 </style>
 </head>
 <body>
@@ -41,7 +31,6 @@ header .profile { cursor:pointer; font-size:16px; }
   <span class="profile" onclick="toggleCharmbar()">☰</span>
 </header>
 
-<!-- Login Formular -->
 <form id="loginForm">
   <h2>Anmelden</h2>
   <input type="email" id="email" placeholder="E-Mail-Adresse" required>
@@ -49,15 +38,8 @@ header .profile { cursor:pointer; font-size:16px; }
   <button type="submit">Anmelden</button>
 </form>
 
-<!-- Dashboard Kacheln -->
-<div id="dashboard">
-  <div class="tile" data-size="2x2" onclick="openApp('https://dasfohlen1900.github.io/mini-word')">Mini-Word</div>
-  <div class="tile" data-size="1x1" onclick="openApp('https://dasfohlen1900.github.io/mini-calc')">Mini-Calc</div>
-  <div class="tile" data-size="1x1" onclick="openApp('https://dasfohlen1900.github.io/derminikicker')">Der Mini-Kicker</div>
-  <div class="tile" data-size="2x1" onclick="openApp('https://dasfohlen1900.github.io/mini-pp')">Mini-Präsentator</div>
-</div>
+<div id="dashboard"></div>
 
-<!-- Charmbar -->
 <div id="charmbar">
   <h3>Charmbar</h3>
   <label>Suche Mini-Apps:</label>
@@ -70,8 +52,6 @@ header .profile { cursor:pointer; font-size:16px; }
   <button onclick="showInfo()">Info</button>
   <button onclick="logout()">Abmelden</button>
 </div>
-
-<div id="uploadBg"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
@@ -91,30 +71,59 @@ const auth = getAuth(app);
 const loginForm = document.getElementById('loginForm');
 const dashboard = document.getElementById('dashboard');
 
+// Kacheln definieren
+const tilesData = [
+  {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word"},
+  {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc"},
+  {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker"},
+  {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp"}
+];
+
+// Dashboard erstellen
+function renderTiles(){
+  dashboard.innerHTML="";
+  tilesData.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='tile';
+    div.dataset.size=t.size;
+    div.draggable=true;
+    div.innerText=t.name;
+    div.onclick=()=>{ if(t.url) window.open(t.url,'_blank'); else alert('Link fehlt!'); };
+    div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',i); });
+    div.addEventListener('dragover', e=>e.preventDefault());
+    div.addEventListener('drop', e=>{
+      e.preventDefault();
+      const fromIndex = e.dataTransfer.getData('text/plain');
+      tilesData.splice(i,0,tilesData.splice(fromIndex,1)[0]);
+      renderTiles();
+    });
+    dashboard.appendChild(div);
+  });
+}
+
 loginForm.addEventListener('submit', e=>{
   e.preventDefault();
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   signInWithEmailAndPassword(auth,email,password)
-    .then(()=>{ loginForm.style.display='none'; dashboard.style.display='grid'; })
+    .then(()=>{ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); })
     .catch(err=>alert("Login fehlgeschlagen: "+err.message));
 });
 
 function toggleCharmbar(){ document.getElementById('charmbar').classList.toggle('show'); }
-function openApp(url){ window.open(url,"_blank"); }
 function filterTiles(){
   const term = document.getElementById('searchApp').value.toLowerCase();
-  document.querySelectorAll('#dashboard .tile').forEach(t=>{
-    t.style.display = t.textContent.toLowerCase().includes(term) ? 'flex' : 'none';
-  });
+  dashboard.querySelectorAll('.tile').forEach(t=>{ t.style.display=t.innerText.toLowerCase().includes(term)?'flex':'none'; });
 }
 function uploadBackground(e){
-  const file = e.target.files[0];
+  const file=e.target.files[0];
   if(file){
-    const reader = new FileReader();
-    reader.onload = function(evt){
-      document.body.style.backgroundImage = `url(${evt.target.result})`;
-      document.body.style.backgroundSize = "cover";
+    const reader=new FileReader();
+    reader.onload=function(evt){
+      document.body.style.backgroundImage=`url(${evt.target.result})`;
+      document.body.style.backgroundSize="cover";
+      document.body.style.backgroundRepeat="no-repeat";
+      document.body.style.backgroundPosition="center center";
     };
     reader.readAsDataURL(file);
   }
@@ -122,30 +131,18 @@ function uploadBackground(e){
 function setTheme(theme){
   if(theme==='borussia'){
     document.body.style.background="#eef4fb";
-    document.querySelectorAll('.tile').forEach(t=>t.style.background="#00703C");
+    dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#00703C");
   } else {
     document.body.style.background="#f5f5f5";
-    document.querySelectorAll('.tile').forEach(t=>t.style.background="#888");
+    dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#888");
   }
 }
-function shareLink(){
-  const link="https://dasfohlen1900.github.io/share";
-  navigator.clipboard.writeText(link);
-  alert("Link kopiert: "+link);
-}
-function showInfo(){
-  alert("Pro-Status: Premium\nBenutzer: "+(auth.currentUser?.email || "Gast"));
-}
-function logout(){
-  signOut(auth).then(()=>{ location.reload(); });
-}
+function shareLink(){ navigator.clipboard.writeText("https://dasfohlen1900.github.io/share"); alert("Link kopiert!"); }
+function showInfo(){ alert("Pro-Status: Premium\nBenutzer: "+(auth.currentUser?.email||"Gast")); }
+function logout(){ signOut(auth).then(()=>{ location.reload(); }); }
 
-// Prüfen ob User bereits angemeldet
 onAuthStateChanged(auth,user=>{
-  if(user){
-    loginForm.style.display='none';
-    dashboard.style.display='grid';
-  }
+  if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; renderTiles(); }
 });
 </script>
 </body>
