@@ -15,7 +15,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'Work Sans',system-ui,Arial;
-  background:linear-gradient(180deg,var(--bg),#fff);
+  background:var(--bg);
   display:flex;flex-direction:column;align-items:center;
   min-height:100vh;padding:40px 20px;
 }
@@ -62,21 +62,27 @@ footer .next-btn{
   transition:background .2s;
 }
 footer .next-btn:hover{background:#1e293b;}
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  width:100%;max-width:960px;margin-bottom:40px;
+}
+header h1{margin:0;font-size:2.2rem;color:var(--accent);}
+header p{margin:0;color:var(--muted);font-size:1.1rem;}
+header a.search-btn button{
+  padding:6px 10px;border-radius:8px;border:none;
+  background:var(--accent);color:#fff;cursor:pointer;font-size:0.95rem;
+}
 </style>
 </head>
 <body>
 
-<!-- Neuer Header -->
-<header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:40px;width:100%;max-width:960px;">
-  <a href="premium/" style="text-decoration:none;color:#0f172a;font-size:1.8rem;">👤</a>
+<header>
+  <a href="premium/" style="font-size:1.8rem;">👤</a>
   <div style="text-align:center;flex-grow:1;">
-    <h1 style="margin:0;font-size:2.2rem;color:#0f172a;">🚀 Mini-Office</h1>
-    <p class="tagline" style="margin:0;color:#6b7280;font-size:1.1rem;">Alle deine Mini-Apps auf einen Blick</p>
+    <h1>🚀 Mini-Office</h1>
+    <p>Alle deine Mini-Apps auf einen Blick</p>
   </div>
-  <div style="display:flex;align-items:center;gap:6px;">
-    <input id="search-input" type="text" placeholder="Suche..." style="padding:6px 10px;border-radius:8px;border:1px solid #ccc;font-size:0.95rem;">
-    <button id="search-btn" style="padding:6px 10px;border-radius:8px;border:none;background:#0f172a;color:#fff;cursor:pointer;font-size:0.95rem;">🔍</button>
-  </div>
+  <a href="/suche/" class="search-btn"><button>🔍 Suche</button></a>
 </header>
 
 <main class="grid">
@@ -89,18 +95,10 @@ footer .next-btn:hover{background:#1e293b;}
   <a class="card" href="mini-convert/"><h2>Mini-Converter</h2><p>Länge, Daten, Größe, Hohlmaße</p></a>
   <a class="card" href="to-do/"><h2>To-Do-Liste</h2><p>Kleine To-Do-Liste</p></a>
   <a class="card" href="derminikicker/"><h2>Der Mini-Kicker</h2><p>Aktuelle Fußball-News aus der Bundesliga</p></a>
-  <a class="card" href="derminikicker/fußballsimulator/"><h2>Der Mini-Kicker-Report</h2><p>Eigenen Fußballticker erstellen und herunterladen</p></a>
-  <a class="card" href="mini-kalender/"><h2>Der Mini-Kalender</h2><p>Kalender mit Teminerstellung</p></a>
-  <a class="card" href="mini-pp/"><h2>Der Mini-Präsentator</h2><p>Hochwertige Präsentationen erstellen</p></a>
-  <a class="card" href="mini-music/"><h2>Mini-Musik</h2><p>Werde zum Komponisten</p></a>
-  <a class="card" href="mini-mindmap/"><h2>Mini-MindMap</h2><p>Mindmap im Gladbach-Style</p></a>
-  <a class="card" href="games/2048/"><h2>2048</h2><p>Das bekannte Spiel mit den Zahlen</p></a>
-  <a class="card" href="games/penalty/"><h2>Penalty</h2><p>Elfmeterschießen bis zum Pfostenbruch!</p></a>
 </main>
 
 <footer>
-  &copy; 2025 Mini-Office – 
-  <a href="https://github.com/dasfohlen1900" style="color:inherit;text-decoration:underline;">dasfohlen1900</a>
+  &copy; 2025 Mini-Office – <a href="https://github.com/dasfohlen1900" style="color:inherit;text-decoration:underline;">dasfohlen1900</a>
   <br>
   <a href="seite2.html" class="next-btn">Weitere Apps →</a>
 </footer>
