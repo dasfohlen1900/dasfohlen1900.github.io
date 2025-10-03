@@ -5,19 +5,27 @@
 <title>Mini-Office Premium Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
 <style>
-body { margin:0; padding:0; font-family:"Segoe UI",sans-serif; background:#eef4fb; overflow-x:hidden; }
+body { margin:0; padding:0; font-family:"Segoe UI",sans-serif; background:#eef4fb; overflow-x:hidden; transition: background 0.3s; }
+body.dark { background:#1e1e1e; color:#eee; }
 header { background:#000; color:white; padding:15px 20px; font-family:'Bungee',cursive; font-size:28px; display:flex; justify-content:space-between; align-items:center; }
 header .profile { cursor:pointer; font-size:16px; }
+
 #loginForm { display:flex; flex-direction:column; max-width:400px; margin:50px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.2); }
+body.dark #loginForm { background:#333; color:#eee; }
 #loginForm input { padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
+body.dark #loginForm input { background:#555; color:#eee; border:1px solid #777; }
 #loginForm button { padding:10px; background:#00703C; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Bungee',cursive; }
 #loginForm button:hover { background:#005f2b; }
+
 #dashboard { display:none; display:grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); grid-auto-rows:120px; gap:15px; padding:20px; }
 .tile { background:#00703C; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:'Bungee',cursive; font-size:18px; border-radius:12px; cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; }
+body.dark .tile { background:#444; color:#eee; }
+.tile img { width:48px; height:48px; margin-bottom:5px; }
 .tile:hover { transform: scale(1.05); box-shadow:0 8px 20px rgba(0,0,0,0.3); }
 .tile[data-size="2x2"] { grid-column: span 2; grid-row: span 2; font-size:22px; }
 .tile[data-size="2x1"] { grid-column: span 2; font-size:20px; }
-.tile img { width:48px; height:48px; margin-bottom:8px; }
+.tile[data-size="1x2"] { grid-row: span 2; }
+
 #charmbar { position:fixed; right:-300px; top:0; width:250px; height:100%; background:rgba(0,0,0,0.85); color:white; display:flex; flex-direction:column; padding:20px; transition:right 0.3s ease; z-index:1000; }
 #charmbar.show { right:0; }
 #charmbar h3 { font-family:'Bungee',cursive; margin-top:0; }
@@ -79,24 +87,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeCharmBtn = document.getElementById('closeCharm');
 
   const tilesData = [
-    {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word", icon:"icons/mini-word.png"},
-    {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc", icon:"icons/mini-calc.png"},
-    {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker", icon:"icons/mini-kicker.png"},
-    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp", icon:"icons/mini-pp.png"},
-    {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048", icon:"icons/2048.png"},
-    {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw", icon:"icons/mini-draw.png"},
-    {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store", icon:"icons/store.png"},
-    {name:"Konsole (DEV)", size:"1x1", url:"https://dasfohlen1900.github.io/console", icon:"icons/console.png"},
-    {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes", icon:"icons/mini-notes.png"},
-    {name:"Mini-Table", size:"1x2", url:"/mini-table", icon:"icons/mini-table.png"},
-    {name:"Mini-Randomizer", size:"1x1", url:"/premium/randomizer", icon:"icons/mini-randomizer.png"},
-    {name:"Penalty", size:"1x1", url:"/games/penalty", icon:"icons/penalty.png"},
-    {name:"Mini-Uhr", size:"2x2", url:"/mini-uhr", icon:"icons/mini-uhr.png"}
+    {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word", icon:"https://cdn-icons-png.flaticon.com/512/109/109612.png"},
+    {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828926.png"},
+    {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker", icon:"https://cdn-icons-png.flaticon.com/512/197/197564.png"},
+    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828970.png"},
+    {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048", icon:"https://cdn-icons-png.flaticon.com/512/102/102671.png"},
+    {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw", icon:"https://cdn-icons-png.flaticon.com/512/1828/1828884.png"},
+    {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store", icon:"https://cdn-icons-png.flaticon.com/512/992/992700.png"},
+    {name:"Konsole (DEV)", size:"1x1", url:"https://dasfohlen1900.github.io/console", icon:"https://cdn-icons-png.flaticon.com/512/1055/1055687.png"},
+    {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes", icon:"https://cdn-icons-png.flaticon.com/512/84/84380.png"},
+    {name:"Mini-Table", size:"1x2", url:"https://dasfohlen1900.github.io/mini-table", icon:"https://cdn-icons-png.flaticon.com/512/2910/2910767.png"},
+    {name:"Mini-Randomizer", size:"1x1", url:"https://dasfohlen1900.github.io/premium/randomizer", icon:"https://cdn-icons-png.flaticon.com/512/3135/3135715.png"},
+    {name:"Penalty", size:"1x1", url:"https://dasfohlen1900.github.io/games/penalty", icon:"https://cdn-icons-png.flaticon.com/512/833/833472.png"},
+    {name:"Mini-Uhr", size:"2x2", url:"https://dasfohlen1900.github.io/mini-uhr", icon:"https://cdn-icons-png.flaticon.com/512/2910/2910768.png"}
   ];
 
   function saveLayout(){
-    const layout = Array.from(dashboard.querySelectorAll('.tile')).map(t=>t.querySelector('span').innerText);
-    localStorage.setItem('dashboard_'+auth.currentUser.uid, JSON.stringify(layout));
+    if(auth.currentUser){
+      const layout = Array.from(dashboard.querySelectorAll('.tile')).map(t=>t.dataset.name);
+      localStorage.setItem('dashboard_'+auth.currentUser.uid, JSON.stringify(layout));
+    }
   }
 
   function loadLayout(){
@@ -104,10 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const layout = JSON.parse(localStorage.getItem('dashboard_'+auth.currentUser.uid) || 'null');
       if(layout){
         const orderedTiles = [];
-        layout.forEach(name=>{
-          const t = tilesData.find(td=>td.name===name);
-          if(t) orderedTiles.push(t);
-        });
+        layout.forEach(name=>{ const t = tilesData.find(td=>td.name===name); if(t) orderedTiles.push(t); });
         tilesData.forEach(td=>{ if(!orderedTiles.includes(td)) orderedTiles.push(td); });
         tilesData.splice(0, tilesData.length, ...orderedTiles);
       }
@@ -120,23 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const div=document.createElement('div');
       div.className='tile';
       div.dataset.size=t.size;
+      div.dataset.name=t.name;
+      div.innerHTML=`<img src="${t.icon}" alt="${t.name} Icon"><br>${t.name}`;
       div.draggable=true;
-
-      const icon = document.createElement('img');
-      icon.src=t.icon;
-      icon.alt=t.name;
-      const label = document.createElement('span');
-      label.innerText=t.name;
-
-      div.appendChild(icon);
-      div.appendChild(label);
-
       div.onclick=()=>{ if(t.url) window.open(t.url,'_blank'); else alert('Link fehlt!'); };
       div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',i); });
       div.addEventListener('dragover', e=>e.preventDefault());
       div.addEventListener('drop', e=>{
         e.preventDefault();
-        const fromIndex=e.dataTransfer.getData('text/plain');
+        const fromIndex = e.dataTransfer.getData('text/plain');
         tilesData.splice(i,0,tilesData.splice(fromIndex,1)[0]);
         renderTiles();
         saveLayout();
@@ -147,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loginForm.addEventListener('submit', e=>{
     e.preventDefault();
-    const email=document.getElementById('email').value;
-    const password=document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     signInWithEmailAndPassword(auth,email,password)
       .then(()=>{ 
         loginForm.style.display='none'; 
@@ -163,18 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
   closeCharmBtn.addEventListener('click', ()=>{ charmbar.classList.remove('show'); });
 
   document.getElementById('searchApp').addEventListener('input', ()=>{
-    const term=document.getElementById('searchApp').value.toLowerCase();
+    const term = document.getElementById('searchApp').value.toLowerCase();
     dashboard.querySelectorAll('.tile').forEach(t=>{
-      t.style.display=t.querySelector('span').innerText.toLowerCase().includes(term)?'flex':'none';
+      t.style.display = t.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
     });
   });
 
   document.getElementById('bgUpload').addEventListener('change', e=>{
-    const file=e.target.files[0];
+    const file = e.target.files[0];
     if(file){
-      const reader=new FileReader();
-      reader.onload=function(evt){
-        document.body.style.backgroundImage=`url(${evt.target.result})`;
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        document.body.style.backgroundImage = `url(${evt.target.result})`;
         document.body.style.backgroundSize="cover";
         document.body.style.backgroundRepeat="no-repeat";
         document.body.style.backgroundPosition="center center";
@@ -183,7 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  window.setTheme=(theme)=>{
+  window.setTheme = (theme)=>{
+    document.body.classList.remove('dark');
     if(theme==='borussia'){
       document.body.style.background="#eef4fb";
       dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#00703C");
@@ -191,14 +191,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.background="#f5f5f5";
       dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#666");
     } else if(theme==='dark'){
-      document.body.style.background="#1e1e1e";
-      dashboard.querySelectorAll('.tile').forEach(t=>t.style.background="#333");
+      document.body.classList.add('dark');
     }
   };
 
-  window.shareLink=()=>{ prompt("Teile diesen Link:", window.location.href); };
-  window.showInfo=()=>{ alert("Mini-Office Premium Dashboard\nVersion 1.0"); };
-  window.logout=()=>{ signOut(auth).then(()=>{ location.reload(); }); };
+  window.shareLink = ()=>{ prompt("Teile diesen Link:", window.location.href); };
+  window.showInfo = ()=>{ alert("Mini-Office Premium Dashboard\nVersion 1.0"); };
+  window.logout = ()=>{ signOut(auth).then(()=>{ location.reload(); }); };
 
   onAuthStateChanged(auth, user=>{
     if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; loadLayout(); renderTiles(); }
