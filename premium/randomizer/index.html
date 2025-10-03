@@ -142,37 +142,63 @@ logoutBtn.addEventListener("click", ()=>{
 
 // Auth-Status
 onAuthStateChanged(auth, (user)=>{
-  if(user){
-    loginBox.style.display="none";
-    logoutBtn.style.display="block";
-    appContent.style.display="block";
-  } else {
-    loginBox.style.display="block";
-    logoutBtn.style.display="none";
-    appContent.style.display="none";
-  }
+  loginBox.style.display = user ? "none" : "block";
+  logoutBtn.style.display = user ? "block" : "none";
+  appContent.style.display = user ? "block" : "none";
 });
 
 // ==== Zufallstools ====
 const presets = {
-    bundesliga:["Gladbach","Dortmund","HSV","Bayern","Stuttgart"],
-    "2bundesliga":["Hamburg","Karlsruhe","Nürnberg","Düsseldorf","Paderborn"],
-    monate:["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
-    programme:["Mini-Word","Mini-Lists","Mini-Coder","Mini-Draw","Mini-Office Store","Zufallsgenerator"]
+    bundesliga: [
+        "Bayern München","Borussia Dortmund","RB Leipzig","Bayer Leverkusen",
+        "Eintracht Frankfurt","Borussia Mönchengladbach","VfL Wolfsburg","SC Freiburg",
+        "1. FC Union Berlin","VfB Stuttgart","1. FSV Mainz 05","FC Augsburg",
+        "1. FC Köln","Werder Bremen","TSG Hoffenheim","FC Schalke 04",
+        "VfL Bochum","Hannover 96"
+    ],
+    "2bundesliga": [
+        "Hamburger SV","Karlsruher SC","1. FC Nürnberg","Fortuna Düsseldorf",
+        "SC Paderborn","FC St. Pauli","Hannover 96","Eintracht Braunschweig",
+        "Hansa Rostock","Dynamo Dresden","1. FC Heidenheim","SV Darmstadt 98",
+        "VfL Bochum","Greuther Fürth","FC Erzgebirge Aue","1. FC Magdeburg",
+        "VfL Osnabrück","FC Ingolstadt"
+    ],
+    monate: ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],
+    programme: ["Mini-Word","Mini-Lists","Mini-Coder","Mini-Draw","Mini-Office Store","Zufallsgenerator"]
 };
+
+// Gekürzte Versionen für Glücksrad
+const bundesligaShort = [
+  "Bayern","Dortmund","RB Leipzig","Leverkusen","Frankfurt","Gladbach",
+  "Wolfsburg","Freiburg","Union","Stuttgart","Mainz","Augsburg",
+  "Köln","Werder","Hoffenheim","Schalke","Bochum","Hannover"
+];
+const zweiteBundesligaShort = [
+  "HSV","Karlsruhe","Nürnberg","Düsseldorf","Paderborn","St. Pauli",
+  "Hannover","Braunschweig","Rostock","Dresden","Heidenheim","Darmstadt",
+  "Bochum","Fürth","Erzgebirge","Magdeburg","Osnabrück","Ingolstadt"
+];
 
 let currentList = [];
 
-// Zufall aus Liste
+// Zufall aus Liste + Rad-Update
+function updateWheelForPreset(presetName){
+    if(presetName==="bundesliga") updateWheelList(bundesligaShort);
+    else if(presetName==="2bundesliga") updateWheelList(zweiteBundesligaShort);
+    else if(presets[presetName]) updateWheelList([...presets[presetName]]);
+}
+
 document.getElementById("presetList").addEventListener("change", function(){
     const val = this.value;
-    if(val && presets[val]){
-        currentList = [...presets[val]];
+    if(val){
+        updateWheelForPreset(val);
+        currentList = [...(presets[val] || [])];
         document.getElementById("result").innerText = "–";
         document.getElementById("histList").innerHTML = "";
     }
 });
 
+// Zufall aus Liste
 document.getElementById("drawButton").addEventListener("click", function(){
     if(currentList.length===0){ alert("Liste ist leer!"); return; }
     const index = Math.floor(Math.random()*currentList.length);
@@ -205,7 +231,7 @@ document.getElementById("createGroups").addEventListener("click", function(){
             let idx = 0;
             while(last.length>0){
                 groups[idx].push(last.shift());
-                idx = (idx+1)% (groups.length-1);
+                idx = (idx+1) % (groups.length-1);
             }
             groups.pop();
         }
