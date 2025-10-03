@@ -1,133 +1,223 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini.Pinball</title>
-  <style>
-    canvas { background: #111; display: block; margin: auto; border: 2px solid #444; }
-    #score { text-align: center; font-family: sans-serif; color: #fff; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Pinball mit Cursor</title>
+<style>
+body {
+  margin: 0;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+canvas { 
+  background: #222; 
+  display: block; 
+  cursor: url('https://dasfohlen1900.github.io/games/flipper/assets/FabConvert.png') 16 16, auto;
+}
+.controls, .highscore { margin-top: 10px; }
+button { font-size: 16px; margin: 3px; padding: 5px 10px; cursor: pointer; }
+</style>
 </head>
 <body>
-  <canvas id="pinball" width="400" height="600"></canvas>
-  <div id="score">Score: 0</div>
 
-  <script>
-    const canvas = document.getElementById('pinball');
-    const ctx = canvas.getContext('2d');
-    let score = 0;
+<canvas id="pinball" width="500" height="700"></canvas>
 
-    // 🎱 pinball.ball
-    const ball = {
-      x: 200, y: 300,
-      dx: 2, dy: -3,
-      r: 10,
-      color: 'orange'
-    };
+<div class="controls">
+  <div>
+    <button id="leftFlip">Links A / ←</button>
+    <button id="rightFlip">Rechts D / →</button>
+    <button id="upFlip">Oben W / ↑</button>
+    <button id="downFlip">Unten S / ↓</button>
+  </div>
+  <div>
+    <button id="exportHS">Highscore exportieren</button>
+    <input type="file" id="importHS" accept=".ocpinh">
+  </div>
+</div>
 
-    // 🧱 pinball.wall
-    const walls = [
-      {x: 0, y: 0, w: 400, h: 10}, // top
-      {x: 0, y: 0, w: 10, h: 600}, // left
-      {x: 390, y: 0, w: 10, h: 600}, // right
-      {x: 0, y: 590, w: 400, h: 10}  // bottom
-    ];
+<div class="highscore">
+  <h3>Highscores</h3>
+  <ol id="hsList"></ol>
+</div>
 
-    // 💥 pinball.bumpers[]
-    const bumpers = [
-      {x: 100, y: 200, r: 20},
-      {x: 300, y: 250, r: 20}
-    ];
+<script>
+// --- Variablen ---
+const canvas = document.getElementById("pinball");
+const ctx = canvas.getContext("2d");
 
-    // 🕹️ pinball.flipper
-    let flipperLeft = {x: 120, y: 550, w: 60, h: 10, active: false};
-    let flipperRight = {x: 220, y: 550, w: 60, h: 10, active: false};
+let score = 0;
+let gameOver = false;
+let highScores = [];
 
-    function drawBall() {
-      ctx.beginPath();
-      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-      ctx.fillStyle = ball.color;
-      ctx.fill();
-      ctx.closePath();
+// Ball
+const ball = {x:250, y:650, radius:10, dx:3, dy:-4, color:"white"};
+
+// Paddle
+const paddle = {width:100, height:10, x:200, y:680, dx:7, color:"lime"};
+
+// Bumper mit Animation
+const bumpers = [
+  {x:100, y:200, radius:20, color:"red", points:250, active:false},
+  {x:300, y:150, radius:25, color:"yellow", points:500, active:false},
+  {x:200, y:300, radius:30, color:"blue", points:1000, active:false},
+  {x:400, y:250, radius:20, color:"orange", points:3000, active:false},
+];
+
+// Flipperarme: left, right, up, down
+const flippers = [
+  {x:150, y:650, width:80, height:15, angle:0, side:"left"},
+  {x:270, y:650, width:80, height:15, angle:0, side:"right"},
+  {x:230, y:600, width:15, height:80, angle:0, side:"up"},
+  {x:260, y:600, width:15, height:80, angle:0, side:"down"}
+];
+
+let keys = {left:false, right:false, up:false, down:false};
+
+// --- Tastensteuerung ---
+document.addEventListener("keydown", e => {
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a") keys.left = true;
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d") keys.right = true;
+  if(e.key==="ArrowUp"||e.key.toLowerCase()==="w") keys.up = true;
+  if(e.key==="ArrowDown"||e.key.toLowerCase()==="s") keys.down = true;
+});
+
+document.addEventListener("keyup", e => {
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a") keys.left = false;
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d") keys.right = false;
+  if(e.key==="ArrowUp"||e.key.toLowerCase()==="w") keys.up = false;
+  if(e.key==="ArrowDown"||e.key.toLowerCase()==="s") keys.down = false;
+});
+
+// --- Buttonsteuerung ---
+document.getElementById("leftFlip").addEventListener("mousedown",()=>keys.left=true);
+document.getElementById("leftFlip").addEventListener("mouseup",()=>keys.left=false);
+document.getElementById("rightFlip").addEventListener("mousedown",()=>keys.right=true);
+document.getElementById("rightFlip").addEventListener("mouseup",()=>keys.right=false);
+document.getElementById("upFlip").addEventListener("mousedown",()=>keys.up=true);
+document.getElementById("upFlip").addEventListener("mouseup",()=>keys.up=false);
+document.getElementById("downFlip").addEventListener("mousedown",()=>keys.down=true);
+document.getElementById("downFlip").addEventListener("mouseup",()=>keys.down=false);
+
+// --- Highscore Export/Import ---
+document.getElementById("exportHS").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(highScores)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "highscores.ocpinh";
+  a.click();
+});
+
+document.getElementById("importHS").addEventListener("change", e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = evt=>{
+    try { highScores = JSON.parse(evt.target.result); renderHighScores(); }
+    catch(err){ alert("Ungültige Datei"); }
+  };
+  reader.readAsText(file);
+});
+
+// --- Zeichnen ---
+function drawBall(){ ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.radius,0,Math.PI*2); ctx.fillStyle=ball.color; ctx.fill(); ctx.closePath(); }
+function drawPaddle(){ ctx.beginPath(); ctx.rect(paddle.x,paddle.y,paddle.width,paddle.height); ctx.fillStyle=paddle.color; ctx.fill(); ctx.closePath(); }
+function drawBumpers(){ bumpers.forEach(b=>{
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.radius,0,Math.PI*2);
+  ctx.fillStyle=b.active?"white":b.color;
+  ctx.fill(); ctx.closePath();
+  if(b.active) b.active=false;
+}); }
+function drawFlippers(){ flippers.forEach(f=>{
+  ctx.save(); ctx.translate(f.x,f.y); ctx.rotate(f.angle); ctx.fillStyle="cyan"; ctx.fillRect(0,-f.height/2,f.width,f.height); ctx.restore();
+}); }
+function drawScore(){ ctx.font="20px Arial"; ctx.fillStyle="white"; ctx.fillText("Score: "+score,10,30); }
+function renderHighScores(){ const list=document.getElementById("hsList"); list.innerHTML=""; highScores.slice(0,10).forEach(h=>{ const li=document.createElement("li"); li.textContent=h; list.appendChild(li); }); }
+
+// --- Flipper Update ---
+function updateFlippers(){ flippers.forEach(f=>{
+  if((f.side==="left"&&keys.left)||(f.side==="right"&&keys.right)||(f.side==="up"&&keys.up)||(f.side==="down"&&keys.down)){
+    f.angle = (f.side==="left"||f.side==="up")?-0.5:0.5;
+  } else f.angle=0;
+}); }
+
+function checkFlipperCollision(){ flippers.forEach(f=>{
+  if(ball.x+ball.radius>f.x && ball.x-ball.radius<f.x+f.width && ball.y+ball.radius>f.y-f.height/2 && ball.y-ball.radius<f.y+f.height/2){
+    ball.dy=-Math.abs(ball.dy);
+    if(f.side==="left") ball.dx-=1;
+    if(f.side==="right") ball.dx+=1;
+    if(f.side==="up") ball.dy-=1;
+    if(f.side==="down") ball.dy+=1;
+  }
+}); }
+
+// --- Bumper Kollision mit Cursor-Change ---
+function checkBumperCollision(){
+  let hit = false;
+  bumpers.forEach(b=>{
+    if(Math.hypot(ball.x-b.x,ball.y-b.y)<ball.radius+b.radius){
+      ball.dy=-ball.dy;
+      score+=b.points;
+      b.active=true;
+      hit = true;
     }
+  });
 
-    function drawWalls() {
-      ctx.fillStyle = '#555';
-      walls.forEach(w => ctx.fillRect(w.x, w.y, w.w, w.h));
-    }
+  // Cursor dynamisch ändern bei Treffer
+  canvas.style.cursor = hit ? 
+    "url('https://dasfohlen1900.github.io/games/flipper/assets/FabConvert.png') 16 16, crosshair" : 
+    "url('https://dasfohlen1900.github.io/games/flipper/assets/FabConvert.png') 16 16, auto";
+}
 
-    function drawBumpers() {
-      ctx.fillStyle = 'red';
-      bumpers.forEach(b => {
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.closePath();
-      });
-    }
+// --- Update Loop ---
+function update(){
+  if(gameOver){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.font="40px Arial"; ctx.fillStyle="red"; ctx.fillText("GAME OVER",canvas.width/2-120,canvas.height/2);
+    ctx.font="25px Arial"; ctx.fillText("Score: "+score,canvas.width/2-50,canvas.height/2+40);
+    highScores.push(score); highScores.sort((a,b)=>b-a); renderHighScores();
+    return;
+  }
 
-    function drawFlippers() {
-      ctx.fillStyle = flipperLeft.active ? '#0f0' : '#888';
-      ctx.fillRect(flipperLeft.x, flipperLeft.y, flipperLeft.w, flipperLeft.h);
-      ctx.fillStyle = flipperRight.active ? '#0f0' : '#888';
-      ctx.fillRect(flipperRight.x, flipperRight.y, flipperRight.w, flipperRight.h);
-    }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawBall(); drawPaddle(); drawBumpers(); drawFlippers(); drawScore();
 
-    function updateBall() {
-      ball.x += ball.dx;
-      ball.y += ball.dy;
+  // Ballbewegung
+  ball.x+=ball.dx; ball.y+=ball.dy;
 
-      // 🧱 pinball.wall → Kollisionserkennung
-      if (ball.x < ball.r || ball.x > canvas.width - ball.r) ball.dx *= -1;
-      if (ball.y < ball.r || ball.y > canvas.height - ball.r) ball.dy *= -1;
+  // Wände
+  if(ball.x+ball.radius>canvas.width||ball.x-ball.radius<0) ball.dx=-ball.dx;
+  if(ball.y-ball.radius<0) ball.dy=-ball.dy;
 
-      // 💥 pinball.bumpers[] → Rückstoß + Score
-      bumpers.forEach(b => {
-        const dist = Math.hypot(ball.x - b.x, ball.y - b.y);
-        if (dist < ball.r + b.r) {
-          ball.dy *= -1;
-          ball.dx *= -1;
-          score += 100; // 🪄 pinball.score.add(100)
-          document.getElementById('score').textContent = 'Score: ' + score;
-        }
-      });
+  // Paddle Kollision
+  if(ball.y+ball.radius>paddle.y && ball.x>paddle.x && ball.x<paddle.x+paddle.width) ball.dy=-ball.dy;
 
-      // 🕹️ pinball.flipper → einfache Kollision
-      [flipperLeft, flipperRight].forEach(f => {
-        if (ball.x > f.x && ball.x < f.x + f.w && ball.y + ball.r > f.y && ball.y < f.y + f.h) {
-          ball.dy = -Math.abs(ball.dy);
-        }
-      });
+  // Bumper
+  checkBumperCollision();
 
-      // 🪄 pinball.ball.move → frame-basiert
-    }
+  // Flipper
+  updateFlippers(); checkFlipperCollision();
 
-    function render() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawWalls();
-      drawBumpers();
-      drawFlippers();
-      drawBall();
-    }
+  // Boden
+  if(ball.y+ball.radius>canvas.height) gameOver=true;
 
-    function loop() {
-      updateBall();
-      render();
-      requestAnimationFrame(loop);
-    }
+  // Paddle Bewegung
+  if(keys.right && paddle.x+paddle.width<canvas.width) paddle.x+=paddle.dx;
+  if(keys.left && paddle.x>0) paddle.x-=paddle.dx;
 
-    // 🪄 pinball.flipper.left.activate → bei Tastendruck
-    document.addEventListener('keydown', e => {
-      if (e.key === 'a') flipperLeft.active = true;
-      if (e.key === 'l') flipperRight.active = true;
-    });
+  requestAnimationFrame(update);
+}
 
-    document.addEventListener('keyup', e => {
-      if (e.key === 'a') flipperLeft.active = false;
-      if (e.key === 'l') flipperRight.active = false;
-    });
+// --- Start ---
+renderHighScores();
+update();
+</script>
 
-    loop();
-  </script>
 </body>
 </html>
