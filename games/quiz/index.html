@@ -68,36 +68,2408 @@ h1 {
 <script>
 // Alle Fragen direkt eingebunden
 const fragenpoolData = [
-  // Easy 1-5
-  {"id":1,"difficulty":"Easy","topic":"Technik","q":"Wie heißt das Betriebssystem, das auf iPhones läuft?","a":["iOS","Android","HarmonyOS","Windows Phone"],"correct":0},
-  {"id":2,"difficulty":"Easy","topic":"Sport","q":"Wie viele Spieler stehen beim Fußball pro Mannschaft auf dem Feld?","a":["9","10","11","12"],"correct":2},
-  {"id":3,"difficulty":"Easy","topic":"Wissenschaft","q":"Wie viele Planeten hat unser Sonnensystem?","a":["7","8","9","10"],"correct":1},
-  {"id":4,"difficulty":"Easy","topic":"Geschichte","q":"Wer war der erste Bundeskanzler der Bundesrepublik Deutschland?","a":["Konrad Adenauer","Willy Brandt","Helmut Kohl","Angela Merkel"],"correct":0},
-  {"id":5,"difficulty":"Easy","topic":"Länder der Welt","q":"Welches Land hat die größte Bevölkerung?","a":["Indien","USA","China","Russland"],"correct":2},
-
-  // Medium 6-10
-  {"id":6,"difficulty":"Medium","topic":"Technik","q":"Was ist die Abkürzung von HTML?","a":["Hyper Text Markup Language","High Tech Machine Language","Hyperlink Markup Language","Home Tool Markup Language"],"correct":0},
-  {"id":7,"difficulty":"Medium","topic":"Sport","q":"In welchem Jahr fanden die ersten Olympischen Spiele der Neuzeit statt?","a":["1896","1900","1888","1920"],"correct":0},
-  {"id":8,"difficulty":"Medium","topic":"Wissenschaft","q":"Wer entwickelte die Relativitätstheorie?","a":["Isaac Newton","Albert Einstein","Galileo Galilei","Nikola Tesla"],"correct":1},
-  {"id":9,"difficulty":"Medium","topic":"Geschichte","q":"Wann endete der Zweite Weltkrieg?","a":["1945","1939","1918","1963"],"correct":0},
-  {"id":10,"difficulty":"Medium","topic":"Länder der Welt","q":"Welches Land ist flächenmäßig am größten?","a":["USA","China","Kanada","Russland"],"correct":3},
-
-  // Hard 11-15
-  {"id":11,"difficulty":"Hard","topic":"Technik","q":"Was ist die Funktion eines Routers?","a":["Speichern von Daten","Verteilen von Netzwerkpaketen","Drucken von Dokumenten","Steuern von Motoren"],"correct":1},
-  {"id":12,"difficulty":"Hard","topic":"Sport","q":"Welcher Spieler gewann die Fußball-WM 2014?","a":["Deutschland","Brasilien","Argentinien","Spanien"],"correct":0},
-  {"id":13,"difficulty":"Hard","topic":"Wissenschaft","q":"Wie lautet die chemische Formel von Kochsalz?","a":["NaCl","KCl","H2O","CO2"],"correct":0},
-  {"id":14,"difficulty":"Hard","topic":"Geschichte","q":"Wer entdeckte Amerika?","a":["Christoph Kolumbus","Vasco da Gama","James Cook","Ferdinand Magellan"],"correct":0},
-  {"id":15,"difficulty":"Hard","topic":"Länder der Welt","q":"Welches Land ist bekannt als 'Land der aufgehenden Sonne'?","a":["China","Japan","Thailand","Südkorea"],"correct":1},
-
-  // Expert 16-21
-  {"id":16,"difficulty":"Expert","topic":"Technik","q":"Was bedeutet die Abkürzung CPU?","a":["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing Unit"],"correct":0},
-  {"id":17,"difficulty":"Expert","topic":"Sport","q":"Wie viele Minuten dauert ein Handballspiel in der Regel?","a":["40","60","50","45"],"correct":0},
-  {"id":18,"difficulty":"Expert","topic":"Sport","q":"Welches Land gewann die Fußball-WM 2018?","a":["Deutschland","Frankreich","Brasilien","Kroatien"],"correct":1},
-  {"id":19,"difficulty":"Expert","topic":"Wissenschaft","q":"Welcher Teil des Auges reguliert die Lichtmenge?","a":["Linse","Iris","Netzhaut","Hornhaut"],"correct":1},
-  {"id":20,"difficulty":"Expert","topic":"Geschichte","q":"Wann fiel die Berliner Mauer?","a":["1987","1989","1991","1990"],"correct":1},
-  {"id":21,"difficulty":"Expert","topic":"Länder der Welt","q":"Welches Land hat die Hauptstadt Ottawa?","a":["USA","Kanada","Australien","Neuseeland"],"correct":1}
-];
-
+ [
+  {
+    id: 1,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Wie heißt das Betriebssystem, das auf iPhones läuft?",
+    a: ["iOS", "Android", "HarmonyOS", "Windows Phone"],
+    correct: 0
+  },
+  {
+    id: 2,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was ist eine CPU in einem Computer?",
+    a: ["Zentralprozessor", "Grafikkarte", "Festplatte", "Lüfter"],
+    correct: 0
+  },
+  {
+    id: 3,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Welches Unternehmen entwickelte das erste iPhone?",
+    a: ["Samsung", "Apple", "Nokia", "Sony"],
+    correct: 1
+  },
+  {
+    id: 4,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was bedeutet 'USB' ausgeschrieben?",
+    a: ["Universal Serial Bus", "Ultra Speed Bridge", "Unified System Base", "Universal Signal Board"],
+    correct: 0
+  },
+  {
+    id: 5,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Wofür steht das 'www' in einer Internetadresse?",
+    a: ["World Wide Web", "Wide Web World", "Web Wide World", "Wireless Web Wave"],
+    correct: 0
+  },
+  {
+    id: 6,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Welche dieser Geräteart kann man als 'tragbaren Computer' bezeichnen?",
+    a: ["Monitor", "Laptop", "Router", "Scanner"],
+    correct: 1
+  },
+  {
+    id: 7,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Welche Taste drückt man, um einen Computer neu zu starten?",
+    a: ["F1", "Reset", "Alt", "Tab"],
+    correct: 1
+  },
+  {
+    id: 8,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Welcher Hersteller ist für die Spielkonsole 'PlayStation' bekannt?",
+    a: ["Microsoft", "Sony", "Nintendo", "Sega"],
+    correct: 1
+  },
+  {
+    id: 9,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was speichert man auf einem USB-Stick?",
+    a: ["Dateien", "Energie", "Programme im BIOS", "Internetsignale"],
+    correct: 0
+  },
+  {
+    id: 10,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was ist WLAN?",
+    a: ["Kabelloses Netzwerk", "Fernsehanschluss", "Bluetooth-Verbindung", "Batterieladegerät"],
+    correct: 0
+  },
+  {
+    id: 11,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was ist ein Smartphone?",
+    a: ["Ein moderner Fernseher", "Ein tragbarer Computer mit Telefonfunktion", "Ein Taschenrechner", "Ein Musikplayer"],
+    correct: 1
+  },
+  {
+    id: 12,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Welche Firma produziert Windows?",
+    a: ["Apple", "Microsoft", "Google", "IBM"],
+    correct: 1
+  },
+  {
+    id: 13,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was zeigt ein Monitor an?",
+    a: ["Stromspannung", "Bildinhalt", "Datenmenge im Speicher", "Signalstärke des WLANs"],
+    correct: 1
+  },
+  {
+    id: 14,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Wie nennt man die Mausbewegung auf einem Touchscreen?",
+    a: ["Swipe", "Click", "Drag", "Hover"],
+    correct: 0
+  },
+  {
+    id: 15,
+    difficulty: "Easy",
+    topic: "Technik",
+    q: "Was ist das Hauptziel eines Antivirenprogramms?",
+    a: ["Virenschutz", "Internetbeschleunigung", "Speichererweiterung", "Dateikompression"],
+    correct: 0
+  },
+  {
+    id: 16,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie viele Spieler stehen beim Fußball pro Mannschaft auf dem Feld?",
+    a: ["9", "10", "11", "12"],
+    correct: 2
+  },
+  {
+    id: 17,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "In welcher Sportart wird der Begriff 'Love' für null Punkte verwendet?",
+    a: ["Tennis", "Golf", "Badminton", "Cricket"],
+    correct: 0
+  },
+  {
+    id: 18,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie nennt man das große Turnier im Fußball, das alle vier Jahre stattfindet?",
+    a: ["Europameisterschaft", "Champions League", "Weltmeisterschaft", "Confed Cup"],
+    correct: 2
+  },
+  {
+    id: 19,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Welche Farbe hat die Zielflagge im Motorsport?",
+    a: ["Rot", "Grün", "Schwarz-Weiß kariert", "Gelb"],
+    correct: 2
+  },
+  {
+    id: 20,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie viele Ringe hat das olympische Symbol?",
+    a: ["4", "5", "6", "7"],
+    correct: 1
+  },
+  {
+    id: 21,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie nennt man die Sportart, bei der man auf einem Brett über Wellen fährt?",
+    a: ["Skateboarden", "Snowboarden", "Surfen", "Wakeboarden"],
+    correct: 2
+  },
+  {
+    id: 22,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "In welcher Sportart wird ein Puck verwendet?",
+    a: ["Eishockey", "Baseball", "Basketball", "Curling"],
+    correct: 0
+  },
+  {
+    id: 23,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Welcher deutsche Tennisspieler gewann 1985 mit 17 Jahren Wimbledon?",
+    a: ["Boris Becker", "Michael Stich", "Alexander Zverev", "Tommy Haas"],
+    correct: 0
+  },
+  {
+    id: 24,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie nennt man das Gerät, auf dem Turner balancieren?",
+    a: ["Stufenbarren", "Reck", "Schwebebalken", "Trampolin"],
+    correct: 2
+  },
+  {
+    id: 25,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie nennt man das Spielgerät beim Baseball?",
+    a: ["Ball", "Stock", "Schläger", "Keule"],
+    correct: 2
+  },
+  {
+    id: 26,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "In welcher Sportart gibt es das 'Hole-in-one'?",
+    a: ["Golf", "Bowling", "Billard", "Tennis"],
+    correct: 0
+  },
+  {
+    id: 27,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie viele Punkte gibt ein Tor im Handball?",
+    a: ["1", "2", "3", "5"],
+    correct: 0
+  },
+  {
+    id: 28,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Was ist ein Marathon?",
+    a: ["Ein Hindernislauf", "Ein Langstreckenlauf", "Ein Staffellauf", "Ein Sprint"],
+    correct: 1
+  },
+  {
+    id: 29,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Wie nennt man den höchsten Pokal im Clubfußball Europas?",
+    a: ["UEFA Cup", "Champions League", "Conference League", "Europa League"],
+    correct: 1
+  },
+  {
+    id: 30,
+    difficulty: "Easy",
+    topic: "Sport",
+    q: "Welche Sportart wird oft als 'Königssport' bezeichnet?",
+    a: ["Formel 1", "Fußball", "Boxen", "Leichtathletik"],
+    correct: 1
+  },
+  {
+    id: 31,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie viele Planeten hat unser Sonnensystem?",
+    a: ["7", "8", "9", "10"],
+    correct: 1
+  },
+  {
+    id: 32,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Welcher Planet ist der Sonne am nächsten?",
+    a: ["Merkur", "Venus", "Erde", "Mars"],
+    correct: 0
+  },
+  {
+    id: 33,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man das Gas, das wir zum Atmen brauchen?",
+    a: ["Kohlenstoffdioxid", "Sauerstoff", "Stickstoff", "Helium"],
+    correct: 1
+  },
+  {
+    id: 34,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man die Wissenschaft vom Leben?",
+    a: ["Physik", "Chemie", "Biologie", "Geologie"],
+    correct: 2
+  },
+  {
+    id: 35,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie viel Grad Celsius hat Wasser beim Gefrierpunkt?",
+    a: ["0", "10", "20", "100"],
+    correct: 0
+  },
+  {
+    id: 36,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie heißt das Organ, das Blut durch den Körper pumpt?",
+    a: ["Lunge", "Herz", "Leber", "Gehirn"],
+    correct: 1
+  },
+  {
+    id: 37,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Welche Farbe hat das Blut im menschlichen Körper?",
+    a: ["Blau", "Rot", "Grün", "Transparent"],
+    correct: 1
+  },
+  {
+    id: 38,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man den festen Aggregatzustand von Wasser?",
+    a: ["Eis", "Dampf", "Nebel", "Regen"],
+    correct: 0
+  },
+  {
+    id: 39,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie viele Kontinente gibt es auf der Erde?",
+    a: ["5", "6", "7", "8"],
+    correct: 2
+  },
+  {
+    id: 40,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Was misst man mit einem Thermometer?",
+    a: ["Zeit", "Lautstärke", "Temperatur", "Luftfeuchtigkeit"],
+    correct: 2
+  },
+  {
+    id: 41,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man das Gerät, das elektrische Energie speichert?",
+    a: ["Batterie", "Generator", "Lampe", "Wandler"],
+    correct: 0
+  },
+  {
+    id: 42,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man den natürlichen Satelliten der Erde?",
+    a: ["Mars", "Sonne", "Mond", "Venus"],
+    correct: 2
+  },
+  {
+    id: 43,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Was ist H2O?",
+    a: ["Wasser", "Sauerstoff", "Kohlenstoffdioxid", "Helium"],
+    correct: 0
+  },
+  {
+    id: 44,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man die Kraft, die uns auf der Erde hält?",
+    a: ["Magnetismus", "Gravitation", "Reibung", "Trägheit"],
+    correct: 1
+  },
+  {
+    id: 45,
+    difficulty: "Easy",
+    topic: "Wissenschaft",
+    q: "Wie nennt man den roten Planeten?",
+    a: ["Mars", "Venus", "Saturn", "Jupiter"],
+    correct: 0
+  },
+  {
+    id: 46,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wer war der erste Bundeskanzler der Bundesrepublik Deutschland?",
+    a: ["Konrad Adenauer", "Willy Brandt", "Helmut Schmidt", "Ludwig Erhard"],
+    correct: 0
+  },
+  {
+    id: 47,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "In welchem Jahr fiel die Berliner Mauer?",
+    a: ["1987", "1989", "1991", "1993"],
+    correct: 1
+  },
+  {
+    id: 48,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wer war der erste Mensch auf dem Mond?",
+    a: ["Buzz Aldrin", "Yuri Gagarin", "Neil Armstrong", "Michael Collins"],
+    correct: 2
+  },
+  {
+    id: 49,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "In welchem Jahr begann der Zweite Weltkrieg?",
+    a: ["1937", "1938", "1939", "1940"],
+    correct: 2
+  },
+  {
+    id: 50,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Welches Land wurde früher als 'Sowjetunion' bezeichnet?",
+    a: ["Russland", "Polen", "Ukraine", "Kasachstan"],
+    correct: 0
+  },
+  {
+    id: 51,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wie hieß das große Schiff, das 1912 sank?",
+    a: ["Britannic", "Olympic", "Titanic", "Carpathia"],
+    correct: 2
+  },
+  {
+    id: 52,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Welches alte Volk baute die Pyramiden?",
+    a: ["Römer", "Griechen", "Ägypter", "Maya"],
+    correct: 2
+  },
+  {
+    id: 53,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wer war der berühmte König von Makedonien, der große Teile Asiens eroberte?",
+    a: ["Cäsar", "Alexander der Große", "Ramses II", "Napoleon"],
+    correct: 1
+  },
+  {
+    id: 54,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "In welcher Stadt stand früher das antike Kolosseum?",
+    a: ["Athen", "Rom", "Kairo", "Istanbul"],
+    correct: 1
+  },
+  {
+    id: 55,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wie hieß der Anführer des nationalsozialistischen Deutschlands?",
+    a: ["Adolf Hitler", "Benito Mussolini", "Joseph Stalin", "Winston Churchill"],
+    correct: 0
+  },
+  {
+    id: 56,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wie hieß das erste Land, das Menschen ins All schickte?",
+    a: ["USA", "China", "Sowjetunion", "Deutschland"],
+    correct: 2
+  },
+  {
+    id: 57,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Welche Mauer teilte Berlin über Jahrzehnte?",
+    a: ["Chinesische Mauer", "Berliner Mauer", "Mauer des Westens", "Grenzmauer"],
+    correct: 1
+  },
+  {
+    id: 58,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Wer war der berühmte Physiker, der die Relativitätstheorie entwickelte?",
+    a: ["Isaac Newton", "Albert Einstein", "Stephen Hawking", "Galileo Galilei"],
+    correct: 1
+  },
+  {
+    id: 59,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Was entdeckte Christoph Kolumbus im Jahr 1492?",
+    a: ["Afrika", "Amerika", "Australien", "Indien"],
+    correct: 1
+  },
+  {
+    id: 60,
+    difficulty: "Easy",
+    topic: "Geschichte",
+    q: "Welche Stadt war die Hauptstadt des Römischen Reichs?",
+    a: ["Rom", "Athen", "Karthago", "Alexandria"],
+    correct: 0
+  },
+  {
+    id: 61,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "In welchem Land steht der Eiffelturm?",
+    a: ["Italien", "Frankreich", "Spanien", "Belgien"],
+    correct: 1
+  },
+  {
+    id: 62,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Welche Hauptstadt gehört zu Deutschland?",
+    a: ["München", "Hamburg", "Berlin", "Köln"],
+    correct: 2
+  },
+  {
+    id: 63,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "In welchem Land liegt die Stadt Rom?",
+    a: ["Frankreich", "Griechenland", "Spanien", "Italien"],
+    correct: 3
+  },
+  {
+    id: 64,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die größte Fläche der Erde?",
+    a: ["Kanada", "USA", "China", "Russland"],
+    correct: 3
+  },
+  {
+    id: 65,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt von Österreich?",
+    a: ["Salzburg", "Wien", "Graz", "Innsbruck"],
+    correct: 1
+  },
+  {
+    id: 66,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "In welchem Land spricht man Spanisch?",
+    a: ["Portugal", "Spanien", "Frankreich", "Italien"],
+    correct: 1
+  },
+  {
+    id: 67,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Wie heißt der längste Fluss der Welt?",
+    a: ["Nil", "Amazonas", "Mississippi", "Jangtse"],
+    correct: 1
+  },
+  {
+    id: 68,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "In welchem Land leben die meisten Menschen?",
+    a: ["Indien", "China", "USA", "Indonesien"],
+    correct: 1
+  },
+  {
+    id: 69,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Welche Stadt ist für ihre roten Doppeldeckerbusse bekannt?",
+    a: ["New York", "London", "Paris", "Dublin"],
+    correct: 1
+  },
+  {
+    id: 70,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt von Japan?",
+    a: ["Kyoto", "Osaka", "Tokio", "Hiroshima"],
+    correct: 2
+  },
+  {
+    id: 71,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Welcher Kontinent liegt südlich von Europa?",
+    a: ["Asien", "Afrika", "Australien", "Antarktika"],
+    correct: 1
+  },
+  {
+    id: 72,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Welches Land ist berühmt für Kängurus?",
+    a: ["Südafrika", "Australien", "Neuseeland", "Kanada"],
+    correct: 1
+  },
+  {
+    id: 73,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt der Schweiz?",
+    a: ["Zürich", "Bern", "Genf", "Basel"],
+    correct: 1
+  },
+  {
+    id: 74,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "In welchem Land befindet sich die Freiheitsstatue?",
+    a: ["Kanada", "Frankreich", "USA", "England"],
+    correct: 2
+  },
+  {
+    id: 75,
+    difficulty: "Easy",
+    topic: "Länder der Welt",
+    q: "Welche Insel gehört zu Italien und liegt im Mittelmeer?",
+    a: ["Kreta", "Sizilien", "Mallorca", "Zypern"],
+    correct: 1
+  },
+  {
+    id: 76,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Wie nennt man die kleinste Einheit digitaler Information?",
+    a: ["Byte", "Bit", "Pixel", "Code"],
+    correct: 1
+  },
+  {
+    id: 77,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Welche Firma entwickelte das erste grafische Betriebssystem mit Maussteuerung?",
+    a: ["Apple", "Microsoft", "IBM", "Atari"],
+    correct: 0
+  },
+  {
+    id: 78,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Was bedeutet die Abkürzung 'HTML'?",
+    a: ["HyperText Markup Language", "HyperTransfer Machine Logic", "HighTech Media Layout", "Hyperlink Text Management Language"],
+    correct: 0
+  },
+  {
+    id: 79,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Was ist ein Motherboard?",
+    a: ["Das Hauptnetzteil", "Die zentrale Platine im Computer", "Ein externer Speicher", "Ein Lüfter"],
+    correct: 1
+  },
+  {
+    id: 80,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Welches Unternehmen stellt die Prozessoren mit der Marke 'Ryzen' her?",
+    a: ["Intel", "AMD", "Qualcomm", "Nvidia"],
+    correct: 1
+  },
+  {
+    id: 81,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Welche Programmiersprache wird häufig für Web-Apps im Browser verwendet?",
+    a: ["C++", "Python", "JavaScript", "Java"],
+    correct: 2
+  },
+  {
+    id: 82,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Wie nennt man den internen schnellen Speicher einer CPU?",
+    a: ["Cache", "RAM", "ROM", "SSD"],
+    correct: 0
+  },
+  {
+    id: 83,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Was beschreibt die Taktfrequenz eines Prozessors?",
+    a: ["Die Rechengeschwindigkeit in Hertz", "Die Speicherkapazität", "Die Größe des Prozessors", "Die Anzahl der Anschlüsse"],
+    correct: 0
+  },
+  {
+    id: 84,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Was ist 'Cloud Computing'?",
+    a: ["Datenverarbeitung über das Internet", "Programmieren von Wettermodellen", "Netzwerk von PCs im Heimnetz", "Speicherung auf CD-ROMs"],
+    correct: 0
+  },
+  {
+    id: 85,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Was ist eine GPU?",
+    a: ["Grafikprozessor", "Audiochip", "Hauptspeicher", "Netzwerkadapter"],
+    correct: 0
+  },
+  {
+    id: 86,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Wie nennt man die Technologie für drahtlose Nahfeldkommunikation?",
+    a: ["LAN", "NFC", "RFID", "WPS"],
+    correct: 1
+  },
+  {
+    id: 87,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Welche Speichereinheit ist größer?",
+    a: ["Megabyte", "Gigabyte", "Kilobyte", "Terabyte"],
+    correct: 3
+  },
+  {
+    id: 88,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Wie nennt man das Herzstück eines Betriebssystems?",
+    a: ["Kernel", "Firmware", "BIOS", "Treiber"],
+    correct: 0
+  },
+  {
+    id: 89,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Was ist ein Algorithmus?",
+    a: ["Eine feste Folge von Anweisungen zur Problemlösung", "Eine Speicherformel", "Ein Computertyp", "Ein Datensatz"],
+    correct: 0
+  },
+  {
+    id: 90,
+    difficulty: "Medium",
+    topic: "Technik",
+    q: "Wie nennt man die virtuelle Realität im Englischen?",
+    a: ["Virtual World", "Virtual Reality", "Digital Environment", "Cyber Space"],
+    correct: 1
+  },
+  {
+    id: 91,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie lang ist ein olympisches Schwimmbecken?",
+    a: ["25 Meter", "50 Meter", "75 Meter", "100 Meter"],
+    correct: 1
+  },
+  {
+    id: 92,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Welches Land gewann die erste Fußball-Weltmeisterschaft 1930?",
+    a: ["Deutschland", "Brasilien", "Uruguay", "Italien"],
+    correct: 2
+  },
+  {
+    id: 93,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie viele Runden werden in einem Formel-1-Rennen typischerweise gefahren?",
+    a: ["10–20", "30–50", "60–80", "100–120"],
+    correct: 1
+  },
+  {
+    id: 94,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "In welcher Sportart wird ein 'Spalding' verwendet?",
+    a: ["Basketball", "Baseball", "Tennis", "Golf"],
+    correct: 0
+  },
+  {
+    id: 95,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie viele Spieler befinden sich gleichzeitig auf dem Basketballfeld (beide Teams)?",
+    a: ["8", "10", "12", "14"],
+    correct: 1
+  },
+  {
+    id: 96,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wer gewann die Fußball-WM 2014 in Brasilien?",
+    a: ["Argentinien", "Deutschland", "Frankreich", "Brasilien"],
+    correct: 1
+  },
+  {
+    id: 97,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie viele Sätze braucht man im Tennis (bei Herren) zum Sieg bei Grand-Slam-Turnieren?",
+    a: ["2", "3", "4", "5"],
+    correct: 3
+  },
+  {
+    id: 98,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie viele Punkte gibt ein Treffer im Basketball?",
+    a: ["1, 2 oder 3", "Immer 2", "Immer 3", "1 oder 2"],
+    correct: 0
+  },
+  {
+    id: 99,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie nennt man den Ballwechsel im Tennis?",
+    a: ["Duel", "Volley", "Rallye", "Smash"],
+    correct: 2
+  },
+  {
+    id: 100,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie nennt man das zentrale Feld beim Baseball?",
+    a: ["Center", "Infield", "Pitch", "Court"],
+    correct: 1
+  },
+  {
+    id: 101,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Welcher Sportler gilt als der erfolgreichste Olympionike aller Zeiten?",
+    a: ["Usain Bolt", "Michael Phelps", "Carl Lewis", "Simone Biles"],
+    correct: 1
+  },
+  {
+    id: 102,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie viele Löcher hat ein reguläres Golfturnier?",
+    a: ["9", "12", "18", "24"],
+    correct: 2
+  },
+  {
+    id: 103,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie viele Minuten dauert ein normales Fußballspiel ohne Nachspielzeit?",
+    a: ["80", "90", "100", "120"],
+    correct: 1
+  },
+  {
+    id: 104,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Welche Farbe hat das Trikot des Spitzenreiters bei der Tour de France?",
+    a: ["Rot", "Grün", "Gelb", "Weiß"],
+    correct: 2
+  },
+  {
+    id: 105,
+    difficulty: "Medium",
+    topic: "Sport",
+    q: "Wie nennt man den Bereich, in dem ein Torhüter den Ball mit der Hand spielen darf?",
+    a: ["Torzone", "Strafraum", "Mittelfeld", "Abwehrraum"],
+    correct: 1
+  },
+  {
+    id: 106,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Welches chemische Element hat das Symbol 'Fe'?",
+    a: ["Fluor", "Eisen", "Fermium", "Francium"],
+    correct: 1
+  },
+  {
+    id: 107,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Was misst die Einheit 'Newton'?",
+    a: ["Energie", "Kraft", "Druck", "Leistung"],
+    correct: 1
+  },
+  {
+    id: 108,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Welcher Planet ist der Sonne am nächsten?",
+    a: ["Venus", "Merkur", "Mars", "Erde"],
+    correct: 1
+  },
+  {
+    id: 109,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie viele Chromosomen hat der Mensch normalerweise?",
+    a: ["44", "46", "48", "50"],
+    correct: 1
+  },
+  {
+    id: 110,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie nennt man die Lehre von den Pilzen?",
+    a: ["Botanik", "Mykologie", "Zoologie", "Mikrobiologie"],
+    correct: 1
+  },
+  {
+    id: 111,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Was ist die kleinste Einheit der Materie?",
+    a: ["Atom", "Molekül", "Elektron", "Proton"],
+    correct: 0
+  },
+  {
+    id: 112,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie nennt man die Umwandlung von Wasser in Dampf?",
+    a: ["Kondensation", "Verdunstung", "Sublimation", "Oxidation"],
+    correct: 1
+  },
+  {
+    id: 113,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Welcher Wissenschaftler entdeckte die Schwerkraft laut Legende durch einen fallenden Apfel?",
+    a: ["Albert Einstein", "Isaac Newton", "Galileo Galilei", "Nikola Tesla"],
+    correct: 1
+  },
+  {
+    id: 114,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Welche Farbe hat Kupferoxid?",
+    a: ["Grün", "Blau", "Schwarz", "Rot"],
+    correct: 2
+  },
+  {
+    id: 115,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie nennt man die Wissenschaft, die sich mit Sternen und Planeten beschäftigt?",
+    a: ["Astronomie", "Astrologie", "Geologie", "Meteorologie"],
+    correct: 0
+  },
+  {
+    id: 116,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Welches Organ produziert Insulin?",
+    a: ["Leber", "Bauchspeicheldrüse", "Milz", "Niere"],
+    correct: 1
+  },
+  {
+    id: 117,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie nennt man den Übergang von fest zu gasförmig ohne flüssige Phase?",
+    a: ["Kondensation", "Sublimation", "Verdunstung", "Destillation"],
+    correct: 1
+  },
+  {
+    id: 118,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Was ist der Hauptbestandteil der Sonne?",
+    a: ["Helium", "Kohlenstoff", "Wasserstoff", "Sauerstoff"],
+    correct: 2
+  },
+  {
+    id: 119,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie nennt man das Blutgefäß, das Blut zum Herzen führt?",
+    a: ["Arterie", "Vene", "Kapillare", "Aorta"],
+    correct: 1
+  },
+  {
+    id: 120,
+    difficulty: "Medium",
+    topic: "Wissenschaft",
+    q: "Wie heißt die Naturkraft, die Elektronen anzieht oder abstößt?",
+    a: ["Magnetismus", "Gravitation", "Elektromagnetismus", "Elektrische Kraft"],
+    correct: 3
+  },
+  {
+    id: 121,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer war der erste Präsident der Vereinigten Staaten?",
+    a: ["Thomas Jefferson", "Abraham Lincoln", "George Washington", "John Adams"],
+    correct: 2
+  },
+  {
+    id: 122,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "In welchem Jahr begann der Erste Weltkrieg?",
+    a: ["1912", "1914", "1916", "1918"],
+    correct: 1
+  },
+  {
+    id: 123,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer leitete die Russische Revolution 1917?",
+    a: ["Stalin", "Lenin", "Trotsky", "Gorbatschow"],
+    correct: 1
+  },
+  {
+    id: 124,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Welches antike Reich baute die Stadt Karthago?",
+    a: ["Römer", "Phönizier", "Ägypter", "Perser"],
+    correct: 1
+  },
+  {
+    id: 125,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer war die berühmte Königin von Ägypten, die Kleopatra VII. genannt wird?",
+    a: ["Nofretete", "Hatschepsut", "Kleopatra", "Nefertari"],
+    correct: 2
+  },
+  {
+    id: 126,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Welche Stadt wurde 79 n. Chr. durch den Ausbruch des Vesuvs zerstört?",
+    a: ["Pompeji", "Rom", "Neapel", "Herculaneum"],
+    correct: 0
+  },
+  {
+    id: 127,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer war der erste Kaiser des Römischen Reiches?",
+    a: ["Julius Cäsar", "Augustus", "Nero", "Trajan"],
+    correct: 1
+  },
+  {
+    id: 128,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Welcher Krieg endete 1945 mit der Kapitulation Deutschlands?",
+    a: ["Erster Weltkrieg", "Zweiter Weltkrieg", "Kalter Krieg", "Napoleonische Kriege"],
+    correct: 1
+  },
+  {
+    id: 129,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer war der Anführer der Reformation im 16. Jahrhundert?",
+    a: ["Martin Luther", "Johannes Calvin", "Huldrych Zwingli", "Thomas More"],
+    correct: 0
+  },
+  {
+    id: 130,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wie heißt die berühmte Mauer, die Rom im Mittelalter umgab?",
+    a: ["Hadrianswall", "Aurelianische Mauer", "Chinesische Mauer", "Berliner Mauer"],
+    correct: 1
+  },
+  {
+    id: 131,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer führte die Französische Revolution an?",
+    a: ["Napoleon", "Maximilien Robespierre", "Louis XVI", "Charles de Gaulle"],
+    correct: 1
+  },
+  {
+    id: 132,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Welche Zivilisation baute Machu Picchu?",
+    a: ["Azteken", "Inka", "Maya", "Olmeken"],
+    correct: 1
+  },
+  {
+    id: 133,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wer war der englische König während der Schlacht von Hastings 1066?",
+    a: ["Harold II", "Wilhelm der Eroberer", "Edward der Bekenner", "Richard Löwenherz"],
+    correct: 0
+  },
+  {
+    id: 134,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Wann begann die Französische Revolution?",
+    a: ["1789", "1776", "1799", "1804"],
+    correct: 0
+  },
+  {
+    id: 135,
+    difficulty: "Medium",
+    topic: "Geschichte",
+    q: "Welcher Krieg dauerte von 1939 bis 1945?",
+    a: ["Erster Weltkrieg", "Zweiter Weltkrieg", "Koreakrieg", "Vietnamkrieg"],
+    correct: 1
+  },
+  {
+    id: 136,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die Hauptstadt Oslo?",
+    a: ["Norwegen", "Schweden", "Dänemark", "Finnland"],
+    correct: 0
+  },
+  {
+    id: 137,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "In welchem Land liegt der Kilimandscharo?",
+    a: ["Kenia", "Tansania", "Uganda", "Südafrika"],
+    correct: 1
+  },
+  {
+    id: 138,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welche Hauptstadt liegt in Kanada?",
+    a: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
+    correct: 1
+  },
+  {
+    id: 139,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welches Land ist flächenmäßig das zweitgrößte der Erde?",
+    a: ["Kanada", "China", "USA", "Brasilien"],
+    correct: 0
+  },
+  {
+    id: 140,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt von Australien?",
+    a: ["Sydney", "Melbourne", "Canberra", "Perth"],
+    correct: 2
+  },
+  {
+    id: 141,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "In welchem Land liegt die Stadt Marrakesch?",
+    a: ["Algerien", "Marokko", "Tunesien", "Ägypten"],
+    correct: 1
+  },
+  {
+    id: 142,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die meisten Vulkane?",
+    a: ["Japan", "Indonesien", "Italien", "Philippinen"],
+    correct: 1
+  },
+  {
+    id: 143,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt von Griechenland?",
+    a: ["Thessaloniki", "Athens", "Athen", "Patras"],
+    correct: 2
+  },
+  {
+    id: 144,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welche Stadt liegt in Russland?",
+    a: ["Kiew", "Moskau", "St. Petersburg", "Sofia"],
+    correct: 1
+  },
+  {
+    id: 145,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welches Land grenzt nicht an Deutschland?",
+    a: ["Polen", "Belgien", "Tschechien", "Italien"],
+    correct: 3
+  },
+  {
+    id: 146,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "In welchem Land liegt die Sahara?",
+    a: ["Marokko", "Ägypten", "Algerien", "Alle genannten"],
+    correct: 3
+  },
+  {
+    id: 147,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welche Stadt ist Hauptstadt von Indien?",
+    a: ["Mumbai", "Delhi", "Bangalore", "Kalkutta"],
+    correct: 1
+  },
+  {
+    id: 148,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die Form eines Stiefels?",
+    a: ["Spanien", "Italien", "Portugal", "Griechenland"],
+    correct: 1
+  },
+  {
+    id: 149,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt von Ägypten?",
+    a: ["Alexandria", "Kairo", "Gizeh", "Luxor"],
+    correct: 1
+  },
+  {
+    id: 150,
+    difficulty: "Medium",
+    topic: "Länder der Welt",
+    q: "Welches Land ist bekannt für die Fjorde?",
+    a: ["Norwegen", "Schweden", "Finnland", "Island"],
+    correct: 0
+  },
+  {
+    id: 151,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welcher Mikroprozessor war der erste von Intel mit 32-Bit-Architektur?",
+    a: ["8086", "80286", "80386", "80486"],
+    correct: 2
+  },
+  {
+    id: 152,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Was bedeutet die Abkürzung 'SSD'?",
+    a: ["Solid State Drive", "Super Storage Device", "Single State Disk", "Solid Storage Disk"],
+    correct: 0
+  },
+  {
+    id: 153,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welche Programmiersprache wird hauptsächlich für Systemprogrammierung verwendet?",
+    a: ["Python", "C", "JavaScript", "Ruby"],
+    correct: 1
+  },
+  {
+    id: 154,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Was beschreibt das Moore’sche Gesetz?",
+    a: ["Verdopplung der Rechenleistung alle 18–24 Monate", "Halbierung der Speichergröße alle 10 Jahre", "Verdopplung der Bandbreite alle 5 Jahre", "Stabile Prozessorpreise über Jahre"],
+    correct: 0
+  },
+  {
+    id: 155,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welche Architektur hat die meisten modernen Desktop-CPUs?",
+    a: ["ARM", "x86-64", "PowerPC", "MIPS"],
+    correct: 1
+  },
+  {
+    id: 156,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Was ist der Zweck eines RAID-Systems?",
+    a: ["Sicherheitskopie von Software", "Redundanz und Performance bei Speicher", "Netzwerkoptimierung", "CPU-Kühlung"],
+    correct: 1
+  },
+  {
+    id: 157,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Was ist die Aufgabe eines BIOS?",
+    a: ["Festplatten formatieren", "Starten des Betriebssystems und Hardwareprüfung", "RAM verwalten", "Daten verschlüsseln"],
+    correct: 1
+  },
+  {
+    id: 158,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welche Schnittstelle wird für Grafikkarten am häufigsten verwendet?",
+    a: ["PCIe", "USB", "SATA", "Thunderbolt"],
+    correct: 0
+  },
+  {
+    id: 159,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welche Art von Speicher verliert beim Ausschalten die Daten?",
+    a: ["ROM", "EEPROM", "RAM", "Flash"],
+    correct: 2
+  },
+  {
+    id: 160,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Was ist Overclocking?",
+    a: ["Die Übertaktung einer CPU oder GPU zur Leistungssteigerung", "Reduzierung der CPU-Leistung", "Fehlerbehebung bei Software", "Datenübertragung zwischen Geräten"],
+    correct: 0
+  },
+  {
+    id: 161,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welche Einheit misst die Speicherkapazität eines RAM-Riegels?",
+    a: ["Hertz", "Byte", "Watt", "Volt"],
+    correct: 1
+  },
+  {
+    id: 162,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welches Betriebssystem ist Open Source?",
+    a: ["Windows", "macOS", "Linux", "iOS"],
+    correct: 2
+  },
+  {
+    id: 163,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Wie nennt man das Protokoll zur sicheren Datenübertragung im Internet?",
+    a: ["HTTP", "FTP", "HTTPS", "SMTP"],
+    correct: 2
+  },
+  {
+    id: 164,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Was bedeutet 'GPU TDP'?",
+    a: ["Temperatur der GPU", "Maximale Leistungsaufnahme", "Speicherkapazität", "Taktrate der GPU"],
+    correct: 1
+  },
+  {
+    id: 165,
+    difficulty: "Hard",
+    topic: "Technik",
+    q: "Welche Art von Kabel wird für die meisten modernen Netzwerke verwendet?",
+    a: ["Koaxialkabel", "Twisted-Pair-Kabel", "Glasfaserkabel", "HDMI-Kabel"],
+    correct: 1
+  },
+  {
+    id: 166,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie viele Spieler befinden sich bei Rugby Union pro Team auf dem Feld?",
+    a: ["11", "13", "15", "18"],
+    correct: 2
+  },
+  {
+    id: 167,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wer hält den Rekord für die meisten Tore in einer Fußball-Weltmeisterschaft?",
+    a: ["Miroslav Klose", "Ronaldo", "Pele", "Lionel Messi"],
+    correct: 0
+  },
+  {
+    id: 168,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "In welchem Jahr wurden die ersten modernen Olympischen Spiele abgehalten?",
+    a: ["1892", "1896", "1900", "1904"],
+    correct: 1
+  },
+  {
+    id: 169,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie viele Sets muss man im Damen-Tennis für einen Sieg in Grand-Slam-Spielen gewinnen?",
+    a: ["2", "3", "4", "5"],
+    correct: 0
+  },
+  {
+    id: 170,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Welche Distanz wird beim Marathonlauf offiziell gelaufen?",
+    a: ["40 km", "42,195 km", "45 km", "50 km"],
+    correct: 1
+  },
+  {
+    id: 171,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie viele Spieler bilden eine Fußballmannschaft auf dem Feld?",
+    a: ["10", "11", "12", "9"],
+    correct: 1
+  },
+  {
+    id: 172,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie nennt man die Spielfläche beim Eishockey?",
+    a: ["Feld", "Rink", "Arena", "Court"],
+    correct: 1
+  },
+  {
+    id: 173,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wer gewann die Formel-1-Weltmeisterschaft 2021?",
+    a: ["Lewis Hamilton", "Max Verstappen", "Sebastian Vettel", "Valtteri Bottas"],
+    correct: 1
+  },
+  {
+    id: 174,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie viele Runden hat ein Standard-Boxkampf (Weltmeisterschaft) höchstens?",
+    a: ["10", "12", "15", "16"],
+    correct: 1
+  },
+  {
+    id: 175,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Welche Sportart wird beim Davis Cup gespielt?",
+    a: ["Tennis", "Golf", "Rugby", "Basketball"],
+    correct: 0
+  },
+  {
+    id: 176,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie lange dauert ein Eishockey-Spiel regulär ohne Verlängerung?",
+    a: ["50 Minuten", "55 Minuten", "60 Minuten", "65 Minuten"],
+    correct: 2
+  },
+  {
+    id: 177,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wer ist Rekord-Olympiasieger im Schwimmen?",
+    a: ["Michael Phelps", "Mark Spitz", "Ryan Lochte", "Ian Thorpe"],
+    correct: 0
+  },
+  {
+    id: 178,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Welches Land gewann die Rugby-Weltmeisterschaft 2019?",
+    a: ["England", "Neuseeland", "Südafrika", "Australien"],
+    correct: 2
+  },
+  {
+    id: 179,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wie viele Minuten dauert ein Basketballspiel in der NBA regulär?",
+    a: ["40", "48", "50", "60"],
+    correct: 1
+  },
+  {
+    id: 180,
+    difficulty: "Hard",
+    topic: "Sport",
+    q: "Wer gilt als Erfinder des modernen Fußballs?",
+    a: ["William Webb Ellis", "James Naismith", "Ebenezer Cobb Morley", "Alexander Cartwright"],
+    correct: 2
+  },
+  {
+    id: 181,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welches Teilchen ist elektrisch negativ geladen?",
+    a: ["Proton", "Neutron", "Elektron", "Photon"],
+    correct: 2
+  },
+  {
+    id: 182,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Wie lautet die chemische Formel von Wasser?",
+    a: ["H2O", "CO2", "O2", "HO2"],
+    correct: 0
+  },
+  {
+    id: 183,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Wer formulierte die Relativitätstheorie?",
+    a: ["Isaac Newton", "Albert Einstein", "Galileo Galilei", "Nikola Tesla"],
+    correct: 1
+  },
+  {
+    id: 184,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welche Einheit misst die elektrische Spannung?",
+    a: ["Ampere", "Volt", "Ohm", "Watt"],
+    correct: 1
+  },
+  {
+    id: 185,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welche Planeten gelten als Gasriesen?",
+    a: ["Merkur, Venus", "Mars, Erde", "Jupiter, Saturn, Uranus, Neptun", "Venus, Mars, Jupiter"],
+    correct: 2
+  },
+  {
+    id: 186,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Wie viele Zähne hat ein normales menschliches Gebiss?",
+    a: ["28", "30", "32", "34"],
+    correct: 2
+  },
+  {
+    id: 187,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welche Art von Strahlung kann durch Aluminium abgeschirmt werden?",
+    a: ["Alpha-Strahlung", "Beta-Strahlung", "Gamma-Strahlung", "Röntgenstrahlung"],
+    correct: 0
+  },
+  {
+    id: 188,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welches Gas ist für die Photosynthese notwendig?",
+    a: ["Sauerstoff", "Kohlendioxid", "Stickstoff", "Wasserstoff"],
+    correct: 1
+  },
+  {
+    id: 189,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Was ist die kleinste Einheit des Lebens?",
+    a: ["Organ", "Zelle", "Gewebe", "Molekül"],
+    correct: 1
+  },
+  {
+    id: 190,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welches Teil des Auges reguliert die Lichtmenge?",
+    a: ["Linse", "Iris", "Netzhaut", "Sehnerv"],
+    correct: 1
+  },
+  {
+    id: 191,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welche Art von Blutgefäß transportiert Blut vom Herz weg?",
+    a: ["Arterie", "Vene", "Kapillare", "Lymphgefäß"],
+    correct: 0
+  },
+  {
+    id: 192,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welches Organ ist für die Produktion von Insulin verantwortlich?",
+    a: ["Leber", "Bauchspeicheldrüse", "Milz", "Niere"],
+    correct: 1
+  },
+  {
+    id: 193,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welche chemische Verbindung ist Hauptbestandteil von Kochsalz?",
+    a: ["NaCl", "KCl", "Na2SO4", "CaCO3"],
+    correct: 0
+  },
+  {
+    id: 194,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Wie nennt man die Umwandlung von flüssigem Wasser in Dampf?",
+    a: ["Kondensation", "Verdunstung", "Sublimation", "Oxidation"],
+    correct: 1
+  },
+  {
+    id: 195,
+    difficulty: "Hard",
+    topic: "Wissenschaft",
+    q: "Welcher Planet ist bekannt für seine Ringe?",
+    a: ["Jupiter", "Saturn", "Uranus", "Neptun"],
+    correct: 1
+  },
+  {
+    id: 196,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wer war der britische Premierminister während des Zweiten Weltkriegs?",
+    a: ["Winston Churchill", "Neville Chamberlain", "Clement Attlee", "Harold Macmillan"],
+    correct: 0
+  },
+  {
+    id: 197,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "In welchem Jahr fiel die Berliner Mauer?",
+    a: ["1987", "1989", "1991", "1993"],
+    correct: 1
+  },
+  {
+    id: 198,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Welcher Kaiser war während des Untergangs des Weströmischen Reiches?",
+    a: ["Augustus", "Romulus Augustulus", "Konstantin", "Nero"],
+    correct: 1
+  },
+  {
+    id: 199,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wann begann der Amerikanische Bürgerkrieg?",
+    a: ["1850", "1861", "1865", "1870"],
+    correct: 1
+  },
+  {
+    id: 200,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wer war Anführer der Mongolen im 13. Jahrhundert?",
+    a: ["Kublai Khan", "Dschingis Khan", "Tamerlan", "Attila"],
+    correct: 1
+  },
+  {
+    id: 201,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Welches Land führte die industrielle Revolution an?",
+    a: ["Deutschland", "USA", "England", "Frankreich"],
+    correct: 2
+  },
+  {
+    id: 202,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wer entdeckte Amerika 1492?",
+    a: ["Ferdinand Magellan", "Christoph Kolumbus", "Amerigo Vespucci", "James Cook"],
+    correct: 1
+  },
+  {
+    id: 203,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Welches Land führte den Kalten Krieg nicht direkt?",
+    a: ["USA", "Sowjetunion", "China", "Kanada"],
+    correct: 3
+  },
+  {
+    id: 204,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wann begann der Zweite Weltkrieg?",
+    a: ["1937", "1939", "1941", "1945"],
+    correct: 1
+  },
+  {
+    id: 205,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wer war der Führer Deutschlands im Zweiten Weltkrieg?",
+    a: ["Adolf Hitler", "Otto von Bismarck", "Heinrich Himmler", "Joseph Goebbels"],
+    correct: 0
+  },
+  {
+    id: 206,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Welcher König war bekannt als 'Sonnenkönig'?",
+    a: ["Ludwig XIV.", "Karl V.", "Heinrich VIII.", "Franz Joseph I."],
+    correct: 0
+  },
+  {
+    id: 207,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wann wurde die UNO gegründet?",
+    a: ["1919", "1945", "1950", "1960"],
+    correct: 1
+  },
+  {
+    id: 208,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Wer war der letzte Zar von Russland?",
+    a: ["Peter der Große", "Nikolaus II.", "Alexander III.", "Michael I."],
+    correct: 1
+  },
+  {
+    id: 209,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Welches Ereignis löste den Ersten Weltkrieg aus?",
+    a: ["Attentat auf Franz Ferdinand", "Invasion Belgiens", "Schlacht bei Verdun", "Unterzeichnung des Versailler Vertrags"],
+    correct: 0
+  },
+  {
+    id: 210,
+    difficulty: "Hard",
+    topic: "Geschichte",
+    q: "Welcher Herrscher führte das Römische Reich während seiner größten Ausdehnung?",
+    a: ["Trajan", "Augustus", "Nero", "Hadrian"],
+    correct: 0
+  },
+  {
+    id: 211,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die meisten Nachbarländer?",
+    a: ["China", "Russland", "Brasilien", "Deutschland"],
+    correct: 0
+  },
+  {
+    id: 212,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Wie viele Länder gehören zu den Vereinten Nationen (Stand 2025)?",
+    a: ["192", "193", "194", "195"],
+    correct: 1
+  },
+  {
+    id: 213,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die größte Bevölkerung?",
+    a: ["USA", "Indien", "China", "Indonesien"],
+    correct: 2
+  },
+  {
+    id: 214,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welche Hauptstadt liegt am weitesten nördlich?",
+    a: ["Reykjavik", "Oslo", "Helsinki", "Stockholm"],
+    correct: 0
+  },
+  {
+    id: 215,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welches Land hat keine Landgrenze?",
+    a: ["Australien", "Kanada", "Niger", "Bolivien"],
+    correct: 0
+  },
+  {
+    id: 216,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "In welchem Land liegt der Amazonas-Regenwald hauptsächlich?",
+    a: ["Brasilien", "Peru", "Kolumbien", "Venezuela"],
+    correct: 0
+  },
+  {
+    id: 217,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Wie heißt die Hauptstadt von Saudi-Arabien?",
+    a: ["Riad", "Dschidda", "Medina", "Damaskus"],
+    correct: 0
+  },
+  {
+    id: 218,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welche Insel gehört zu Japan?",
+    a: ["Honshu", "Taiwan", "Hainan", "Sumatra"],
+    correct: 0
+  },
+  {
+    id: 219,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die längste Küstenlinie der Welt?",
+    a: ["Kanada", "USA", "Russland", "Australien"],
+    correct: 0
+  },
+  {
+    id: 220,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welche Stadt ist Hauptstadt von Neuseeland?",
+    a: ["Auckland", "Wellington", "Christchurch", "Dunedin"],
+    correct: 1
+  },
+  {
+    id: 221,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "In welchem Land liegt die Atacama-Wüste?",
+    a: ["Chile", "Peru", "Argentinien", "Bolivien"],
+    correct: 0
+  },
+  {
+    id: 222,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welche ist die kleinste unabhängige Nation der Welt?",
+    a: ["Monaco", "Liechtenstein", "Malta", "Vatikanstadt"],
+    correct: 3
+  },
+  {
+    id: 223,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welche Stadt ist Hauptstadt von Kanada?",
+    a: ["Toronto", "Ottawa", "Vancouver", "Montreal"],
+    correct: 1
+  },
+  {
+    id: 224,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welche Inselgruppe gehört zu Spanien?",
+    a: ["Balearen", "Färöer", "Azoren", "Kanarische Inseln"],
+    correct: 0
+  },
+  {
+    id: 225,
+    difficulty: "Hard",
+    topic: "Länder der Welt",
+    q: "Welches Land liegt vollständig in Südamerika?",
+    a: ["Panama", "Chile", "Mexiko", "Costa Rica"],
+    correct: 1
+  },
+  {
+    id: 226,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welches Jahr gilt als Beginn des Internets in der breiten Nutzung?",
+    a: ["1983", "1990", "1995", "2000"],
+    correct: 1
+  },
+  {
+    id: 227,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was ist ein FPGA?",
+    a: ["Eine Art Prozessor", "Ein rekonfigurierbarer integrierter Schaltkreis", "Eine Grafikkarte", "Ein Betriebssystem"],
+    correct: 1
+  },
+  {
+    id: 228,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welche Programmiersprache wird für maschinennahe Programmierung oft verwendet?",
+    a: ["C", "Python", "JavaScript", "Ruby"],
+    correct: 0
+  },
+  {
+    id: 229,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was beschreibt die Latenz in Netzwerken?",
+    a: ["Maximale Datenrate", "Verzögerung der Datenübertragung", "Signalstärke", "Fehlerrate"],
+    correct: 1
+  },
+  {
+    id: 230,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welches Betriebssystem basiert auf dem Linux-Kernel?",
+    a: ["Windows", "macOS", "Ubuntu", "iOS"],
+    correct: 2
+  },
+  {
+    id: 231,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was ist die Funktion eines Load Balancers?",
+    a: ["CPU kühlen", "Last auf Server verteilen", "RAM optimieren", "Software installieren"],
+    correct: 1
+  },
+  {
+    id: 232,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welche Einheit misst die Datenübertragungsgeschwindigkeit?",
+    a: ["Bit pro Sekunde", "Byte", "Watt", "Hertz"],
+    correct: 0
+  },
+  {
+    id: 233,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was ist der Hauptvorteil von SSDs gegenüber HDDs?",
+    a: ["Geringerer Stromverbrauch", "Schnellere Zugriffszeiten", "Größere Kapazität", "Längere Kabel"],
+    correct: 1
+  },
+  {
+    id: 234,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welches Protokoll wird für sichere E-Mails verwendet?",
+    a: ["SMTP", "IMAP", "POP3", "PGP"],
+    correct: 3
+  },
+  {
+    id: 235,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welche Programmiersprache ist für künstliche Intelligenz und maschinelles Lernen beliebt?",
+    a: ["Python", "HTML", "CSS", "SQL"],
+    correct: 0
+  },
+  {
+    id: 236,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was ist eine API?",
+    a: ["Anwendungsprogrammierschnittstelle", "Speicherchip", "Betriebssystem", "Netzwerkkabel"],
+    correct: 0
+  },
+  {
+    id: 237,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welche Technologie wird für drahtlose Nahfeld-Kommunikation genutzt?",
+    a: ["Wi-Fi", "Bluetooth", "Ethernet", "5G"],
+    correct: 1
+  },
+  {
+    id: 238,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was ist der Unterschied zwischen RAM und ROM?",
+    a: ["RAM ist flüchtig, ROM nicht", "ROM ist schneller als RAM", "RAM speichert dauerhaft Daten", "ROM ist flüchtig"],
+    correct: 0
+  },
+  {
+    id: 239,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Was bedeutet 'HTTP' in Webadressen?",
+    a: ["Hypertext Transfer Protocol", "Hyperlink Text Program", "High Transfer TCP Protocol", "Hyper Terminal Transfer Process"],
+    correct: 0
+  },
+  {
+    id: 240,
+    difficulty: "Expert",
+    topic: "Technik",
+    q: "Welches Gerät wandelt digitale Signale in analoge um?",
+    a: ["Modem", "Router", "Switch", "Repeater"],
+    correct: 0
+  },
+  {
+    id: 241,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer gewann die meisten Goldmedaillen bei den Olympischen Spielen insgesamt?",
+    a: ["Usain Bolt", "Michael Phelps", "Carl Lewis", "Mark Spitz"],
+    correct: 1
+  },
+  {
+    id: 242,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Spieler sind in einem Rugby League Team auf dem Feld?",
+    a: ["11", "13", "15", "17"],
+    correct: 1
+  },
+  {
+    id: 243,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer hält den Rekord für die meisten Tore in einer einzigen NHL-Saison?",
+    a: ["Wayne Gretzky", "Alex Ovechkin", "Mario Lemieux", "Bobby Orr"],
+    correct: 0
+  },
+  {
+    id: 244,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Welche Tennisspielerin gewann die meisten Grand Slam Titel (Einzel) in der Open Era?",
+    a: ["Serena Williams", "Steffi Graf", "Margaret Court", "Martina Navratilova"],
+    correct: 2
+  },
+  {
+    id: 245,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie lange dauert ein offizielles Cricket-Testmatch maximal?",
+    a: ["3 Tage", "4 Tage", "5 Tage", "6 Tage"],
+    correct: 2
+  },
+  {
+    id: 246,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Welche Nation gewann die Fußball-Weltmeisterschaft 2018?",
+    a: ["Brasilien", "Deutschland", "Frankreich", "Kroatien"],
+    correct: 2
+  },
+  {
+    id: 247,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer gewann die Tour de France 2020?",
+    a: ["Tadej Pogačar", "Primož Roglič", "Chris Froome", "Egan Bernal"],
+    correct: 0
+  },
+  {
+    id: 248,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Spieler sind in einer Volleyball-Mannschaft auf dem Feld?",
+    a: ["5", "6", "7", "8"],
+    correct: 1
+  },
+  {
+    id: 249,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Welches Land hat die meisten Rugby-Weltmeisterschaften gewonnen?",
+    a: ["England", "Neuseeland", "Südafrika", "Australien"],
+    correct: 1
+  },
+  {
+    id: 250,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Punkte sind ein Touchdown im American Football wert?",
+    a: ["3", "6", "7", "1"],
+    correct: 1
+  },
+  {
+    id: 251,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Spieler hat ein Hockeyteam auf dem Feld (ohne Torwart)?",
+    a: ["5", "6", "7", "8"],
+    correct: 0
+  },
+  {
+    id: 252,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer gilt als Rekordhalter der meisten Siege in Formel 1?",
+    a: ["Lewis Hamilton", "Michael Schumacher", "Sebastian Vettel", "Ayrton Senna"],
+    correct: 0
+  },
+  {
+    id: 253,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie lang ist ein offizielles Marathonrennen?",
+    a: ["40 km", "41,5 km", "42,195 km", "43 km"],
+    correct: 2
+  },
+  {
+    id: 254,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer gewann die UEFA Champions League 2020?",
+    a: ["Bayern München", "Paris Saint-Germain", "Real Madrid", "Liverpool"],
+    correct: 0
+  },
+  {
+    id: 255,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "In welcher Sportart gibt es den Begriff 'Bogey'?",
+    a: ["Golf", "Tennis", "Cricket", "Baseball"],
+    correct: 0
+  },
+  {
+    id: 256,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welches Element hat das chemische Symbol 'Fe'?",
+    a: ["Fluor", "Eisen", "Fermium", "Francium"],
+    correct: 1
+  },
+  {
+    id: 257,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Wer entdeckte die Struktur der DNA?",
+    a: ["James Watson & Francis Crick", "Gregor Mendel", "Louis Pasteur", "Rosalind Franklin"],
+    correct: 0
+  },
+  {
+    id: 258,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welche Teilchenart vermittelt die starke Kernkraft?",
+    a: ["Photon", "Gluon", "Neutron", "W-Boson"],
+    correct: 1
+  },
+  {
+    id: 259,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Was misst ein Barometer?",
+    a: ["Luftdruck", "Temperatur", "Feuchtigkeit", "Windgeschwindigkeit"],
+    correct: 0
+  },
+  {
+    id: 260,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welches Gas ist Hauptbestandteil der Erdatmosphäre?",
+    a: ["Sauerstoff", "Kohlenstoffdioxid", "Stickstoff", "Argon"],
+    correct: 2
+  },
+  {
+    id: 261,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Wer formulierte die drei Bewegungsgesetze?",
+    a: ["Isaac Newton", "Albert Einstein", "Galileo Galilei", "Johannes Kepler"],
+    correct: 0
+  },
+  {
+    id: 262,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welche Wellenart wird in der medizinischen Ultraschalldiagnostik verwendet?",
+    a: ["Radiowellen", "Schallwellen", "Lichtwellen", "Gammastrahlen"],
+    correct: 1
+  },
+  {
+    id: 263,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welches Organ produziert die Galle?",
+    a: ["Leber", "Bauchspeicheldrüse", "Milz", "Niere"],
+    correct: 0
+  },
+  {
+    id: 264,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Was beschreibt die Halbwertszeit?",
+    a: ["Die Verdopplungszeit von Populationen", "Die Zeit, bis die Hälfte einer radioaktiven Substanz zerfällt", "Die Zeit für die Verdampfung von Flüssigkeiten", "Die Lebensdauer von Sternen"],
+    correct: 1
+  },
+  {
+    id: 265,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welche Einheit misst die Lichtstärke?",
+    a: ["Candela", "Lux", "Lumen", "Nit"],
+    correct: 0
+  },
+  {
+    id: 266,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Wer gilt als Begründer der modernen Chemie?",
+    a: ["Dmitri Mendelejew", "Robert Boyle", "Antoine Lavoisier", "John Dalton"],
+    correct: 2
+  },
+  {
+    id: 267,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welches Planetensystem ist das dichteste bekannte?",
+    a: ["Sonnensystem", "TRAPPIST-1", "Kepler-11", "Gliese 581"],
+    correct: 1
+  },
+  {
+    id: 268,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Was ist die SI-Einheit der elektrischen Ladung?",
+    a: ["Volt", "Coulomb", "Ampere", "Ohm"],
+    correct: 1
+  },
+  {
+    id: 269,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welche Kraft hält die Elektronen im Atom gebunden?",
+    a: ["Gravitationskraft", "Elektromagnetische Kraft", "Starke Kernkraft", "Schwache Kernkraft"],
+    correct: 1
+  },
+  {
+    id: 270,
+    difficulty: "Expert",
+    topic: "Wissenschaft",
+    q: "Welches Teilchen ist neutral?",
+    a: ["Proton", "Neutron", "Elektron", "Photon"],
+    correct: 1
+  },
+  {
+    id: 271,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wann begann der Dreißigjährige Krieg?",
+    a: ["1618", "1620", "1630", "1648"],
+    correct: 0
+  },
+  {
+    id: 272,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wer war der Gründer des Mongolischen Reiches?",
+    a: ["Kublai Khan", "Dschingis Khan", "Attila", "Tamerlan"],
+    correct: 1
+  },
+  {
+    id: 273,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Welche Dynastie herrschte in China von 1644 bis 1912?",
+    a: ["Ming", "Qing", "Tang", "Song"],
+    correct: 1
+  },
+  {
+    id: 274,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wer war der erste Präsident der USA?",
+    a: ["Thomas Jefferson", "George Washington", "John Adams", "James Madison"],
+    correct: 1
+  },
+  {
+    id: 275,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wann endete der Zweite Weltkrieg in Europa?",
+    a: ["1944", "1945", "1946", "1947"],
+    correct: 1
+  },
+  {
+    id: 276,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Welches Reich war als 'Reich der Mitte' bekannt?",
+    a: ["China", "Japan", "Persien", "Indien"],
+    correct: 0
+  },
+  {
+    id: 277,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wer führte die Russische Revolution 1917 an?",
+    a: ["Lenin", "Stalin", "Trotski", "Nicholas II."],
+    correct: 0
+  },
+  {
+    id: 278,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wann fiel Konstantinopel an die Osmanen?",
+    a: ["1453", "1492", "1517", "1526"],
+    correct: 0
+  },
+  {
+    id: 279,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wer war der letzte Kaiser des Heiligen Römischen Reiches?",
+    a: ["Franz II.", "Karl V.", "Otto I.", "Friedrich III."],
+    correct: 0
+  },
+  {
+    id: 280,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Welche Stadt war Hauptstadt des Byzantinischen Reiches?",
+    a: ["Rom", "Konstantinopel", "Athen", "Alexandria"],
+    correct: 1
+  },
+  {
+    id: 281,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wer leitete die Reformation in Deutschland ein?",
+    a: ["Johannes Calvin", "Martin Luther", "Huldrych Zwingli", "John Knox"],
+    correct: 1
+  },
+  {
+    id: 282,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wann begann die Französische Revolution?",
+    a: ["1787", "1789", "1791", "1793"],
+    correct: 1
+  },
+  {
+    id: 283,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Wer war Pharao während des Baus der Großen Pyramide von Gizeh?",
+    a: ["Tutanchamun", "Cheops", "Ramses II.", "Kleopatra"],
+    correct: 1
+  },
+  {
+    id: 284,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Welches Ereignis markierte den Beginn des Kalten Krieges?",
+    a: ["Atombombenabwurf auf Japan", "Truman-Doktrin", "Kubakrise", "Berlins Blockade"],
+    correct: 1
+  },
+  {
+    id: 285,
+    difficulty: "Expert",
+    topic: "Geschichte",
+    q: "Welches Jahr gilt als Ende des Heiligen Römischen Reiches?",
+    a: ["1804", "1806", "1815", "1820"],
+    correct: 1
+  },
+  {
+    id: 286,
+    difficulty: "Expert",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die größte Fläche in Afrika?",
+    a: ["Ägypten", "Algerien", "Sudan", "Libyen"],
+    correct: 1
+  },
+  {
+    id: 287,
+    difficulty: "Expert",
+    topic: "Länder der Welt",
+    q: "Welches Land hat die meisten offiziellen Amtssprachen?",
+    a: ["Indien", "Südafrika", "Schweiz", "Kanada"],
+    correct: 1
+  },
+  {
+    id: 288,
+    difficulty: "Expert",
+    topic: "Länder der Welt",
+    q: "Welche Hauptstadt liegt am südlichsten?",
+    a: ["Wellington", "Kapstadt", "Buenos Aires", "Sydney"],
+    correct: 0
+  },
+  {
+    id: 289,
+    difficulty: "Expert",
+    topic: "Länder der Welt",
+    q: "Welche Inselgruppe gehört zu Italien?",
+    a: ["Sizilien", "Korsika", "Kreta", "Balearen"],
+    correct: 0
+  },
+  {
+    id: 290,
+    difficulty: "Expert",
+    topic: "Länder der Welt",
+    q: "Welches Land hat keinen Zugang zum Meer?",
+    a: ["Bolivien", "Peru", "Kolumbien", "Venezuela"],
+    correct: 0
+  },
+  {
+    id: 291,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer gewann die meisten Grand Slam Titel im Herren-Tennis (Einzel) in der Open Era?",
+    a: ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"],
+    correct: 2
+  },
+  {
+    id: 292,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Welche Nation gewann die Rugby-Weltmeisterschaft 2015?",
+    a: ["Neuseeland", "Australien", "Südafrika", "England"],
+    correct: 0
+  },
+  {
+    id: 293,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie lang ist ein Standard-Handballfeld?",
+    a: ["40 m", "50 m", "60 m", "70 m"],
+    correct: 2
+  },
+  {
+    id: 294,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer hat die meisten Siege in der Formel 1 2020er Jahre erzielt?",
+    a: ["Lewis Hamilton", "Max Verstappen", "Sebastian Vettel", "Valtteri Bottas"],
+    correct: 0
+  },
+  {
+    id: 295,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Spieler sind in einem Wasserballteam auf dem Feld?",
+    a: ["5", "6", "7", "8"],
+    correct: 2
+  },
+  {
+    id: 296,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wer gewann die Fußball-Weltmeisterschaft 2006?",
+    a: ["Brasilien", "Italien", "Frankreich", "Deutschland"],
+    correct: 1
+  },
+  {
+    id: 297,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Minuten dauert ein reguläres Rugby-Spiel?",
+    a: ["70", "80", "90", "100"],
+    correct: 1
+  },
+  {
+    id: 298,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Welche Nation hat die meisten Olympischen Winterspiele-Medaillen insgesamt?",
+    a: ["USA", "Norwegen", "Deutschland", "Kanada"],
+    correct: 1
+  },
+  {
+    id: 299,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Wie viele Runden hat ein offizieller Profiboxkampf um die Weltmeisterschaft?",
+    a: ["10", "12", "15", "16"],
+    correct: 1
+  },
+  {
+    id: 300,
+    difficulty: "Expert",
+    topic: "Sport",
+    q: "Welches Land gewann die erste Fußball-Weltmeisterschaft 1930?",
+    a: ["Brasilien", "Uruguay", "Argentinien", "Italien"],
+    correct: 1
+  }
+]
 let fragenpool=[];
 let currentIndex=0;
 
