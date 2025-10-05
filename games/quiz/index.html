@@ -66,6 +66,38 @@ h1 {
 </div>
 
 <script>
+// Alle Fragen direkt eingebunden
+const fragenpoolData = [
+  // Easy 1-5
+  {"id":1,"difficulty":"Easy","topic":"Technik","q":"Wie heißt das Betriebssystem, das auf iPhones läuft?","a":["iOS","Android","HarmonyOS","Windows Phone"],"correct":0},
+  {"id":2,"difficulty":"Easy","topic":"Sport","q":"Wie viele Spieler stehen beim Fußball pro Mannschaft auf dem Feld?","a":["9","10","11","12"],"correct":2},
+  {"id":3,"difficulty":"Easy","topic":"Wissenschaft","q":"Wie viele Planeten hat unser Sonnensystem?","a":["7","8","9","10"],"correct":1},
+  {"id":4,"difficulty":"Easy","topic":"Geschichte","q":"Wer war der erste Bundeskanzler der Bundesrepublik Deutschland?","a":["Konrad Adenauer","Willy Brandt","Helmut Kohl","Angela Merkel"],"correct":0},
+  {"id":5,"difficulty":"Easy","topic":"Länder der Welt","q":"Welches Land hat die größte Bevölkerung?","a":["Indien","USA","China","Russland"],"correct":2},
+
+  // Medium 6-10
+  {"id":6,"difficulty":"Medium","topic":"Technik","q":"Was ist die Abkürzung von HTML?","a":["Hyper Text Markup Language","High Tech Machine Language","Hyperlink Markup Language","Home Tool Markup Language"],"correct":0},
+  {"id":7,"difficulty":"Medium","topic":"Sport","q":"In welchem Jahr fanden die ersten Olympischen Spiele der Neuzeit statt?","a":["1896","1900","1888","1920"],"correct":0},
+  {"id":8,"difficulty":"Medium","topic":"Wissenschaft","q":"Wer entwickelte die Relativitätstheorie?","a":["Isaac Newton","Albert Einstein","Galileo Galilei","Nikola Tesla"],"correct":1},
+  {"id":9,"difficulty":"Medium","topic":"Geschichte","q":"Wann endete der Zweite Weltkrieg?","a":["1945","1939","1918","1963"],"correct":0},
+  {"id":10,"difficulty":"Medium","topic":"Länder der Welt","q":"Welches Land ist flächenmäßig am größten?","a":["USA","China","Kanada","Russland"],"correct":3},
+
+  // Hard 11-15
+  {"id":11,"difficulty":"Hard","topic":"Technik","q":"Was ist die Funktion eines Routers?","a":["Speichern von Daten","Verteilen von Netzwerkpaketen","Drucken von Dokumenten","Steuern von Motoren"],"correct":1},
+  {"id":12,"difficulty":"Hard","topic":"Sport","q":"Welcher Spieler gewann die Fußball-WM 2014?","a":["Deutschland","Brasilien","Argentinien","Spanien"],"correct":0},
+  {"id":13,"difficulty":"Hard","topic":"Wissenschaft","q":"Wie lautet die chemische Formel von Kochsalz?","a":["NaCl","KCl","H2O","CO2"],"correct":0},
+  {"id":14,"difficulty":"Hard","topic":"Geschichte","q":"Wer entdeckte Amerika?","a":["Christoph Kolumbus","Vasco da Gama","James Cook","Ferdinand Magellan"],"correct":0},
+  {"id":15,"difficulty":"Hard","topic":"Länder der Welt","q":"Welches Land ist bekannt als 'Land der aufgehenden Sonne'?","a":["China","Japan","Thailand","Südkorea"],"correct":1},
+
+  // Expert 16-21
+  {"id":16,"difficulty":"Expert","topic":"Technik","q":"Was bedeutet die Abkürzung CPU?","a":["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing Unit"],"correct":0},
+  {"id":17,"difficulty":"Expert","topic":"Sport","q":"Wie viele Minuten dauert ein Handballspiel in der Regel?","a":["40","60","50","45"],"correct":0},
+  {"id":18,"difficulty":"Expert","topic":"Sport","q":"Welches Land gewann die Fußball-WM 2018?","a":["Deutschland","Frankreich","Brasilien","Kroatien"],"correct":1},
+  {"id":19,"difficulty":"Expert","topic":"Wissenschaft","q":"Welcher Teil des Auges reguliert die Lichtmenge?","a":["Linse","Iris","Netzhaut","Hornhaut"],"correct":1},
+  {"id":20,"difficulty":"Expert","topic":"Geschichte","q":"Wann fiel die Berliner Mauer?","a":["1987","1989","1991","1990"],"correct":1},
+  {"id":21,"difficulty":"Expert","topic":"Länder der Welt","q":"Welches Land hat die Hauptstadt Ottawa?","a":["USA","Kanada","Australien","Neuseeland"],"correct":1}
+];
+
 let fragenpool=[];
 let currentIndex=0;
 
@@ -80,33 +112,24 @@ const answersEl=document.getElementById('answers');
 const nextBtn=document.getElementById('next-btn');
 const moneyEl=document.getElementById('money-pyramid');
 
-// Fragen vom GitHub laden
-fetch('https://dasfohlen1900.github.io/games/quiz/fragenpool.json')
-  .then(res=>res.json())
-  .then(data=>{
-    // Easy 1-5
-    const easyTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-    const easy=easyTopics.map(t=>data.filter(q=>q.difficulty==="Easy"&&q.topic===t).shift()).filter(Boolean);
+function prepareQuestions(){
+  const easyTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const easy=easyTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Easy"&&q.topic===t).shift()).filter(Boolean);
 
-    // Medium 6-10
-    const mediumTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-    const medium=mediumTopics.map(t=>data.filter(q=>q.difficulty==="Medium"&&q.topic===t).shift()).filter(Boolean);
+  const mediumTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const medium=mediumTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Medium"&&q.topic===t).shift()).filter(Boolean);
 
-    // Hard 11-15
-    const hardTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-    const hard=hardTopics.map(t=>data.filter(q=>q.difficulty==="Hard"&&q.topic===t).shift()).filter(Boolean);
+  const hardTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const hard=hardTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Hard"&&q.topic===t).shift()).filter(Boolean);
 
-    // Expert 16-21 (Sport 2)
-    const expertTopics=["Technik","Sport","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-    const expert=expertTopics.map(t=>data.filter(q=>q.difficulty==="Expert"&&q.topic===t).shift()).filter(Boolean);
+  const expertTopics=["Technik","Sport","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const expert=expertTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Expert"&&q.topic===t).shift()).filter(Boolean);
 
-    fragenpool=[...easy,...medium,...hard,...expert];
-    loadQuestion();
-  })
-  .catch(err=>{
-    questionEl.textContent="Fehler beim Laden der Fragen!";
-    console.error(err);
-  });
+  fragenpool=[...easy,...medium,...hard,...expert];
+}
+
+prepareQuestions();
+loadQuestion();
 
 function loadQuestion(){
   const q=fragenpool[currentIndex];
