@@ -2481,47 +2481,48 @@ const answersEl=document.getElementById('answers');
 const nextBtn=document.getElementById('next-btn');
 const moneyEl=document.getElementById('money-pyramid');
 
-function getRandomQuestion(pool){
+function getRandomQuestion(pool) {
   const idx = Math.floor(Math.random() * pool.length);
-  return pool.splice(idx,1)[0];
+  return pool.splice(idx, 1)[0]; // entfernt die Frage aus dem Pool
 }
 
-function prepareQuestions(){
-  const easyTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  const easy=easyTopics.map(t=>{
-    const pool = fragenpoolData.filter(q=>q.difficulty==="Easy" && q.topic===t);
-    return getRandomQuestion(pool);
+function prepareQuestions() {
+  const usedExpertIds = [];
+
+  const easyTopics = ["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const easy = easyTopics.map(t => {
+    const pool = fragenpoolData.filter(q => q.difficulty === "Easy" && q.topic === t);
+    return getRandomQuestion([...pool]); // Kopie, damit der Originalpool intakt bleibt
   }).filter(Boolean);
 
-  const mediumTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  const medium=mediumTopics.map(t=>{
-    const pool = fragenpoolData.filter(q=>q.difficulty==="Medium" && q.topic===t);
-    return getRandomQuestion(pool);
+  const mediumTopics = ["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const medium = mediumTopics.map(t => {
+    const pool = fragenpoolData.filter(q => q.difficulty === "Medium" && q.topic === t);
+    return getRandomQuestion([...pool]);
   }).filter(Boolean);
 
-  const hardTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  const hard=hardTopics.map(t=>{
-    const pool = fragenpoolData.filter(q=>q.difficulty==="Hard" && q.topic===t);
-    return getRandomQuestion(pool);
+  const hardTopics = ["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const hard = hardTopics.map(t => {
+    const pool = fragenpoolData.filter(q => q.difficulty === "Hard" && q.topic === t);
+    return getRandomQuestion([...pool]);
   }).filter(Boolean);
 
-  // Expert: zweite Sportfrage aus IDs 291–300
-  const expertTopics=["Technik","Sport","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  let usedExpertIds = [];
-  const expert = expertTopics.map((t,i)=>{
+  const expertTopics = ["Technik","Sport","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+  const expert = expertTopics.map((t, i) => {
     let pool;
-    if(t==="Sport" && i===2){
-      pool = fragenpoolData.filter(q=>q.difficulty==="Expert" && q.topic==="Sport" && q.id>=291 && q.id<=300 && !usedExpertIds.includes(q.id));
+    if(t === "Sport" && i === 2) {
+      pool = fragenpoolData.filter(q => q.difficulty === "Expert" && q.topic === "Sport" && q.id >= 291 && q.id <= 300 && !usedExpertIds.includes(q.id));
     } else {
-      pool = fragenpoolData.filter(q=>q.difficulty==="Expert" && q.topic===t && !usedExpertIds.includes(q.id));
+      pool = fragenpoolData.filter(q => q.difficulty === "Expert" && q.topic === t && !usedExpertIds.includes(q.id));
     }
-    const q = getRandomQuestion(pool);
+    const q = getRandomQuestion([...pool]);
     if(q) usedExpertIds.push(q.id);
     return q;
   }).filter(Boolean);
 
-  fragenpool=[...easy,...medium,...hard,...expert];
+  fragenpool = [...easy, ...medium, ...hard, ...expert];
 }
+
 
 prepareQuestions();
 loadQuestion();
