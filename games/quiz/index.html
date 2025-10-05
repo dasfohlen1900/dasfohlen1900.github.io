@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -66,9 +66,8 @@ h1 {
 </div>
 
 <script>
-// Fragenpool separat einfügen
-const fragenpoolData = [
-{
+// Beispiel-Fragen: 21 Fragen (Easy, Medium, Hard, Expert)
+const fragenpoolData = [{
     id: 1,
     difficulty: "Easy",
     topic: "Technik",
@@ -2391,7 +2390,7 @@ const fragenpoolData = [
   {
     id: 291,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wer gewann die meisten Grand Slam Titel im Herren-Tennis (Einzel) in der Open Era?",
     a: ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"],
     correct: 2
@@ -2399,7 +2398,7 @@ const fragenpoolData = [
   {
     id: 292,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Welche Nation gewann die Rugby-Weltmeisterschaft 2015?",
     a: ["Neuseeland", "Australien", "Südafrika", "England"],
     correct: 0
@@ -2407,7 +2406,7 @@ const fragenpoolData = [
   {
     id: 293,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wie lang ist ein Standard-Handballfeld?",
     a: ["40 m", "50 m", "60 m", "70 m"],
     correct: 2
@@ -2415,7 +2414,7 @@ const fragenpoolData = [
   {
     id: 294,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wer hat die meisten Siege in der Formel 1 2020er Jahre erzielt?",
     a: ["Lewis Hamilton", "Max Verstappen", "Sebastian Vettel", "Valtteri Bottas"],
     correct: 0
@@ -2423,7 +2422,7 @@ const fragenpoolData = [
   {
     id: 295,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wie viele Spieler sind in einem Wasserballteam auf dem Feld?",
     a: ["5", "6", "7", "8"],
     correct: 2
@@ -2431,7 +2430,7 @@ const fragenpoolData = [
   {
     id: 296,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wer gewann die Fußball-Weltmeisterschaft 2006?",
     a: ["Brasilien", "Italien", "Frankreich", "Deutschland"],
     correct: 1
@@ -2439,7 +2438,7 @@ const fragenpoolData = [
   {
     id: 297,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wie viele Minuten dauert ein reguläres Rugby-Spiel?",
     a: ["70", "80", "90", "100"],
     correct: 1
@@ -2447,7 +2446,7 @@ const fragenpoolData = [
   {
     id: 298,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Welche Nation hat die meisten Olympischen Winterspiele-Medaillen insgesamt?",
     a: ["USA", "Norwegen", "Deutschland", "Kanada"],
     correct: 1
@@ -2455,7 +2454,7 @@ const fragenpoolData = [
   {
     id: 299,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Wie viele Runden hat ein offizieller Profiboxkampf um die Weltmeisterschaft?",
     a: ["10", "12", "15", "16"],
     correct: 1
@@ -2463,13 +2462,12 @@ const fragenpoolData = [
   {
     id: 300,
     difficulty: "Expert",
-    topic: "Sport2",
+    topic: "Sport",
     q: "Welches Land gewann die erste Fußball-Weltmeisterschaft 1930?",
     a: ["Brasilien", "Uruguay", "Argentinien", "Italien"],
     correct: 1
-  }
-];
-
+  }]
+ 
 let fragenpool=[];
 let currentIndex=0;
 
@@ -2483,27 +2481,41 @@ const answersEl=document.getElementById('answers');
 const nextBtn=document.getElementById('next-btn');
 const moneyEl=document.getElementById('money-pyramid');
 
+function getRandomQuestion(pool){
+  const idx = Math.floor(Math.random() * pool.length);
+  return pool.splice(idx,1)[0];
+}
+
 function prepareQuestions(){
   const easyTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  const easy=easyTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Easy"&&q.topic===t).shift()).filter(Boolean);
+  const easy=easyTopics.map(t=>{
+    const pool = fragenpoolData.filter(q=>q.difficulty==="Easy" && q.topic===t);
+    return getRandomQuestion(pool);
+  }).filter(Boolean);
 
   const mediumTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  const medium=mediumTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Medium"&&q.topic===t).shift()).filter(Boolean);
+  const medium=mediumTopics.map(t=>{
+    const pool = fragenpoolData.filter(q=>q.difficulty==="Medium" && q.topic===t);
+    return getRandomQuestion(pool);
+  }).filter(Boolean);
 
   const hardTopics=["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
-  const hard=hardTopics.map(t=>fragenpoolData.filter(q=>q.difficulty==="Hard"&&q.topic===t).shift()).filter(Boolean);
+  const hard=hardTopics.map(t=>{
+    const pool = fragenpoolData.filter(q=>q.difficulty==="Hard" && q.topic===t);
+    return getRandomQuestion(pool);
+  }).filter(Boolean);
 
-  // Expert: zweite Sportfrage aus IDs 291-300
+  // Expert: zweite Sportfrage aus IDs 291–300
   const expertTopics=["Technik","Sport","Sport","Wissenschaft","Geschichte","Länder der Welt"];
   let usedExpertIds = [];
   const expert = expertTopics.map((t,i)=>{
-    let possible;
-    if(t==="Sport" && i===2){ 
-      possible = fragenpoolData.filter(q => q.difficulty==="Expert" && q.topic==="Sport" && q.id>=291 && q.id<=300 && !usedExpertIds.includes(q.id));
+    let pool;
+    if(t==="Sport" && i===2){
+      pool = fragenpoolData.filter(q=>q.difficulty==="Expert" && q.topic==="Sport" && q.id>=291 && q.id<=300 && !usedExpertIds.includes(q.id));
     } else {
-      possible = fragenpoolData.filter(q => q.difficulty==="Expert" && q.topic===t && !usedExpertIds.includes(q.id));
+      pool = fragenpoolData.filter(q=>q.difficulty==="Expert" && q.topic===t && !usedExpertIds.includes(q.id));
     }
-    const q = possible.shift();
+    const q = getRandomQuestion(pool);
     if(q) usedExpertIds.push(q.id);
     return q;
   }).filter(Boolean);
@@ -2563,3 +2575,4 @@ function updateMoneyPyramid(){
 
 </body>
 </html>
+ 
