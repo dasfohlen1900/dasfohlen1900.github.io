@@ -1,156 +1,272 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mini-Word 3.0 — Voller Font-Support</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-Word</title>
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600&family=Roboto&family=Open+Sans&family=Lato&family=Montserrat&family=Poppins&family=Ubuntu&family=Fira+Sans&family=Signika&family=Permanent+Marker&family=Patrick+Hand&family=Indie+Flower&family=Caveat&family=Shadows+Into+Light&family=Bungee&family=Coming+Soon&family=Lilita+One&family=Merriweather&family=Playfair+Display&family=Crimson+Text&family=Libre+Baskerville&display=swap" rel="stylesheet">
-
+<!-- Lokale Fonts -->
 <style>
-/* --- Fonts einbinden --- */
-@font-face { font-family: 'IcoMoon'; src: url('./fonts/icomoon.woff') format('woff'), url('./fonts/icomoon.ttf') format('truetype'); font-weight: normal; font-style: normal; }
-@font-face { font-family: 'Lukovic2'; src: url('./fonts/Lukovic2-Regular.ttf') format('truetype'); }
-@font-face { font-family: 'LukovicSans'; src: url('./fonts/LukovicSans.ttf') format('truetype'); }
-@font-face { font-family: 'RetroStylePro'; src: url('./fonts/RetroStyleProReg.ttf') format('truetype'); }
-@font-face { font-family: 'Bahnschrift'; src: url('./fonts/bahnschrift.ttf') format('truetype'); }
-@font-face { font-family: 'Calibri'; src: url('./fonts/calibri.ttf') format('truetype'); }
-@font-face { font-family: 'Segoe UI'; src: url('./fonts/segoeui.ttf') format('truetype'); }
+@font-face { font-family: 'Lukovic2'; src: url('fonts/Lukovic2-Regular.ttf'); }
+@font-face { font-family: 'LukovicSans'; src: url('fonts/LukovicSans.ttf'); }
+@font-face { font-family: 'RetroStylePro'; src: url('fonts/RetroStyleProReg.ttf'); }
+@font-face { font-family: 'Bahnschrift'; src: url('fonts/bahnschrift.ttf'); }
+@font-face { font-family: 'Calibri'; src: url('fonts/calibri.ttf'); }
+@font-face { font-family: 'SegoeUI'; src: url('fonts/segoeui.ttf'); }
+@font-face { font-family: 'IcoMoon'; src: url('fonts/icomoon.ttf'); }
 
-/* --- Farben, Layout --- */
-:root{
-  --bg:#eef4fb;
-  --paper:#fff;
-  --muted:#6b7280;
-  --accent:#0f172a;
-  --panel:#f8fafc;
+body {
+  margin: 0;
+  font-family: 'Work Sans', 'SegoeUI', sans-serif;
+  background: #f7f9fc;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-html,body{height:100%;margin:0;font-family:Work Sans,Roboto,Arial,system-ui}
-body{background:linear-gradient(180deg,var(--bg),#fff);display:flex;flex-direction:column;align-items:center;padding:18px 12px;box-sizing:border-box}
-header{width:100%;max-width:980px;display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;background:var(--paper);box-shadow:0 6px 24px rgba(16,24,40,0.06);margin-bottom:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--accent)}
-.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:1}
-.btn, .select, .color{
-  background:var(--panel);border:1px solid #e6eef7;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px
+
+/* Ribbon Design */
+.ribbon {
+  background: linear-gradient(#fdfdfd, #e9edf5);
+  border-bottom: 1px solid #c6c9d1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
-.btn:active{transform:translateY(1px)}
-.select{appearance:none}
-input[type="color"].color{padding:4px;height:36px;width:42px;border-radius:8px}
-.canvas{width:100%;max-width:980px;display:flex;justify-content:center}
-.paper{
-  width:800px;min-width:600px;background:var(--paper);box-shadow:0 8px 24px rgba(16,24,40,0.08);
-  border-radius:10px;padding:18px 22px;box-sizing:border-box;min-height:560px;overflow:auto;
-  border:1px solid rgba(15,23,42,0.04);
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 10px;
 }
-#title{font-size:18px;border:0;outline:none;margin:0 0 6px 0;padding:6px 0;font-weight:600}
-#editor{min-height:420px;outline:none;padding:10px;border-radius:6px;background:linear-gradient(180deg,#fff,#fbfdff)}
-#editor img{max-width:100%;height:auto;display:block;margin:8px 0}
-footer{width:100%;max-width:980px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
-.status{color:var(--muted)}
-.counter{font-weight:600;color:var(--accent)}
-.icon{font-family:'IcoMoon'; font-style: normal;}
-@media (max-width:760px){
-  .paper{width:100%;min-width:auto}
-  header{padding:8px}
+.tab {
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+  margin-right: 4px;
+  font-weight: 600;
+  color: #333;
+}
+.tab.active {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-bottom: none;
+}
+.tab-content {
+  display: none;
+  background: #fff;
+  padding: 10px;
+  border-top: none;
+  min-height: 90px;
+}
+.tab-content.active { display: block; }
+
+.group {
+  display: inline-block;
+  vertical-align: top;
+  padding: 5px 10px;
+  border-right: 1px solid #ddd;
+}
+.group:last-child { border-right: none; }
+
+button.icon {
+  font-family: 'IcoMoon';
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+  transition: background 0.2s;
+}
+button.icon:hover {
+  background: #e6eaf2;
+  border-radius: 6px;
+}
+
+#editor {
+  flex-grow: 1;
+  background: white;
+  margin: 0;
+  padding: 20px;
+  outline: none;
+  font-size: 16px;
+  overflow-y: auto;
+}
+select, input[type="color"], input[type="file"] {
+  margin: 4px;
+  padding: 3px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+/* Export-Buttons */
+.save-zone {
+  margin-top: 8px;
 }
 </style>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Arvo&family=Bungee&family=Cormorant+Garamond&family=Crimson+Text&family=Domine&family=Exo+2&family=Fira+Code&family=Gloria+Hallelujah&family=JetBrains+Mono&family=Lilita+One&family=Lora&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Playfair+Display&family=Poppins&family=PT+Serif&family=Quicksand&family=Raleway&family=Roboto&family=Signika&family=Vollkorn&family=Work+Sans&family=Patrick+Hand&family=Caveat&family=Satisfy&family=Shadows+Into+Light&family=Architects+Daughter&family=Courier+Prime&family=Inconsolata&display=swap" rel="stylesheet">
 </head>
+
 <body>
-<header>
-  <div class="brand">📝 Mini-Word 3.0</div>
-  <div class="toolbar" role="toolbar" aria-label="Hauptwerkzeuge">
-    
-    <!-- Datei-Gruppe -->
-    <button class="btn icon" onclick="exec('save')">&#xe962;</button>
-    <button class="btn icon" onclick="exec('open')">&#xe930;</button>
-    <button class="btn icon" onclick="exec('print')">&#xe914;</button>
-    <button class="btn icon" onclick="exec('exportDocx')">&#xeae1;</button>
 
-    <!-- Start-Gruppe -->
-    <select class="select" id="fontFamily" onchange="exec('fontName', this.value)">
-      <option value="Work Sans" selected>Work Sans</option>
-      <option value="Arial">Arial</option>
-      <option value="Comic Sans MS">Comic Sans MS</option>
-      <option value="Bungee">Bungee</option>
-      <option value="Lukovic2">Lukovic2</option>
-      <option value="LukovicSans">LukovicSans</option>
-      <option value="RetroStylePro">RetroStylePro</option>
-      <option value="Bahnschrift">Bahnschrift</option>
-      <option value="Calibri">Calibri</option>
-      <option value="Segoe UI">Segoe UI</option>
-      <!-- hier können noch Google Fonts kommen -->
-    </select>
-
-    <select class="select" id="fontSize" onchange="setFontSize(this.value)">
-      <option value="3">14px</option>
-      <option value="4" selected>16px</option>
-      <option value="5">18px</option>
-      <option value="6">20px</option>
-      <option value="7">24px</option>
-    </select>
-
-    <button class="btn icon" onclick="exec('bold')">&#xe9e2;</button>
-    <button class="btn icon" onclick="exec('italic')">&#xe9e4;</button>
-    <button class="btn icon" onclick="exec('underline')">&#xe9e3;</button>
-
+<div class="ribbon">
+  <div class="tabs">
+    <div class="tab active" data-tab="file">Datei</div>
+    <div class="tab" data-tab="home">Start</div>
+    <div class="tab" data-tab="insert">Einfügen</div>
+    <div class="tab" data-tab="review">Überprüfen</div>
   </div>
-</header>
 
-<div class="canvas">
-  <article class="paper">
-    <input id="title" value="Neues Dokument" />
-    <div id="editor" contenteditable="true" spellcheck="true">
-      <p>Willkommen zu Mini-Word 3.0 — schreibe los.</p>
+  <!-- Datei -->
+  <div class="tab-content active" id="file">
+    <div class="group">
+      <button class="icon" onclick="saveFile('octxt')">&#xe962;</button> 
+      <button class="icon" onclick="loadFile()">&#xe930;</button> 
+      <button class="icon" onclick="exportDocx()">&#xeae1;</button> 
+      <button class="icon" onclick="window.print()">&#xe914;</button>
+      <input type="file" id="fileInput" accept=".octxt,.txt,.docx" hidden>
     </div>
-  </article>
+    <div class="save-zone"></div>
+  </div>
+
+  <!-- Start -->
+  <div class="tab-content" id="home">
+    <div class="group">
+      <select id="fontSelect">
+        <option value="Arial">Arial</option>
+        <option value="Bahnschrift">Bahnschrift</option>
+        <option value="Bungee">Bungee</option>
+        <option value="Calibri">Calibri</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="LukovicSans">LukovicSans</option>
+        <option value="RetroStylePro">RetroStylePro</option>
+        <option value="SegoeUI">Segoe UI</option>
+        <option value="Work Sans">Work Sans</option>
+        <option value="Playfair Display">Playfair Display</option>
+        <option value="Noto Sans">Noto Sans</option>
+      </select>
+      <select id="fontSize">
+        <option>10</option><option>12</option><option>14</option>
+        <option>16</option><option>18</option><option>20</option><option>24</option><option>28</option>
+      </select>
+    </div>
+    <div class="group">
+      <button class="icon" onclick="format('bold')">&#xea62;</button>
+      <button class="icon" onclick="format('italic')">&#xea64;</button>
+      <button class="icon" onclick="format('underline')">&#xea63;</button>
+      <input type="color" id="colorPicker" title="Schriftfarbe">
+    </div>
+    <div class="group">
+      <button class="icon" onclick="format('insertUnorderedList')">&#xe9ba;</button>
+      <button class="icon" onclick="format('insertOrderedList')">&#xe9b9;</button>
+    </div>
+    <div class="group">
+      <button class="icon" onclick="format('justifyLeft')">&#xea77;</button>
+      <button class="icon" onclick="format('justifyCenter')">&#xea78;</button>
+      <button class="icon" onclick="format('justifyRight')">&#xea79;</button>
+      <button class="icon" onclick="format('justifyFull')">&#xea7a;</button>
+    </div>
+  </div>
+
+  <!-- Einfügen -->
+  <div class="tab-content" id="insert">
+    <div class="group">
+      <button class="icon" onclick="insertImage()">&#xe90d;</button> Bild
+      <button class="icon" onclick="insertTable()">&#xe900;</button> Tabelle
+      <button class="icon" onclick="insertSymbol('Ω')">Ω</button> Symbol
+    </div>
+  </div>
+
+  <!-- Überprüfen -->
+  <div class="tab-content" id="review">
+    <div class="group">
+      <button class="icon">&#xea52;</button> Rechtschreibung
+      <button class="icon">&#xea53;</button> Änderungen
+    </div>
+  </div>
 </div>
 
-<footer>
-  <div class="status" id="status">Bereit</div>
-  <div>Wörter: <span id="wordCount" class="counter">0</span> — Zeichen: <span id="charCount" class="counter">0</span></div>
-</footer>
+<div id="editor" contenteditable="true">
+  <p>🖤🤍💚 Willkommen bei <b>Mini-Word Premium</b> – dein Editor mit Stil!</p>
+</div>
 
 <script>
+const tabs = document.querySelectorAll('.tab');
+const contents = document.querySelectorAll('.tab-content');
 const editor = document.getElementById('editor');
-const status = document.getElementById('status');
-const titleInput = document.getElementById('title');
+const fileInput = document.getElementById('fileInput');
 
-function updateCounts(){
-  const text = editor.innerText || '';
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  const chars = text.replace(/\n/g,'').length;
-  document.getElementById('wordCount').textContent = words;
-  document.getElementById('charCount').textContent = chars;
-}
-editor.addEventListener('input', () => {
-  updateCounts();
+// Tabs wechseln
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    contents.forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
 });
 
-function exec(cmd, val=null){
-  if(cmd==='save'){alert('Speichern-Funktion implementieren'); return;}
-  if(cmd==='open'){alert('Öffnen-Funktion implementieren'); return;}
-  if(cmd==='print'){window.print(); return;}
-  if(cmd==='exportDocx'){alert('DOCX-Export implementieren'); return;}
-  document.execCommand('styleWithCSS', false, true);
-  document.execCommand(cmd,false,val);
-  editor.focus();
-}
-function setFontSize(size){
-  document.execCommand('fontSize', false, size);
-  const fonts = editor.querySelectorAll('font[size]');
-  fonts.forEach(f => {
-    const map={'1':'10px','2':'12px','3':'14px','4':'16px','5':'18px','6':'20px','7':'24px'};
-    const px = map[size] || '14px';
-    const span = document.createElement('span');
-    span.style.fontSize = px;
-    span.innerHTML = f.innerHTML;
-    f.replaceWith(span);
-  });
-  editor.focus();
+// Formatierungen
+function format(cmd, value = null) {
+  document.execCommand(cmd, false, value);
 }
 
-updateCounts();
+document.getElementById('fontSelect').onchange = e => format('fontName', e.target.value);
+document.getElementById('fontSize').onchange = e => format('fontSize', e.target.value);
+document.getElementById('colorPicker').onchange = e => format('foreColor', e.target.value);
+
+// Bild / Tabelle / Symbol einfügen
+function insertImage() {
+  const url = prompt("Bild-URL eingeben:");
+  if (url) document.execCommand('insertImage', false, url);
+}
+function insertTable() {
+  const rows = prompt("Zeilenanzahl:");
+  const cols = prompt("Spaltenanzahl:");
+  if (rows && cols) {
+    let table = "<table border='1' style='border-collapse:collapse; width:100%;'>";
+    for (let r = 0; r < rows; r++) {
+      table += "<tr>";
+      for (let c = 0; c < cols; c++) table += "<td>&nbsp;</td>";
+      table += "</tr>";
+    }
+    table += "</table>";
+    document.execCommand("insertHTML", false, table);
+  }
+}
+function insertSymbol(symbol) {
+  document.execCommand("insertText", false, symbol);
+}
+
+// Speichern / Laden / Export
+function saveFile(ext) {
+  const content = editor.innerHTML;
+  const blob = new Blob([content], {type: "text/html"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "MiniWord." + ext;
+  a.click();
+}
+function loadFile() {
+  fileInput.click();
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => editor.innerHTML = ev.target.result;
+    reader.readAsText(file);
+  };
+}
+function exportDocx() {
+  const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body>`;
+  const footer = `</body></html>`;
+  const sourceHTML = header + editor.innerHTML + footer;
+  const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'MiniWord.docx';
+  a.click();
+}
 </script>
 </body>
 </html>
