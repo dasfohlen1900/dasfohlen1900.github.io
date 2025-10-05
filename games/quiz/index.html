@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wer wird Mini-Millionär</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+body {
+  margin: 0;
+  font-family: 'Bungee', cursive;
+  background: linear-gradient(to right, #2c3e50, #34495e);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+h1 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 2.5em;
+  color: #00ff99;
+  text-shadow: 2px 2px 4px #000;
+}
+#quiz-container {
+  background: rgba(0,0,0,0.6);
+  padding: 25px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 0 15px #00ff99;
+}
+.question { font-size: 1.3em; margin-bottom: 20px; }
+.answers { display: flex; flex-direction: column; }
+.answers button {
+  margin: 8px 0; padding: 12px; font-size: 1em;
+  border: none; border-radius: 8px;
+  background: #1abc9c; color: #fff;
+  cursor: pointer; transition: all 0.3s ease;
+}
+.answers button:hover { background: #16a085; transform: scale(1.05); }
+.answers button.correct { background: #2ecc71; }
+.answers button.wrong { background: #e74c3c; }
+#next-btn {
+  margin-top: 20px; padding: 12px 25px; font-size: 1em;
+  border: none; border-radius: 8px; cursor: pointer;
+  background: #f1c40f; color: #000; transition: all 0.3s ease;
+}
+#next-btn:hover { background: #f39c12; }
+#money-pyramid { margin-top: 15px; font-size: 1.1em; text-align: center; }
+#money-pyramid span.current { color: #00ff99; font-weight: bold; text-shadow:1px1px3px #000; }
+#money-pyramid span.safe { color: #ffd700; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>Wer wird Mini-Millionär</h1>
+<div id="quiz-container">
+  <div class="question" id="question">Lade Fragen...</div>
+  <div class="answers" id="answers"></div>
+  <button id="next-btn" style="display:none;">Nächste Frage</button>
+  <div id="money-pyramid"></div>
+</div>
+
+<script>
+let fragenpool = [];
+let currentIndex = 0;
+
+const moneyValues = [
+  "1€","2€","5€","10€","15€","20€","30€","50€","100€","200€",
+  "500€","750€","1000€","2000€","5000€","10000€","20000€","50000€","100000€","500000€","1000000€"
+];
+
+const safeLevels = ["1€","1000€","100000€"];
+const questionEl = document.getElementById('question');
+const answersEl = document.getElementById('answers');
+const nextBtn = document.getElementById('next-btn');
+const moneyEl = document.getElementById('money-pyramid');
+
+fetch('fragenpool.json')
+  .then(res => res.json())
+  .then(data => {
+    // Easy 1-5 (1 pro Thema)
+    const easyTopics = ["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+    const easy = easyTopics.map(t=>data.filter(q=>q.difficulty==="Easy"&&q.topic===t).shift()).filter(Boolean);
+
+    // Medium 6-10
+    const mediumTopics = ["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+    const medium = mediumTopics.map(t=>data.filter(q=>q.difficulty==="Medium"&&q.topic===t).shift()).filter(Boolean);
+
+    // Hard 11-15
+    const hardTopics = ["Technik","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+    const hard = hardTopics.map(t=>data.filter(q=>q.difficulty==="Hard"&&q.topic===t).shift()).filter(Boolean);
+
+    // Expert 16-21 (Sport 2)
+    const expertTopics = ["Technik","Sport","Sport","Wissenschaft","Geschichte","Länder der Welt"];
+    const expert = expertTopics.map(t=>data.filter(q=>q.difficulty==="Expert"&&q.topic===t).shift()).filter(Boolean);
+
+    fragenpool = [...easy,...medium,...hard,...expert];
+    loadQuestion();
+  })
+  .catch(err => {
+    questionEl.textContent = "Fehler beim Laden der Fragen!";
+    console.error(err);
+  });
+
+function loadQuestion() {
+  const q = fragenpool[currentIndex];
+  questionEl.textContent = `${currentIndex+1}. (${q.difficulty}) ${q.q}`;
+  answersEl.innerHTML = '';
+  nextBtn.style.display = 'none';
+
+  q.a.forEach((answer,i)=>{
+    const btn=document.createElement('button');
+    btn.textContent=answer;
+    btn.addEventListener('click',()=>selectAnswer(i));
+    answersEl.appendChild(btn);
+  });
+
+  updateMoneyPyramid();
+}
+
+function selectAnswer(i){
+  const q=fragenpool[currentIndex];
+  Array.from(answersEl.children).forEach((btn,idx)=>{
+    btn.disabled=true;
+    if(idx===q.correct) btn.classList.add('correct');
+    else if(idx===i) btn.classList.add('wrong');
+  });
+  nextBtn.style.display='block';
+}
+
+nextBtn.addEventListener('click',()=>{
+  currentIndex++;
+  if(currentIndex<fragenpool.length){
+    loadQuestion();
+  } else {
+    questionEl.textContent=`Spiel beendet! Du hast alle ${fragenpool.length} Fragen geschafft!`;
+    answersEl.innerHTML='';
+    nextBtn.style.display='none';
+    moneyEl.innerHTML='';
+  }
+});
+
+function updateMoneyPyramid(){
+  moneyEl.innerHTML=moneyValues.map((val,idx)=>{
+    let classes=[];
+    if(idx===currentIndex) classes.push('current');
+    if(safeLevels.includes(val)) classes.push('safe');
+    return `<span class="${classes.join(' ')}">${val}</span>`;
+  }).join(' → ');
+}
+</script>
+
+</body>
+</html>
