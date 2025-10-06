@@ -85,55 +85,57 @@ td.selected { box-shadow:inset 0 0 0 2px rgba(59,130,246,0.18); background:rgba(
     <div class="tab" data-tab="table">Tabelle</div>
   </div>
 
-  <!-- Datei -->
-  <div class="tab-content active" id="file">
-    <div class="group">
-      <button class="icon" onclick="downloadOcttb()">&#xe962;</button> 
-      <button class="icon" onclick="openOcttb()">&#xe930;</button> 
-      <button class="icon" onclick="exportCSV()">&#xeae1;</button>
-    </div>
+ <!-- Datei Tab -->
+<div class="tab-content active" id="file">
+  <div class="group">
+    <button class="icon" onclick="downloadOcttb()">&#xe900;</button> 
+    <button class="icon" onclick="openOcttb()">&#xe901;</button> 
+    <button class="icon" onclick="exportCSV()">&#xe902;</button>
   </div>
+</div>
 
-  <!-- Text -->
-  <div class="tab-content" id="text">
-    <div class="group">
-      <button class="icon" onclick="exec('bold')">&#xea62;</button>
-      <button class="icon" onclick="exec('italic')">&#xea64;</button>
-      <button class="icon" onclick="exec('underline')">&#xea63;</button>
-      <select id="fontSelect">
-        <option>Arial</option>
-        <option>Bahnschrift</option>
-        <option>Bungee</option>
-        <option>Calibri</option>
-        <option>Comic Sans MS</option>
-        <option>LukovicSans</option>
-        <option>RetroStylePro</option>
-        <option>SegoeUI</option>
-        <option>Work Sans</option>
-        <option>Playfair Display</option>
-        <option>Noto Sans</option>
-        <option>Verdana</option>
-        <option>Georgia</option>
-        <option>Signika</option>
-      </select>
-      <select id="fontSize">
-        <option>10</option><option>12</option><option>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option>
-      </select>
-      <input type="color" id="colorPicker" title="Textfarbe">
-    </div>
+<!-- Text Tab -->
+<div class="tab-content" id="text">
+  <div class="group">
+    <button class="icon" onclick="exec('bold')">&#xe910;</button>
+    <button class="icon" onclick="exec('italic')">&#xe911;</button>
+    <button class="icon" onclick="exec('underline')">&#xe912;</button>
+    <select id="fontSelect">
+      <option>Arial</option>
+      <option>Bahnschrift</option>
+      <option>Bungee</option>
+      <option>Calibri</option>
+      <option>Comic Sans MS</option>
+      <option>LukovicSans</option>
+      <option>RetroStylePro</option>
+      <option>SegoeUI</option>
+      <option>Work Sans</option>
+      <option>Playfair Display</option>
+      <option>Noto Sans</option>
+      <option>Verdana</option>
+      <option>Georgia</option>
+      <option>Signika</option>
+    </select>
+    <select id="fontSize">
+      <option>10</option><option>12</option><option>14</option><option>16</option>
+      <option>18</option><option>20</option><option>24</option><option>28</option>
+    </select>
+    <input type="color" id="colorPicker" title="Textfarbe">
   </div>
+</div>
 
-  <!-- Tabelle -->
-  <div class="tab-content" id="table">
-    <div class="group">
-      <button class="icon" onclick="addRow()">➕ Zeile</button>
-      <button class="icon" onclick="addCol()">➕ Spalte</button>
-      <button class="icon" onclick="delRow()">🗑 Zeile</button>
-      <button class="icon" onclick="delCol()">🗑 Spalte</button>
-      <button class="icon" onclick="mergeCells()">🔗 Verbinden</button>
-      <button class="icon" onclick="splitCell()">✂️ Teilen</button>
-    </div>
+<!-- Tabelle Tab -->
+<div class="tab-content" id="table">
+  <div class="group">
+    <button class="icon" onclick="addRow()">&#xe920;</button> <!-- Zeile hinzufügen -->
+    <button class="icon" onclick="addCol()">&#xe921;</button> <!-- Spalte hinzufügen -->
+    <button class="icon" onclick="delRow()">&#xe922;</button> <!-- Zeile löschen -->
+    <button class="icon" onclick="delCol()">&#xe923;</button> <!-- Spalte löschen -->
+    <button class="icon" onclick="mergeCells()">&#xe924;</button> <!-- Zellen verbinden -->
+    <button class="icon" onclick="splitCell()">&#xe925;</button> <!-- Zelle teilen -->
   </div>
+</div>
+
 </div>
 
 <!-- Table Editor -->
