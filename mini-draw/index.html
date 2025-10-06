@@ -4,148 +4,231 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Mini-Draw+</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600&family=Signika:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- IcoMoon local -->
 <style>
-body{margin:0;font-family:Segoe UI,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;background:#eef4fb;padding:10px;}
-header{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;}
-canvas{border:1px solid #aaa;border-radius:8px;background:#fff;touch-action:none;}
-button,input,select{padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:#f8fafc;cursor:pointer;}
-.color{width:36px;height:36px;padding:0;}
+@font-face {
+  font-family: 'IcoMoon';
+  src: url('assets/fonts/icomoon.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+[class^="icomoon-"], [class*=" icomoon-"] {
+  font-family: 'IcoMoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin:0;
+  font-family:'Work Sans',Segoe UI,Arial,sans-serif;
+  background:#eef4fb;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:10px;
+}
+header {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.ribbon-tab {
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#f8fafc;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.ribbon-tab.active { background:#dbeafe; }
+.control-group { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+button,input,select { padding:6px 10px; border-radius:6px; border:1px solid #ccc; background:#f8fafc; cursor:pointer; }
+.color { width:36px; height:36px; padding:0; }
+canvas { border:1px solid #aaa; border-radius:8px; background:#fff; touch-action:none; margin-top:10px; }
 </style>
 </head>
 <body>
+
 <header>
-  <button id="drawMode">✏️ Zeichnen</button>
-  <button id="eraseMode">🩹 Radierer</button>
-  <button id="textMode">🔤 Text</button>
-  <input type="color" id="color" class="color" value="#000000">
-  <label>Strich:
-    <select id="stroke">
-      <option value="2">2px</option>
-      <option value="4">4px</option>
-      <option value="6" selected>6px</option>
-      <option value="10">10px</option>
-      <option value="20">20px</option>
-    </select>
-  </label>
-  <label>Text:
-    <select id="size">
-      <option value="20">20px</option>
-      <option value="30" selected>30px</option>
-      <option value="40">40px</option>
-      <option value="60">60px</option>
-    </select>
-  </label>
-  <button id="saveImg">💾 PNG</button>
-  <button id="saveOct">💾 .octdr</button>
-  <input type="file" id="openOct" style="display:none;">
-  <button id="openBtn">📂 Öffnen</button>
+  <button class="ribbon-tab active" data-group="file"><span class="icomoon-folder"></span> Datei</button>
+  <button class="ribbon-tab" data-group="start"><span class="icomoon-home"></span> Start</button>
+  <button class="ribbon-tab" data-group="draw"><span class="icomoon-pencil"></span> Zeichnen</button>
 </header>
+
+<div id="controls">
+  <!-- Datei -->
+  <div class="control-group" data-group="file">
+    <button id="saveImg"><span class="icomoon-floppy"></span> PNG</button>
+    <button id="saveOct"><span class="icomoon-floppy"></span> .octdr</button>
+    <input type="file" id="openOct" style="display:none;">
+    <button id="openBtn"><span class="icomoon-folder-open"></span> Öffnen</button>
+  </div>
+
+  <!-- Start -->
+  <div class="control-group" data-group="start" style="display:none;">
+    <input type="color" id="color" class="color" value="#000000">
+    <label>Strich:
+      <select id="stroke">
+        <option value="2">2px</option>
+        <option value="4">4px</option>
+        <option value="6" selected>6px</option>
+        <option value="10">10px</option>
+        <option value="20">20px</option>
+      </select>
+    </label>
+    <label>Text:
+      <select id="size">
+        <option value="20">20px</option>
+        <option value="30" selected>30px</option>
+        <option value="40">40px</option>
+        <option value="60">60px</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Zeichnen -->
+  <div class="control-group" data-group="draw" style="display:none;">
+    <button id="drawMode"><span class="icomoon-pencil"></span> Zeichnen</button>
+    <button id="eraseMode"><span class="icomoon-eraser"></span> Radierer</button>
+    <button id="textMode"><span class="icomoon-text"></span> Text</button>
+    <label>Canvasgröße:
+      <select id="canvasSize">
+        <option value="400x600">400x600</option>
+        <option value="320x480">320x480</option>
+        <option value="900x1600">900x1600</option>
+        <option value="1200x1920">1200x1920</option>
+      </select>
+    </label>
+  </div>
+</div>
 
 <canvas id="canvas" width="800" height="500"></canvas>
 
 <script>
-const c=document.getElementById('canvas');
-const ctx=c.getContext('2d');
-ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
 
-let drawing=false,
-    mode='draw',
-    texts=[],
-    currentColor=document.getElementById('color').value,
-    strokeWidth=parseInt(document.getElementById('stroke').value,10);
+let drawing=false, mode='draw', texts=[];
+let currentColor=document.getElementById('color').value;
+let strokeWidth=parseInt(document.getElementById('stroke').value,10);
 
-function start(e){
-  if(mode==='text') return;
-  drawing=true;
-  draw(e);
-}
-function end(){drawing=false;ctx.beginPath();}
+// Ribbon Tabs funktional
+const tabs = document.querySelectorAll('.ribbon-tab');
+const groups = document.querySelectorAll('.control-group');
+tabs.forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    tabs.forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const group = tab.dataset.group;
+    groups.forEach(g=>{
+      g.style.display = g.dataset.group===group ? 'flex' : 'none';
+    });
+  });
+});
+
+// Canvas Events
+function start(e){ if(mode==='text') return; drawing=true; draw(e); }
+function end(){ drawing=false; ctx.beginPath(); }
 function draw(e){
   if(!drawing) return;
-  const r=c.getBoundingClientRect();
+  const r=canvas.getBoundingClientRect();
   const x=(e.clientX||e.touches[0].clientX)-r.left;
   const y=(e.clientY||e.touches[0].clientY)-r.top;
-  ctx.strokeStyle=(mode==='erase') ? '#ffffff' : currentColor;
+  ctx.strokeStyle=(mode==='erase')?'#fff':currentColor;
   ctx.lineWidth=strokeWidth;
   ctx.lineCap='round';
-  ctx.lineTo(x,y);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x,y);
+  ctx.lineTo(x,y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,y);
 }
+canvas.addEventListener('mousedown',start);
+canvas.addEventListener('touchstart',start);
+canvas.addEventListener('mouseup',end);
+canvas.addEventListener('touchend',end);
+canvas.addEventListener('mousemove',draw);
+canvas.addEventListener('touchmove',draw);
 
-c.addEventListener('mousedown',start);
-c.addEventListener('touchstart',start);
-c.addEventListener('mouseup',end);
-c.addEventListener('touchend',end);
-c.addEventListener('mousemove',draw);
-c.addEventListener('touchmove',draw);
-
+// Modes
 document.getElementById('drawMode').onclick=()=>mode='draw';
 document.getElementById('eraseMode').onclick=()=>mode='erase';
 document.getElementById('textMode').onclick=()=>mode='text';
 document.getElementById('color').oninput=e=>currentColor=e.target.value;
 document.getElementById('stroke').oninput=e=>strokeWidth=parseInt(e.target.value,10);
 
-c.addEventListener('click',e=>{
+// Canvas-Größe ändern
+document.getElementById('canvasSize').onchange=function(){
+  const [w,h]=this.value.split('x').map(Number);
+  const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+  canvas.width=w; canvas.height=h;
+  ctx.putImageData(imgData,0,0);
+};
+
+// Textmodus
+canvas.addEventListener('click',e=>{
   if(mode!=='text') return;
   const text=prompt("Text eingeben:");
   if(!text) return;
   const fontSize=document.getElementById('size').value;
   ctx.fillStyle=currentColor;
-  ctx.font=`${fontSize} Signika,Arial,sans-serif`;
-  const r=c.getBoundingClientRect();
+  ctx.font=`${fontSize}px Signika,Arial,sans-serif`;
+  const r=canvas.getBoundingClientRect();
   const x=e.clientX-r.left;
   const y=e.clientY-r.top;
   ctx.fillText(text,x,y);
   texts.push({x,y,font:ctx.font,color:currentColor,text});
 });
 
-// PNG speichern
+// Speichern
 document.getElementById('saveImg').onclick=()=>{
-  const a=document.createElement('a');
-  a.download='mini-draw.png';
-  a.href=c.toDataURL();
-  a.click();
+  const a=document.createElement('a'); a.download='mini-draw.png';
+  a.href=canvas.toDataURL(); a.click();
 };
-
-// OCTDR speichern
 document.getElementById('saveOct').onclick=()=>{
-  const img=c.toDataURL();
-  const data={
-    type:'octdr',
-    version:2,
-    width:c.width,
-    height:c.height,
-    background:'#ffffff',
-    image:img,
-    texts
-  };
+  const img=canvas.toDataURL();
+  const data={type:'octdr',version:2,width:canvas.width,height:canvas.height,background:'#fff',image:img,texts};
   const blob=new Blob([JSON.stringify(data)],{type:'text/plain'});
-  const a=document.createElement('a');
-  a.download='drawing.octdr';
-  a.href=URL.createObjectURL(blob);
-  a.click();
+  const a=document.createElement('a'); a.download='drawing.octdr'; a.href=URL.createObjectURL(blob); a.click();
 };
 
-// OCTDR öffnen
+// Öffnen
 document.getElementById('openBtn').onclick=()=>document.getElementById('openOct').click();
 document.getElementById('openOct').onchange=e=>{
-  const file=e.target.files[0];
-  if(!file) return;
+  const file=e.target.files[0]; if(!file) return;
   const r=new FileReader();
   r.onload=()=>{
     const obj=JSON.parse(r.result);
     const img=new Image();
     img.onload=()=>{
-      ctx.clearRect(0,0,c.width,c.height);
-      ctx.drawImage(img,0,0,c.width,c.height);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
       texts=obj.texts||[];
     };
     img.src=obj.image;
   };
   r.readAsText(file);
 };
+
+// Event Listeners
+canvas.addEventListener('keydown',e=>{if(e.key==='Escape') mode='draw';});
 </script>
 </body>
 </html>
