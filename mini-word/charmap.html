@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Charmap — Mini-Word</title>
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#fff; --muted:#6b7280;
+    --accent:#3b82f6; --btn:#efefef;
+  }
+  html,body{height:100%;margin:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; margin:0; background:var(--bg); color:#111}
+  header{display:flex;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid #e6e9ef;background:linear-gradient(#fff,#f4f6fb)}
+  h1{font-size:16px;margin:0}
+  .controls{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}
+  select,input[type="text"],button{padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;background:var(--card);font-size:14px}
+  button.primary{background:var(--accent);color:white;border:none}
+  main{display:flex;gap:12px;padding:12px;align-items:stretch;height:calc(100% - 72px);box-sizing:border-box}
+  .sidebar{width:320px;background:var(--card);border-radius:8px;padding:10px;height:100%;overflow:auto;box-shadow:0 4px 10px rgba(0,0,0,0.04)}
+  .viewer{flex:1;background:var(--card);border-radius:8px;padding:10px;height:100%;display:flex;flex-direction:column;box-shadow:0 4px 10px rgba(0,0,0,0.04)}
+  .block-item{padding:8px;border-radius:6px;margin-bottom:6px;cursor:pointer;border:1px solid transparent}
+  .block-item:hover{background:#f3f6fb}
+  .block-item.active{border-color:rgba(59,130,246,0.2);background:linear-gradient(90deg,#fbfdff,#f3f7ff)}
+  .symbols-wrap{flex:1;overflow:auto;padding:8px;border-radius:6px;border:1px dashed #e6e9ef;background:linear-gradient(#fff,#fcfdff)}
+  .symbols-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px}
+  .sym-btn{display:flex;align-items:center;justify-content:center;border-radius:6px;padding:8px;font-size:20px;border:1px solid #e6e9ef;background:#fff;cursor:pointer;min-height:40px}
+  .sym-btn:hover{background:#eef6ff}
+  .controls-bottom{display:flex;gap:8px;align-items:center;padding-top:8px}
+  .pager{display:flex;gap:8px;align-items:center}
+  .meta{font-size:12px;color:var(--muted);margin-top:6px}
+  .search{width:100%}
+  .big{font-size:34px}
+  @media (max-width:900px){
+    main{flex-direction:column}
+    .sidebar{width:100%;height:260px}
+    .viewer{height:calc(100% - 300px)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Charmap — Mini-Word</h1>
+
+  <div class="controls" style="margin-left:auto">
+    <label for="preset">Voreinstellung:</label>
+    <select id="preset">
+      <option value="">— wählen —</option>
+      <option value="bmp">BMP (U+0000 — U+FFFF)</option>
+      <option value="emoji">Emoji (U+1F000 — U+1FAFF)</option>
+      <option value="basiclatin">Basic Latin (U+0020 — U+007F)</option>
+      <option value="latin1">Latin-1 (U+0080 — U+00FF)</option>
+      <option value="greek">Greek & Coptic (U+0370 — U+03FF)</option>
+      <option value="cjk">CJK Unified Ideographs (U+4E00 — U+9FFF)</option>
+      <option value="misc">Misc Symbols (versch. Blocks)</option>
+    </select>
+
+    <label for="customRange">oder Bereich (hex):</label>
+    <input id="customRange" type="text" placeholder="z.B. 1F000-1FAFF" style="min-width:160px"/>
+
+    <button id="loadBtn" class="primary">Laden</button>
+  </div>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <strong>Beliebte Blocks</strong>
+    <div id="blocksList" style="margin-top:8px"></div>
+
+    <div style="margin-top:10px">
+      <strong>Filter / Suche</strong>
+      <input id="searchInput" class="search" type="text" placeholder="Suche (Hex-Code oder Teilzeichen)" />
+      <div class="meta">Suche z.B. "2603" oder "heart" oder direkt ein Zeichen.</div>
+    </div>
+
+    <div style="margin-top:8px">
+      <strong>Anzeige</strong>
+      <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+        <label>Grösse</label>
+        <select id="sizeSelect">
+          <option value="20">20</option>
+          <option value="28">28</option>
+          <option value="36" selected>36</option>
+          <option value="48">48</option>
+          <option value="64">64</option>
+        </select>
+        <label style="margin-left:8px">Pro Seite</label>
+        <select id="pageSize">
+          <option value="128">128</option>
+          <option value="256" selected>256</option>
+          <option value="512">512</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong>Aktionen</strong>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button id="copyBtn">Kopieren</button>
+        <button id="insertBtn" class="primary">Einfügen (Editor)</button>
+        <button id="closeBtn">Schließen</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;font-size:12px;color:var(--muted)">
+      Tip: Bei langsamen Geräten kleinere "Pro Seite"-Werte (z. B. 128) wählen. Große Bereiche werden paged/lazy geladen.
+    </div>
+  </aside>
+
+  <section class="viewer">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div><strong id="currentLabel">— kein Bereich geladen —</strong></div>
+      <div style="margin-left:auto" class="meta" id="currentInfo"></div>
+    </div>
+
+    <div class="symbols-wrap" id="symbolsWrap">
+      <div class="symbols-grid" id="symbolsGrid"></div>
+    </div>
+
+    <div class="controls-bottom">
+      <div class="pager">
+        <button id="prevPage">&lt; Prev</button>
+        <span id="pageInfo">Seite 0 / 0</span>
+        <button id="nextPage">Next &gt;</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <div id="selectedPreview" style="padding:6px 10px;border-radius:6px;border:1px solid #e6e9ef;min-width:72px;text-align:center">—</div>
+        <div id="selectedCode" class="meta">U+----</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* Charmap — dynamisch + paged + chunked rendering
+   - Unterstützt BMP U+0000–U+FFFF und Emoji U+1F000–U+1FAFF
+   - Sendet ausgewähltes Zeichen per postMessage an opener (wenn vorhanden)
+*/
+
+// --- Block-Definitionen (ausgewählte, erweiterbar)
+const BLOCKS = [
+  { id:'basiclatin', name:'Basic Latin', start:0x0020, end:0x007F },
+  { id:'latin1', name:'Latin-1 Supplement', start:0x0080, end:0x00FF },
+  { id:'latinexta', name:'Latin Extended-A', start:0x0100, end:0x017F },
+  { id:'latinextb', name:'Latin Extended-B', start:0x0180, end:0x024F },
+  { id:'ipa', name:'IPA Extensions', start:0x0250, end:0x02AF },
+  { id:'spacingmod', name:'Spacing Modifier Letters', start:0x02B0, end:0x02FF },
+  { id:'combining', name:'Combining Diacritical Marks', start:0x0300, end:0x036F },
+  { id:'greek', name:'Greek & Coptic', start:0x0370, end:0x03FF },
+  { id:'cyrillic', name:'Cyrillic', start:0x0400, end:0x04FF },
+  { id:'armenian', name:'Armenian', start:0x0530, end:0x058F },
+  { id:'hebrew', name:'Hebrew', start:0x0590, end:0x05FF },
+  { id:'arabic', name:'Arabic', start:0x0600, end:0x06FF },
+  { id:'devanagari', name:'Devanagari', start:0x0900, end:0x097F },
+  { id:'bengali', name:'Bengali', start:0x0980, end:0x09FF },
+  { id:'gurmukhi', name:'Gurmukhi', start:0x0A00, end:0x0A7F },
+  { id:'gujarati', name:'Gujarati', start:0x0A80, end:0x0AFF },
+  { id:'tamil', name:'Tamil', start:0x0B80, end:0x0BFF },
+  { id:'telugu', name:'Telugu', start:0x0C00, end:0x0C7F },
+  { id:'kannada', name:'Kannada', start:0x0C80, end:0x0CFF },
+  { id:'malayalam', name:'Malayalam', start:0x0D00, end:0x0D7F },
+  { id:'thai', name:'Thai', start:0x0E00, end:0x0E7F },
+  { id:'lao', name:'Lao', start:0x0E80, end:0x0EFF },
+  { id:'tibetan', name:'Tibetan', start:0x0F00, end:0x0FFF },
+  { id:'georgian', name:'Georgian', start:0x10A0, end:0x10FF },
+  { id:'hanguljamo', name:'Hangul Jamo', start:0x1100, end:0x11FF },
+  { id:'ethiopic', name:'Ethiopic', start:0x1200, end:0x137F },
+  { id:'cherokee', name:'Cherokee', start:0x13A0, end:0x13FF },
+  { id:'canadian', name:'Unified Canadian Aboriginal Syllabics', start:0x1400, end:0x167F },
+  { id:'ogham', name:'Ogham', start:0x1680, end:0x169F },
+  { id:'runic', name:'Runic', start:0x16A0, end:0x16FF },
+  { id:'tagalog', name:'Tagalog', start:0x1700, end:0x171F },
+  { id:'hanunoo', name:'Hanunoo', start:0x1720, end:0x173F },
+  { id:'khmer', name:'Khmer', start:0x1780, end:0x17FF },
+  { id:'mongolian', name:'Mongolian', start:0x1800, end:0x18AF },
+  { id:'limbu', name:'Limbu', start:0x1900, end:0x194F },
+  { id:'tai', name:'Tai Le', start:0x1950, end:0x197F },
+  { id:'bopomofo', name:'Bopomofo', start:0x3100, end:0x312F },
+  { id:'hiragana', name:'Hiragana', start:0x3040, end:0x309F },
+  { id:'katakana', name:'Katakana', start:0x30A0, end:0x30FF },
+  { id:'cjkradicals', name:'CJK Radicals Supplement', start:0x2E80, end:0x2EFF },
+  { id:'cjk', name:'CJK Unified Ideographs', start:0x4E00, end:0x9FFF },
+  { id:'hangul', name:'Hangul Syllables', start:0xAC00, end:0xD7AF },
+  { id:'privateuse', name:'Private Use Area', start:0xE000, end:0xF8FF },
+  // Larger combined blocks / shortcuts
+  { id:'bmp', name:'Complete BMP (U+0000 — U+FFFF)', start:0x0000, end:0xFFFF },
+  { id:'emoji', name:'Emoji & Symbols (U+1F000 — U+1FAFF)', start:0x1F000, end:0x1FAFF }
+];
+
+// Populate sidebar list
+const blocksList = document.getElementById('blocksList');
+BLOCKS.forEach(b=>{
+  const el = document.createElement('div');
+  el.className='block-item';
+  el.dataset.start = b.start;
+  el.dataset.end = b.end;
+  el.dataset.id = b.id;
+  el.innerHTML = `<strong>${b.name}</strong><div class="meta">U+${b.start.toString(16).toUpperCase().padStart(4,'0')} - U+${b.end.toString(16).toUpperCase().padStart(4,'0')}</div>`;
+  el.onclick = ()=>selectBlock(b);
+  blocksList.appendChild(el);
+});
+
+// State
+let current = { start:0, end:0, name:'', size:36, pageSize:256, page:1, totalPages:0 };
+const symbolsGrid = document.getElementById('symbolsGrid');
+const currentLabel = document.getElementById('currentLabel');
+const currentInfo = document.getElementById('currentInfo');
+const pageInfo = document.getElementById('pageInfo');
+const selectedPreview = document.getElementById('selectedPreview');
+const selectedCode = document.getElementById('selectedCode');
+
+let selected = null;
+
+// UI bindings
+document.getElementById('loadBtn').addEventListener('click', onLoadClick);
+document.getElementById('preset').addEventListener('change', onPresetChange);
+document.getElementById('sizeSelect').addEventListener('change', e=>{ current.size = +e.target.value; renderPage(); });
+document.getElementById('pageSize').addEventListener('change', e=>{ current.pageSize = +e.target.value; current.page = 1; computePages(); renderPage(); });
+document.getElementById('searchInput').addEventListener('input', debounce(onSearch,250));
+document.getElementById('prevPage').addEventListener('click', ()=>{ if(current.page>1){current.page--; renderPage()}});
+document.getElementById('nextPage').addEventListener('click', ()=>{ if(current.page<current.totalPages){current.page++; renderPage()}});
+document.getElementById('copyBtn').addEventListener('click', copySelected);
+document.getElementById('insertBtn').addEventListener('click', insertSelected);
+document.getElementById('closeBtn').addEventListener('click', ()=>{ window.close(); });
+
+// Select block
+function selectBlock(b){
+  document.querySelectorAll('.block-item').forEach(el=>el.classList.remove('active'));
+  const node = Array.from(document.querySelectorAll('.block-item')).find(n=>n.dataset.id===b.id);
+  if(node) node.classList.add('active');
+
+  current.start = b.start; current.end = b.end; current.name = b.name; current.page = 1;
+  currentLabel.textContent = b.name;
+  computePages();
+  renderPage();
+}
+
+// Preset change
+function onPresetChange(e){
+  const v = e.target.value;
+  if(!v) return;
+  const b = BLOCKS.find(x=>x.id===v);
+  if(b) selectBlock(b);
+}
+
+// Load button (custom range or preset)
+function onLoadClick(){
+  const custom = document.getElementById('customRange').value.trim();
+  if(custom){
+    const parts = custom.split('-');
+    if(parts.length===2){
+      const s = parseInt(parts[0],16);
+      const e = parseInt(parts[1],16);
+      if(!isNaN(s) && !isNaN(e) && s<=e){
+        current.start = s; current.end = e; current.name = `Custom U+${parts[0].toUpperCase()} - U+${parts[1].toUpperCase()}`; current.page=1;
+        currentLabel.textContent = current.name;
+        computePages(); renderPage(); return;
+      }
+    }
+    alert('Ungültiges Format. Beispiel: 1F000-1FAFF oder 0000-FFFF');
+    return;
+  }
+  const preset = document.getElementById('preset').value;
+  if(preset){
+    const b = BLOCKS.find(x=>x.id===preset);
+    if(b) selectBlock(b);
+    else alert('Preset nicht gefunden.');
+    return;
+  }
+  alert('Wähle eine Voreinstellung oder einen Bereich.');
+}
+
+// compute pages
+function computePages(){
+  const total = current.end - current.start + 1;
+  current.totalCount = total;
+  current.totalPages = Math.max(1, Math.ceil(total / current.pageSize));
+  pageInfo.textContent = `Seite ${current.page} / ${current.totalPages}`;
+  currentInfo.textContent = `U+${current.start.toString(16).toUpperCase().padStart(4,'0')} — U+${current.end.toString(16).toUpperCase().padStart(4,'0')} • ${total} Zeichen`;
+}
+
+// render page chunked
+function renderPage(){
+  const pageSize = current.pageSize;
+  const startIndex = (current.page - 1) * pageSize;
+  const startCode = current.start + startIndex;
+  const endCode = Math.min(current.start + current.page * pageSize - 1, current.end);
+  pageInfo.textContent = `Seite ${current.page} / ${current.totalPages}`;
+  symbolsGrid.innerHTML = '';
+  selectedPreview.textContent = '—'; selectedCode.textContent = 'U+----';
+  selected = null;
+
+  const size = +document.getElementById('sizeSelect').value;
+  const CHUNK = 64; // chunk size for requestAnimationFrame
+  let i = startCode;
+
+  function renderChunk(){
+    const frag = document.createDocumentFragment();
+    let c = 0;
+    while(i <= endCode && c < CHUNK){
+      try{
+        const ch = String.fromCodePoint(i);
+        const btn = document.createElement('button');
+        btn.className = 'sym-btn';
+        btn.style.fontSize = size + 'px';
+        btn.title = `U+${i.toString(16).toUpperCase()}`;
+        btn.textContent = ch;
+        btn.dataset.code = i;
+        btn.onclick = ()=>selectSymbol(btn);
+        frag.appendChild(btn);
+      } catch(err){
+        // skip invalid
+      }
+      i++; c++;
+    }
+    symbolsGrid.appendChild(frag);
+    if(i <= endCode){
+      requestAnimationFrame(renderChunk);
+    } else {
+      // done
+    }
+  }
+  requestAnimationFrame(renderChunk);
+}
+
+// select a symbol
+function selectSymbol(btn){
+  selected = { code: +btn.dataset.code, char: btn.textContent };
+  selectedPreview.innerHTML = `<span style="font-size:28px">${escapeHtml(selected.char)}</span>`;
+  selectedCode.textContent = 'U+' + selected.code.toString(16).toUpperCase().padStart(4,'0');
+}
+
+// copy to clipboard
+function copySelected(){
+  if(!selected){ alert('Kein Zeichen ausgewählt.'); return; }
+  navigator.clipboard.writeText(selected.char).then(()=> {
+    alert(`Zeichen ${selectedCode.textContent} kopiert.`);
+  }).catch(()=> alert('Kopieren fehlgeschlagen (Clipboard nicht verfügbar).'));
+}
+
+// insert selected to opener
+function insertSelected(){
+  if(!selected){ alert('Kein Zeichen ausgewählt.'); return; }
+  if(window.opener){
+    window.opener.postMessage({ type:'insertSymbol', symbol:selected.char }, '*');
+    window.close();
+  } else {
+    copySelected();
+  }
+}
+
+// search (filters visible buttons)
+function onSearch(){
+  const q = document.getElementById('searchInput').value.trim();
+  if(!q){
+    Array.from(symbolsGrid.children).forEach(n=>n.style.display='flex'); return;
+  }
+  const qHex = q.replace(/^U\+?/i,'').toUpperCase();
+  Array.from(symbolsGrid.children).forEach(n=>{
+    const ch = n.textContent;
+    const codeHex = (+n.dataset.code).toString(16).toUpperCase();
+    const matches = ch.includes(q) || codeHex.includes(qHex);
+    n.style.display = matches ? 'flex' : 'none';
+  });
+}
+
+// helpers
+function debounce(fn,ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
+function escapeHtml(s){ return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// small: auto-select Basic Latin on load
+document.addEventListener('DOMContentLoaded', ()=>{
+  const defaultBlock = BLOCKS.find(b=>b.id==='basiclatin');
+  if(defaultBlock) selectBlock(defaultBlock);
+});
+</script>
+</body>
+</html>
