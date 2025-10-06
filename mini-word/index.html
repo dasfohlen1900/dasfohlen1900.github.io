@@ -169,7 +169,22 @@ select, input[type="color"], input[type="file"] {
     <div class="group">
       <button class="icon" onclick="insertImage()">&#xe90d;</button> Bild
       <button class="icon" onclick="insertTable()">&#xe900;</button> Tabelle
-      <button class="icon" onclick="insertSymbol('Ω')">Ω</button> Symbol
+<!-- Button im Ribbon -->
+      <button class="icon" onclick="openCharmap()">Ω</button>
+
+<script>
+function openCharmap() {
+  const popup = window.open('charmap.html', 'Charmap', 'width=400,height=300');
+  
+  // Listener für Nachrichten vom Popup
+  window.addEventListener('message', function receive(event) {
+    if (event.data.type === 'insertSymbol') {
+      document.execCommand('insertText', false, event.data.symbol);
+    }
+  }, { once: true }); // nur einmal pro Öffnung
+}
+</script>
+
     </div>
   </div>
 
