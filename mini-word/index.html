@@ -13,7 +13,15 @@
 @font-face { font-family: 'Bahnschrift'; src: url('fonts/bahnschrift.ttf'); }
 @font-face { font-family: 'Calibri'; src: url('fonts/calibri.ttf'); }
 @font-face { font-family: 'SegoeUI'; src: url('fonts/segoeui.ttf'); }
-@font-face { font-family: 'IcoMoon'; src: url('fonts/icomoon.ttf'); }
+
+/* IcoMoon Icons für alle Geräte inkl. iPad */
+@font-face {
+  font-family: 'IcoMoon';
+  src: url('fonts/icomoon.woff') format('woff'),
+       url('fonts/icomoon.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 body {
   margin: 0;
@@ -119,11 +127,12 @@ select, input[type="color"], input[type="file"] {
   <!-- Datei -->
   <div class="tab-content active" id="file">
     <div class="group">
-      <button class="icon" onclick="saveFile('octxt')">&#xe962;</button> 
-      <button class="icon" onclick="loadFile()">&#xe930;</button> 
+      <button class="icon" onclick="saveOctxt()">&#xe962;</button> 
+      <button class="icon" onclick="loadOctxt()">&#xe930;</button> 
       <button class="icon" onclick="exportDocx()">&#xeae1;</button> 
+      <button class="icon" onclick="saveTxt()">TXT</button>
       <button class="icon" onclick="window.print()">&#xe914;</button>
-      <input type="file" id="fileInput" accept=".octxt,.txt,.docx" hidden>
+      <input type="file" id="fileInput" hidden>
     </div>
     <div class="save-zone"></div>
   </div>
@@ -131,22 +140,7 @@ select, input[type="color"], input[type="file"] {
   <!-- Start -->
   <div class="tab-content" id="home">
     <div class="group">
-      <select id="fontSelect">
-        <option value="Arial">Arial</option>
-        <option value="Bahnschrift">Bahnschrift</option>
-        <option value="Bungee">Bungee</option>
-        <option value="Calibri">Calibri</option>
-        <option value="Comic Sans MS">Comic Sans MS</option>
-        <option value="LukovicSans">LukovicSans</option>
-        <option value="RetroStylePro">RetroStylePro</option>
-        <option value="SegoeUI">Segoe UI</option>
-        <option value="Work Sans">Work Sans</option>
-        <option value="Playfair Display">Playfair Display</option>
-        <option value="Noto Sans">Noto Sans</option>        
-        <option value="Verdana">Verdana</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Signika">Signika</option>
-      </select>
+      <select id="fontSelect"></select>
       <select id="fontSize">
         <option>10</option><option>12</option><option>14</option>
         <option>16</option><option>18</option><option>20</option><option>24</option><option>28</option>
@@ -198,7 +192,7 @@ const contents = document.querySelectorAll('.tab-content');
 const editor = document.getElementById('editor');
 const fileInput = document.getElementById('fileInput');
 
-// Tabs wechseln
+// Tabs wechseln stabil
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
     tabs.forEach(t => t.classList.remove('active'));
@@ -213,63 +207,99 @@ function format(cmd, value = null) {
   document.execCommand(cmd, false, value);
 }
 
-document.getElementById('fontSelect').onchange = e => format('fontName', e.target.value);
-document.getElementById('fontSize').onchange = e => format('fontSize', e.target.value);
 document.getElementById('colorPicker').onchange = e => format('foreColor', e.target.value);
+document.getElementById('fontSize').onchange = e => format('fontSize', e.target.value);
 
-// Bild / Tabelle / Symbol einfügen
+// Alphabetische Fontliste System + lokal + Google
+const fonts = [
+  'Arial','Bahnschrift','Bungee','Calibri','Comic Sans MS','Courier Prime','Exo 2','Fira Code',
+  'Georgia','Gloria Hallelujah','JetBrains Mono','Lilita One','Lora','LukovicSans','Lukovic2','Merriweather',
+  'Montserrat','Noto Sans','Open Sans','Patrick Hand','Playfair Display','Poppins','PT Serif',
+  'Quicksand','Raleway','Roboto','SegoeUI','Shadows Into Light','Signika','Times','Vollkorn','Verdana','Work Sans'
+].sort();
+
+const fontSelect = document.getElementById('fontSelect');
+fonts.forEach(f => {
+  const opt = document.createElement('option');
+  opt.value = f; opt.textContent = f;
+  fontSelect.appendChild(opt);
+});
+fontSelect.onchange = e => format('fontName', e.target.value);
+
+// Bild / Tabelle / Symbol
 function insertImage() {
   const url = prompt("Bild-URL eingeben:");
   if (url) document.execCommand('insertImage', false, url);
 }
 function insertTable() {
-  const rows = prompt("Zeilenanzahl:");
-  const cols = prompt("Spaltenanzahl:");
-  if (rows && cols) {
-    let table = "<table border='1' style='border-collapse:collapse; width:100%;'>";
-    for (let r = 0; r < rows; r++) {
-      table += "<tr>";
-      for (let c = 0; c < cols; c++) table += "<td>&nbsp;</td>";
-      table += "</tr>";
-    }
-    table += "</table>";
-    document.execCommand("insertHTML", false, table);
+  const rows = parseInt(prompt("Zeilenanzahl:"));
+  const cols = parseInt(prompt("Spaltenanzahl:"));
+  if (!rows || !cols) return;
+  let table = "<table border='1' style='border-collapse:collapse; width:100%;'>";
+  for (let r = 0; r < rows; r++) {
+    table += "<tr>";
+    for (let c = 0; c < cols; c++) table += "<td>&nbsp;</td>";
+    table += "</tr>";
   }
+  table += "</table>";
+  document.execCommand("insertHTML", false, table);
 }
 function insertSymbol(symbol) {
   document.execCommand("insertText", false, symbol);
 }
 
-// Speichern / Laden / Export
-function saveFile(ext) {
-  const content = editor.innerHTML;
-  const blob = new Blob([content], {type: "text/html"});
-  const a = document.createElement("a");
+// --- .octxt & .txt Speichern & Laden ---
+function saveOctxt() {
+  const blob = new Blob([editor.innerHTML], { type: 'text/html' });
+  const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = "MiniWord." + ext;
+  a.download = 'MiniWord.octxt';
   a.click();
 }
-function loadFile() {
+
+function loadOctxt() {
+  fileInput.accept = ".octxt,.txt";
   fileInput.click();
   fileInput.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = ev => editor.innerHTML = ev.target.result;
+    reader.onload = ev => {
+      if (file.name.endsWith(".txt")) editor.textContent = ev.target.result;
+      else editor.innerHTML = ev.target.result;
+      localStorage.setItem('miniword_autosave', editor.innerHTML);
+    };
     reader.readAsText(file);
   };
 }
+
+function saveTxt() {
+  const blob = new Blob([editor.textContent], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'MiniWord.txt';
+  a.click();
+}
+
+// Export DOCX
 function exportDocx() {
   const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body>`;
   const footer = `</body></html>`;
-  const sourceHTML = header + editor.innerHTML + footer;
-  const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
+  const blob = new Blob(['\ufeff', header + editor.innerHTML + footer], { type: 'application/msword' });
   const a = document.createElement('a');
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = 'MiniWord.docx';
   a.click();
 }
+
+// --- Autosave ---
+editor.addEventListener('input', () => {
+  localStorage.setItem('miniword_autosave', editor.innerHTML);
+});
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('miniword_autosave');
+  if (saved) editor.innerHTML = saved;
+});
 </script>
 </body>
 </html>
