@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-Word</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Arvo&family=Bungee&family=Cormorant+Garamond&family=Crimson+Text&family=Domine&family=Exo+2&family=Fira+Code&family=Gloria+Hallelujah&family=JetBrains+Mono&family=Lilita+One&family=Lora&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Playfair+Display&family=Poppins&family=PT+Serif&family=Quicksand&family=Raleway&family=Roboto&family=Signika&family=Vollkorn&family=Work+Sans&family=Patrick+Hand&family=Caveat&family=Satisfy&family=Shadows+Into+Light&family=Architects+Daughter&family=Courier+Prime&family=Inconsolata&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Work Sans', system-ui, sans-serif;
+  background: #f7f9fc;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ribbon Design */
+.ribbon {
+  background: linear-gradient(#fdfdfd, #e9edf5);
+  border-bottom: 1px solid #c6c9d1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 10px;
+}
+.tab {
+  padding: 6px 14px;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+  margin-right: 4px;
+  font-weight: 600;
+  color: #333;
+}
+.tab.active {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-bottom: none;
+}
+.tab-content {
+  display: none;
+  background: #fff;
+  padding: 10px;
+  border-top: none;
+  min-height: 90px;
+}
+.tab-content.active { display: block; }
+
+.group {
+  display: inline-block;
+  vertical-align: top;
+  padding: 5px 10px;
+  border-right: 1px solid #ddd;
+}
+.group:last-child { border-right: none; }
+
+button.icon {
+  font-family: 'Segoe UI', system-ui;
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+  transition: background 0.2s;
+}
+button.icon:hover {
+  background: #e6eaf2;
+  border-radius: 6px;
+}
+
+#editor {
+  flex-grow: 1;
+  background: white;
+  margin: 0;
+  padding: 20px;
+  outline: none;
+  font-size: 16px;
+  overflow-y: auto;
+}
+select, input[type="color"], input[type="file"] {
+  margin: 4px;
+  padding: 3px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: inherit;
+}
+</style>
+</head>
+
+<body>
+
+<div class="ribbon">
+  <div class="tabs">
+    <div class="tab active" data-tab="file">File</div>
+    <div class="tab" data-tab="home">Home</div>
+    <div class="tab" data-tab="insert">Insert</div>
+    <div class="tab" data-tab="review">Review</div>
+  </div>
+
+  <!-- File Tab -->
+  <div class="tab-content active" id="file">
+    <div class="group">
+      <button class="icon" onclick="saveOctxt()">Save .octxt</button>
+      <button class="icon" onclick="loadOctxt()">Load</button>
+      <button class="icon" onclick="exportDocx()">Export DOCX</button>
+      <button class="icon" onclick="saveTxt()">Save TXT</button>
+      <button class="icon" onclick="window.print()">Print</button>
+      <input type="file" id="fileInput" hidden>
+    </div>
+  </div>
+
+  <!-- Home Tab -->
+  <div class="tab-content" id="home">
+    <div class="group">
+      <select id="fontSelect"></select>
+      <select id="fontSize">
+        <option>10</option><option>12</option><option>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option>
+      </select>
+    </div>
+    <div class="group">
+      <button class="icon" onclick="format('bold')">B</button>
+      <button class="icon" onclick="format('italic')">I</button>
+      <button class="icon" onclick="format('underline')">U</button>
+      <input type="color" id="colorPicker" title="Font Color">
+    </div>
+    <div class="group">
+      <button class="icon" onclick="format('insertUnorderedList')">• List</button>
+      <button class="icon" onclick="format('insertOrderedList')">1. List</button>
+    </div>
+    <div class="group">
+      <button class="icon" onclick="format('justifyLeft')">L</button>
+      <button class="icon" onclick="format('justifyCenter')">C</button>
+      <button class="icon" onclick="format('justifyRight')">R</button>
+      <button class="icon" onclick="format('justifyFull')">J</button>
+    </div>
+  </div>
+
+  <!-- Insert Tab -->
+  <div class="tab-content" id="insert">
+    <div class="group">
+      <button class="icon" onclick="insertImage()">Image</button>
+      <button class="icon" onclick="insertTable()">Table</button>
+      <button class="icon" onclick="openCharmap()">Ω</button>
+    </div>
+  </div>
+
+  <!-- Review Tab -->
+  <div class="tab-content" id="review">
+    <div class="group">
+      <button class="icon">Spelling</button>
+      <button class="icon">Track Changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="editor" contenteditable="true">
+  <p>🖤🤍💚 Welcome to <b>Mini-Word Premium</b> – your stylish editor!</p>
+</div>
+
+<script>
+// Tabs
+const tabs = document.querySelectorAll('.tab');
+const contents = document.querySelectorAll('.tab-content');
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  tabs.forEach(t => t.classList.remove('active'));
+  contents.forEach(c => c.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById(tab.dataset.tab).classList.add('active');
+}));
+
+// Format
+function format(cmd, value=null){ document.execCommand(cmd, false, value); }
+document.getElementById('colorPicker').onchange = e=>format('foreColor', e.target.value);
+document.getElementById('fontSize').onchange = e=>format('fontSize', e.target.value);
+
+// Fonts
+const fonts = ['Arial','Courier New','Georgia','Times New Roman','Verdana','Roboto','Work Sans'].sort();
+const fontSelect = document.getElementById('fontSelect');
+fonts.forEach(f=>{ const opt=document.createElement('option'); opt.value=f; opt.textContent=f; fontSelect.appendChild(opt); });
+fontSelect.onchange = e=>format('fontName', e.target.value);
+
+// Image/Table/Charmap
+function insertImage(){ const url=prompt("Enter image URL:"); if(url) document.execCommand('insertImage', false, url); }
+function insertTable(){
+  const rows=parseInt(prompt("Number of rows:")), cols=parseInt(prompt("Number of columns:"));
+  if(!rows||!cols) return;
+  let table="<table border='1' style='border-collapse:collapse;width:100%'>";
+  for(let r=0;r<rows;r++){ table+="<tr>"; for(let c=0;c<cols;c++) table+="<td>&nbsp;</td>"; table+="</tr>"; }
+  table+="</table>"; document.execCommand("insertHTML", false, table);
+}
+function openCharmap(){ window.open('charmap.html','Charmap','width=400,height=300'); }
+
+// Save/Load
+const editor=document.getElementById('editor'), fileInput=document.getElementById('fileInput');
+function saveOctxt(){ const blob=new Blob([editor.innerHTML],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MiniWord.octxt'; a.click(); }
+function loadOctxt(){ fileInput.accept=".octxt,.txt"; fileInput.click(); fileInput.onchange=e=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ file.name.endsWith(".txt")?editor.textContent=ev.target.result:editor.innerHTML=ev.target.result; localStorage.setItem('miniword_autosave', editor.innerHTML); }; reader.readAsText(file); }; }
+function saveTxt(){ const blob=new Blob([editor.textContent],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MiniWord.txt'; a.click(); }
+function exportDocx(){ const header=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body>`, footer="</body></html>"; const blob=new Blob(['\ufeff', header+editor.innerHTML+footer],{type:'application/msword'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MiniWord.docx'; a.click(); }
+
+// Autosave
+editor.addEventListener('input',()=>localStorage.setItem('miniword_autosave', editor.innerHTML));
+window.addEventListener('load',()=>{ const saved=localStorage.getItem('miniword_autosave'); if(saved) editor.innerHTML=saved; });
+</script>
+</body>
+</html>
