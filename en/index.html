@@ -95,6 +95,12 @@
       padding: 0.5rem 1rem;
       font-size: 0.9rem;
     }
+    /* Ausgegraute Buttons für deaktivierte Programme */
+    .program.disabled .btn {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: default;
+    }
     footer {
       background-color: #222;
       color: #fff;
@@ -134,20 +140,23 @@
           <p>Create and edit text documents quickly and easily right in the browser.</p>
           <a class="btn" href="mini-word/index.html">Open</a>
         </div>
-        <div class="program">
+
+        <div class="program disabled">
           <h3>Mini-PP</h3>
           <p>Design attractive presentations with templates and effects.</p>
-          <a class="btn" href="mini-pp/index.html">Open</a>
+          <a class="btn" href="mini-pp/index.html">Not available</a>
         </div>
-        <div class="program">
+
+        <div class="program disabled">
           <h3>Mini-Calc</h3>
           <p>Calculate, analyze, and visualize data directly in the browser.</p>
-          <a class="btn" href="mini-calc/index.html">Open</a>
+          <a class="btn" href="mini-calc/index.html">Not Available</a>
         </div>
-        <div class="program">
+
+        <div class="program disabled">
           <h3>Mini-Table</h3>
           <p>Organize tables, lists, and simple data structures quickly and efficiently.</p>
-          <a class="btn" href="mini-table/index.html">Open</a>
+          <a class="btn" href="mini-table/index.html">Not Available</a>
         </div>
       </div>
     </section>
@@ -160,4 +169,3 @@
   </footer>
 </body>
 </html>
-
