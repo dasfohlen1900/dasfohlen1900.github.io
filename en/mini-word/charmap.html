@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Character Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Work+Sans&family=Courier+Prime&family=Fira+Code&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Work Sans', system-ui, sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 10px;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 5px;
+  max-width: 600px;
+  margin: auto;
+}
+.char {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.char:hover { background: #e0e6f1; }
+#selected {
+  margin: 15px auto;
+  padding: 10px;
+  width: 95%;
+  max-width: 600px;
+  border: 1px solid #999;
+  border-radius: 5px;
+  font-size: 22px;
+  background: #fff;
+}
+button#copyBtn {
+  display: block;
+  margin: 10px auto;
+  padding: 6px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #f0f0f0;
+}
+button#copyBtn:hover { background: #d0d0d0; }
+</style>
+</head>
+<body>
+
+<h1>Character Map</h1>
+<div id="selected">Click a character to select it</div>
+<button id="copyBtn">Copy Selected</button>
+
+<div class="grid" id="charGrid"></div>
+
+<script>
+const chars = [
+  '☺','☻','♥','♦','♣','♠','•','◘','○','◙','♂','♀','♪','♫','☼',
+  '►','◄','↕','‼','¶','§','▬','↨','↑','↓','→','←','∟','↔','▲','▼',
+  'α','β','γ','δ','ε','ζ','η','θ','ι','κ','λ','μ','ν','ξ','ο','π',
+  'ρ','σ','τ','υ','φ','χ','ψ','ω','Ω','Δ','Σ','Θ','∞','≈','≠','≤','≥',
+  '€','£','¥','¢','©','®','™','✓','✕','✖','✱','★','☆','☁','☂','☃'
+];
+
+const grid = document.getElementById('charGrid');
+const selected = document.getElementById('selected');
+let currentChar = '';
+
+chars.forEach(c=>{
+  const div = document.createElement('div');
+  div.className = 'char';
+  div.textContent = c;
+  div.onclick = () => { currentChar = c; selected.textContent = c; };
+  grid.appendChild(div);
+});
+
+document.getElementById('copyBtn').onclick = ()=>{
+  if(!currentChar) return alert("No character selected!");
+  navigator.clipboard.writeText(currentChar).then(()=>alert("Copied: "+currentChar));
+};
+</script>
+
+</body>
+</html>
