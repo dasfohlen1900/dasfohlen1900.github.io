@@ -43,7 +43,7 @@
 </head>
 <body>
 <header>
-  <div class="brand">🔢 Mini-Rechner (wissenschaftlich)</div>
+  <div class="brand">🔢 Mini-Calc</div>
   <div class="toolbar">
     <button class="btn small" onclick="downloadOctch()">💾 History (.octch)</button>
     <button class="btn small" onclick="uploadOctch()">📂 Open</button>
@@ -112,8 +112,8 @@
 
   <aside class="panel history">
     <div class="hist-head">
-      <div style="font-weight:600">Verlauf</div>
-      <div class="muted">Speichert als <b>.octch</b></div>
+      <div style="font-weight:600">History</div>
+      <div class="muted">Save as .octch</div>
     </div>
     <div class="hist-list" id="histList"></div>
   </aside>
@@ -121,7 +121,7 @@
 
 <footer>
   <div class="status" id="status">Bereit</div>
-  <div class="muted">Einträge: <span id="histCount">0</span></div>
+  <div class="muted">List: <span id="histCount">0</span></div>
 </footer>
 
 <script>
