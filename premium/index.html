@@ -10,14 +10,7 @@ body.dark { background:#1e1e1e; color:#eee; }
 header { background:#000; color:white; padding:15px 20px; font-family:'Bungee',cursive; font-size:28px; display:flex; justify-content:space-between; align-items:center; }
 header .profile { cursor:pointer; font-size:16px; }
 
-#loginForm { display:flex; flex-direction:column; max-width:400px; margin:50px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.2); }
-body.dark #loginForm { background:#333; color:#eee; }
-#loginForm input { padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
-body.dark #loginForm input { background:#555; color:#eee; border:1px solid #777; }
-#loginForm button { padding:10px; background:#00703C; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Bungee',cursive; }
-#loginForm button:hover { background:#005f2b; }
-
-#dashboard { display:none; display:grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); grid-auto-rows:120px; gap:15px; padding:20px; }
+#dashboard { display:grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); grid-auto-rows:120px; gap:15px; padding:20px; }
 .tile { background:#00703C; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:'Bungee',cursive; font-size:18px; border-radius:12px; cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; }
 body.dark .tile { background:#444; color:#eee; }
 .tile img { width:48px; height:48px; margin-bottom:5px; }
@@ -40,13 +33,6 @@ body.dark .tile { background:#444; color:#eee; }
   <span class="profile">☰</span>
 </header>
 
-<form id="loginForm">
-  <h2>Anmelden</h2>
-  <input type="email" id="email" placeholder="E-Mail-Adresse" required>
-  <input type="password" id="password" placeholder="Passwort" required>
-  <button type="submit">Anmelden</button>
-</form>
-
 <div id="dashboard"></div>
 
 <div id="charmbar">
@@ -64,63 +50,62 @@ body.dark .tile { background:#444; color:#eee; }
   <button onclick="logout()">Abmelden</button>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC4vkDRFGgoHZ8lyGY8VeYYtP6oA-PqaNs",
-  authDomain: "lukovic-store.firebaseapp.com",
-  projectId: "lukovic-store",
-  storageBucket: "lukovic-store.firebasestorage.app",
-  messagingSenderId: "519122370011",
-  appId: "1:519122370011:web:d7bc0ec5cb066d4f033bfe"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
+<script>
 document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('loginForm');
   const dashboard = document.getElementById('dashboard');
   const charmbar = document.getElementById('charmbar');
   const profileBtn = document.querySelector('.profile');
   const closeCharmBtn = document.getElementById('closeCharm');
 
- const tilesData = [
-  {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/file-text.svg"},
-  {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/calculator.svg"},
-  {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/activity.svg"},
-  {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/slideshow.svg"},
-  {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/grid.svg"},
-  {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/edit-2.svg"},
-  {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/shopping-cart.svg"},
-  {name:"Konsole (DEV)", size:"1x1", url:"https://dasfohlen1900.github.io/console", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/terminal.svg"},
-  {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/clipboard.svg"},
-  {name:"Mini-Table", size:"1x2", url:"https://dasfohlen1900.github.io/mini-table", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/grid.svg"},
-  {name:"Mini-Randomizer", size:"1x1", url:"https://dasfohlen1900.github.io/premium/randomizer", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/shuffle.svg"},
-  {name:"Penalty", size:"1x1", url:"https://dasfohlen1900.github.io/games/penalty", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/award.svg"},
-  {name:"Mini-Uhr", size:"2x2", url:"https://dasfohlen1900.github.io/mini-uhr", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/clock.svg"}
-];
+  // --------------------------
+  // Premium-Schutz
+  // --------------------------
+  const userId = localStorage.getItem('currentUserId');
+  if(!userId){
+      window.location.href = '/premium/auth.html';
+      return;
+  }
 
+  // --------------------------
+  // Tiles Daten
+  // --------------------------
+  const tilesData = [
+    {name:"Mini-Word", size:"2x2", url:"https://dasfohlen1900.github.io/mini-word", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/file-text.svg"},
+    {name:"Mini-Calc", size:"1x1", url:"https://dasfohlen1900.github.io/mini-calc", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/calculator.svg"},
+    {name:"Der Mini-Kicker", size:"1x1", url:"https://dasfohlen1900.github.io/derminikicker", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/activity.svg"},
+    {name:"Mini-Präsentator", size:"2x1", url:"https://dasfohlen1900.github.io/mini-pp", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/slideshow.svg"},
+    {name:"2048", size:"1x1", url:"https://dasfohlen1900.github.io/games/2048", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/grid.svg"},
+    {name:"Mini-Draw", size:"1x1", url:"https://dasfohlen1900.github.io/mini-draw", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/edit-2.svg"},
+    {name:"Store", size:"2x1", url:"https://dasfohlen1900.github.io/store", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/shopping-cart.svg"},
+    {name:"Konsole (DEV)", size:"1x1", url:"https://dasfohlen1900.github.io/console", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/terminal.svg"},
+    {name:"Mini-Tafel", size:"2x2", url:"https://dasfohlen1900.github.io/mini-notes", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/clipboard.svg"},
+    {name:"Mini-Table", size:"1x2", url:"https://dasfohlen1900.github.io/mini-table", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/grid.svg"},
+    {name:"Mini-Randomizer", size:"1x1", url:"https://dasfohlen1900.github.io/premium/randomizer", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/shuffle.svg"},
+    {name:"Penalty", size:"1x1", url:"https://dasfohlen1900.github.io/games/penalty", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/award.svg"},
+    {name:"Mini-Uhr", size:"2x2", url:"https://dasfohlen1900.github.io/mini-uhr", icon:"https://cdn.jsdelivr.net/gh/feathericons/feather/icons/clock.svg"}
+  ];
+
+  // --------------------------
+  // Layout speichern/laden
+  // --------------------------
   function saveLayout(){
-    if(auth.currentUser){
       const layout = Array.from(dashboard.querySelectorAll('.tile')).map(t=>t.dataset.name);
-      localStorage.setItem('dashboard_'+auth.currentUser.uid, JSON.stringify(layout));
-    }
+      localStorage.setItem('dashboard_'+userId, JSON.stringify(layout));
   }
 
   function loadLayout(){
-    if(auth.currentUser){
-      const layout = JSON.parse(localStorage.getItem('dashboard_'+auth.currentUser.uid) || 'null');
+      const layout = JSON.parse(localStorage.getItem('dashboard_'+userId) || 'null');
       if(layout){
         const orderedTiles = [];
         layout.forEach(name=>{ const t = tilesData.find(td=>td.name===name); if(t) orderedTiles.push(t); });
         tilesData.forEach(td=>{ if(!orderedTiles.includes(td)) orderedTiles.push(td); });
         tilesData.splice(0, tilesData.length, ...orderedTiles);
       }
-    }
   }
 
+  // --------------------------
+  // Dashboard rendern
+  // --------------------------
   function renderTiles(){
     dashboard.innerHTML="";
     tilesData.forEach((t,i)=>{
@@ -144,20 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  loginForm.addEventListener('submit', e=>{
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    signInWithEmailAndPassword(auth,email,password)
-      .then(()=>{ 
-        loginForm.style.display='none'; 
-        dashboard.style.display='grid'; 
-        loadLayout();
-        renderTiles(); 
-      })
-      .catch(err=>alert("Login fehlgeschlagen: "+err.message));
-  });
-
+  // --------------------------
+  // Charmbar & Funktionen
+  // --------------------------
   profileBtn.addEventListener('click', ()=>{ charmbar.classList.toggle('show'); });
   closeCharmBtn.addEventListener('click', ()=>{ charmbar.classList.remove('show'); });
 
@@ -197,12 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.shareLink = ()=>{ prompt("Teile diesen Link:", window.location.href); };
   window.showInfo = ()=>{ alert("Mini-Office Premium Dashboard\nVersion 1.0"); };
-  window.logout = ()=>{ signOut(auth).then(()=>{ location.reload(); }); };
+  window.logout = ()=>{ localStorage.removeItem('currentUserId'); location.href='/premium/auth.html'; };
 
-  onAuthStateChanged(auth, user=>{
-    if(user){ loginForm.style.display='none'; dashboard.style.display='grid'; loadLayout(); renderTiles(); }
-    else{ loginForm.style.display='flex'; dashboard.style.display='none'; }
-  });
+  // --------------------------
+  // Init
+  // --------------------------
+  loadLayout();
+  renderTiles();
 });
 </script>
 </body>
