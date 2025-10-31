@@ -96,7 +96,7 @@ function renderRange(start, end) {
 select.addEventListener("change", () => {
   switch (select.value) {
     case "BMP":
-      renderRange(0x0000, 0x00FF); // Start mit kleinem Teil
+      renderRange(0x0000, 0xFFFF); // Start mit kleinem Teil
       break;
     case "A0000":
       renderRange(0xA0000, 0xA0FFF);
