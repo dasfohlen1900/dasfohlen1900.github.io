@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini-Office</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      width: 100%;
+      background-color: #222;
+      color: #fff;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    header a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    main {
+      text-align: center;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      flex: 1;
+    }
+    main img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 2rem;
+    }
+    main h1 {
+      font-family: "Arial Black", sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    main p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .btn {
+      background-color: #222;
+      color: #fff;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .btn:hover {
+      background-color: #444;
+    }
+    .mini-programs {
+      margin-top: 3rem;
+      text-align: center;
+    }
+    .mini-programs h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .programs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      justify-items: center;
+    }
+    .program {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      max-width: 220px;
+    }
+    .program h3 {
+      margin-bottom: 0.5rem;
+    }
+    .program p {
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    .program .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    footer {
+      background-color: #222;
+      color: #fff;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    footer a {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Mini-Office</div>
+    <nav>
+      <a href="/mini-word/">Mini-Word</a>
+    </nav>
+  </header>
+
+  <main>
+    <img src="assets/Mini-Office.png" alt="Mini-Office">
+    <h1>Bienvenido a Mini-Office</h1>
+    <p>
+      Mini-Office es tu solución compacta de oficina para textos, hojas de cálculo y presentaciones, 
+      todo en un solo lugar, directamente en tu navegador. 
+      Trabaja en cualquier momento y lugar sin necesidad de instalar software, 
+      comparte documentos con amigos o compañeros en tiempo real 
+      y utiliza plantillas prácticas para empezar a ser productivo de inmediato.
+    </p>
+    <a class="btn" href="/es/seite1.html">Empezar ahora</a>
+
+    <section class="mini-programs">
+      <h2>Nuestros Mini-Programas</h2>
+      <div class="programs-grid">
+        <div class="program">
+          <h3>Mini-Word</h3>
+          <p>Crea y edita textos rápida y fácilmente directamente en el navegador.</p>
+          <a class="btn" href="/mini-word/">Abrir</a>
+        </div>
+        <div class="program">
+          <h3>Mini-PP</h3>
+          <p>Crea presentaciones atractivas con plantillas y efectos.</p>
+          <a class="btn" href="">Abrir</a>
+        </div>
+        <div class="program">
+          <h3>Mini-Calc</h3>
+          <p>Calcula, analiza y visualiza datos directamente en tu navegador.</p>
+          <a class="btn" href="">Abrir</a>
+        </div>
+        <div class="program">
+          <h3>Mini-Table</h3>
+          <p>Organiza tablas, listas y estructuras de datos simples de forma rápida y sencilla.</p>
+          <a class="btn" href="">Abrir</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Mini-Office &copy; 2025</p>
+    <p><a href="/de/">Alemán</a><a href="/en/">Inglés</a></p>
+    <p>Desarrollado por <a href="https://dasfohlen1900.github.io/info" target="_blank">tu equipo</a></p>
+    <p>Nota: Mini-Office funciona mejor en navegadores modernos. Para comentarios o soporte, contáctanos <a href="mailto:lukaskrakers890+miniofficesupport@gmail.com">aquí</a>.</p>
+  </footer>
+</body>
+</html>
