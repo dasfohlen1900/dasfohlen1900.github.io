@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 – Kraki hat diese Seite nicht gefunden 🐙</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --fg: #f0f6fc;
+    --accent: #00c08b;
+    --accent2: #58a6ff;
+  }
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Work Sans", sans-serif;
+    text-align: center;
+  }
+  h1 {
+    font-size: 6rem;
+    margin: 0;
+    color: var(--accent);
+  }
+  p {
+    font-size: 1.3rem;
+    margin: 10px 0 30px;
+  }
+  a {
+    text-decoration: none;
+    background: var(--accent2);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+  a:hover {
+    background: var(--accent);
+  }
+  .switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  .switcher button {
+    background: none;
+    border: 1px solid var(--accent2);
+    color: var(--fg);
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .switcher button:hover {
+    background: var(--accent2);
+    color: var(--bg);
+  }
+</style>
+</head>
+<body>
+  <div class="switcher">
+    <button onclick="setLang('de')">DE</button>
+    <button onclick="setLang('en')">EN</button>
+    <button onclick="setLang('es')">ES</button>
+  </div>
+
+  <h1>🐙 404</h1>
+  <p id="msg">Kraki hat diese Seite nicht gefunden.<br>Vielleicht hat sie sich in den Tiefen des Ozeans versteckt...</p>
+  <a href="/">Zur Startseite</a>
+
+  <script>
+    const texts = {
+      de: {
+        msg: "Kraki hat diese Seite nicht gefunden.<br>Vielleicht hat sie sich in den Tiefen des Ozeans versteckt...",
+        home: "Zur Startseite",
+        title: "404 – Kraki hat diese Seite nicht gefunden 🐙"
+      },
+      en: {
+        msg: "Kraki couldn't find this page.<br>Maybe it’s hiding deep in the ocean...",
+        home: "Back to Home",
+        title: "404 – Kraki couldn’t find this page 🐙"
+      },
+      es: {
+        msg: "Kraki no pudo encontrar esta página.<br>Tal vez se esconda en las profundidades del océano...",
+        home: "Volver al inicio",
+        title: "404 – Kraki no encontró esta página 🐙"
+      }
+    };
+    function setLang(l) {
+      document.getElementById('msg').innerHTML = texts[l].msg;
+      document.querySelector('a').textContent = texts[l].home;
+      document.title = texts[l].title;
+      document.documentElement.lang = l;
+      localStorage.setItem('lang404', l);
+    }
+    // auto-load previous language
+    const saved = localStorage.getItem('lang404');
+    if (saved && texts[saved]) setLang(saved);
+  </script>
+</body>
+</html>
