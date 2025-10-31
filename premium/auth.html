@@ -5,25 +5,21 @@
 <title>Mini-Office Premium Anmeldung</title>
 <style>
 body { font-family: "Segoe UI", sans-serif; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#eef4fb; }
-body.dark { background:#1e1e1e; color:#eee; }
 h1 { font-family:'Bungee',cursive; margin-bottom:20px; }
-#login { display:flex; flex-direction:column; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.2); }
-body.dark #login { background:#333; color:#eee; }
-#login input { padding:10px; margin:8px 0; border-radius:6px; border:1px solid #ccc; }
-body.dark #login input { background:#555; color:#eee; border:1px solid #777; }
-#login button { padding:10px; margin-top:10px; background:#00703C; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Bungee',cursive; }
+#login { display:flex; flex-direction:column; align-items:center; background:white; padding:30px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.2); }
+#login button, #login input { padding:10px 20px; margin-top:10px; border-radius:6px; font-family:'Bungee',cursive; font-size:16px; }
+#login button { background:#00703C; color:white; border:none; cursor:pointer; }
 #login button:hover { background:#005f2b; }
-#qrVideo { width:300px; height:300px; border:1px solid #ccc; margin-top:10px; }
+#qrVideo { width:300px; height:300px; border:1px solid #ccc; margin-top:15px; display:none; }
 </style>
 </head>
 <body>
 <h1>Mini-Office Premium Anmeldung</h1>
 
 <div id="login">
-  <input type="text" id="username" placeholder="Benutzername" required>
   <button id="scanCardBtn">Mini-Card scannen</button>
-  <input type="text" id="code" placeholder="Code generieren/Einfügen" readonly>
-  <button id="loginBtn">Anmelden</button>
+  <input type="text" id="idInput" placeholder="Direkt mit ID anmelden">
+  <button id="loginIdBtn">Anmelden mit ID</button>
 </div>
 
 <video id="qrVideo" autoplay></video>
@@ -31,74 +27,54 @@ body.dark #login input { background:#555; color:#eee; border:1px solid #777; }
 <script type="module">
 import QrScanner from 'https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.min.js';
 
-const usernameInput = document.getElementById('username');
-const codeInput = document.getElementById('code');
-const loginBtn = document.getElementById('loginBtn');
 const scanCardBtn = document.getElementById('scanCardBtn');
 const qrVideo = document.getElementById('qrVideo');
+const idInput = document.getElementById('idInput');
+const loginIdBtn = document.getElementById('loginIdBtn');
 
-let currentCardData = null;
-
-// --------------------------
 // erlaubte Nutzer
-// --------------------------
 const allowedUsers = [
   {name:'Lukas', id:'008'},
   {name:'Jakob', id:'013'},
   {name:'Moritz', id:'002'},
-  {name:'Jakobd', id:'009'},
-  {name:'Gast1', id: '661'}, 
-  {name:'Gast2', id: '662'}
+  {name:'Jakobd', id:'009'}
 ];
 
 // QR-Scanner starten
 scanCardBtn.addEventListener('click', async () => {
+    qrVideo.style.display = 'block';
     QrScanner.WORKER_PATH = 'https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner-worker.min.js';
     const scanner = new QrScanner(qrVideo, result => {
         try {
             const data = JSON.parse(result);
             if(data.id && data.name){
-                currentCardData = data;
-                codeInput.value = generateCode(data);
-                alert('Mini-Card erkannt!');
+                const isAllowed = allowedUsers.some(u => u.name === data.name && u.id === data.id);
+                if(!isAllowed){
+                    alert("Dieser Benutzer ist nicht erlaubt!");
+                    return;
+                }
+                localStorage.setItem('currentUserId', data.id);
+                alert(`${data.name} erfolgreich angemeldet!`);
+                window.location.href = '/premium/index.html';
                 scanner.stop();
             }
-        } catch(e){ console.log('Ungültiger QR-Code'); }
+        } catch(e){
+            console.log('Ungültiger QR-Code');
+        }
     });
     scanner.start();
 });
 
-// Code generieren (einfacher Hash aus ID+Name)
-function generateCode(data){
-    return btoa(data.id + ':' + data.name);
-}
-
-// Login per Code
-loginBtn.addEventListener('click', () => {
-    const username = usernameInput.value.trim();
-    const code = codeInput.value.trim();
-    if(!username || !code || !currentCardData){
-        alert("Benutzername und Mini-Card erforderlich!");
+// Anmeldung per ID
+loginIdBtn.addEventListener('click', () => {
+    const id = idInput.value.trim();
+    const user = allowedUsers.find(u => u.id === id);
+    if(!user){
+        alert("Ungültige ID!");
         return;
     }
-
-    // Prüfen, ob Nutzer erlaubt ist
-    const isAllowed = allowedUsers.some(u => u.name === username && u.id === currentCardData.id);
-    if(!isAllowed){
-        alert("Dieser Benutzer ist nicht erlaubt!");
-        return;
-    }
-
-    // Prüfen, ob Code korrekt ist
-    if(code !== generateCode(currentCardData)){
-        alert("Ungültiger Code!");
-        return;
-    }
-
-    // Anmeldung speichern
-    localStorage.setItem('currentUserId', currentCardData.id);
-
-    // Weiterleiten zum Dashboard
+    localStorage.setItem('currentUserId', user.id);
+    alert(`${user.name} erfolgreich angemeldet!`);
     window.location.href = '/premium/index.html';
 });
 </script>
