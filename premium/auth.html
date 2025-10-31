@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Mini-Office Premium Anmeldung</title>
+<title>Mini-Office Anmeldung</title>
 <style>
 body { font-family: "Segoe UI", sans-serif; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#eef4fb; }
 h1 { font-family:'Bungee',cursive; margin-bottom:20px; }
@@ -14,7 +14,7 @@ h1 { font-family:'Bungee',cursive; margin-bottom:20px; }
 </style>
 </head>
 <body>
-<h1>Mini-Office Premium Anmeldung</h1>
+<h1>Mini-Office Anmeldung</h1>
 
 <div id="login">
   <button id="scanCardBtn">Mini-Card scannen</button>
@@ -32,12 +32,15 @@ const qrVideo = document.getElementById('qrVideo');
 const idInput = document.getElementById('idInput');
 const loginIdBtn = document.getElementById('loginIdBtn');
 
-// erlaubte Nutzer
+// Alle gültigen IDs (Premium + Gast)
 const allowedUsers = [
   {name:'Lukas', id:'008'},
   {name:'Jakob', id:'013'},
   {name:'Moritz', id:'002'},
-  {name:'Jakobd', id:'009'}
+  {name:'Jakobd', id:'009'},
+  {name:'Gast', id:'661'},
+  {name:'Gast', id:'662'},
+  {name:'Gast', id:'663'}
 ];
 
 // QR-Scanner starten
@@ -48,13 +51,13 @@ scanCardBtn.addEventListener('click', async () => {
         try {
             const data = JSON.parse(result);
             if(data.id && data.name){
-                const isAllowed = allowedUsers.some(u => u.name === data.name && u.id === data.id);
-                if(!isAllowed){
+                const user = allowedUsers.find(u => u.id===data.id && (u.name===data.name || u.name==='Gast'));
+                if(!user){
                     alert("Dieser Benutzer ist nicht erlaubt!");
                     return;
                 }
                 localStorage.setItem('currentUserId', data.id);
-                alert(`${data.name} erfolgreich angemeldet!`);
+                alert(`${user.name} erfolgreich angemeldet!`);
                 window.location.href = '/premium/index.html';
                 scanner.stop();
             }
@@ -73,7 +76,7 @@ loginIdBtn.addEventListener('click', () => {
         alert("Ungültige ID!");
         return;
     }
-    localStorage.setItem('currentUserId', user.id);
+    localStorage.setItem('currentUserId', id);
     alert(`${user.name} erfolgreich angemeldet!`);
     window.location.href = '/premium/index.html';
 });
