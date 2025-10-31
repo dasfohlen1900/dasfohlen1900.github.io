@@ -44,6 +44,7 @@
   <option value="BMP">BMP (U+0000–U+FFFF)</option>
   <option value="A0000">Plane 10 (U+A0000–U+A0FFF)</option>
   <option value="Emoji">Emojis (U+1F300–U+1FAFF)</option>
+  <option value="Latin1">Latin 1(00-FF)</option>
 </select>
 
 <div class="container">
@@ -103,6 +104,9 @@ select.addEventListener("change", () => {
       break;
     case "Emoji":
       renderRange(0x1F300, 0x1FAFF);
+      break;
+       case "Latin1":
+      renderRange(0x0000, 0x00FF); // Start mit kleinem Teil
       break;
   }
 });
