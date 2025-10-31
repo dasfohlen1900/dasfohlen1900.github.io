@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Unicode & Emoji Tabelle</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #f9f9f9;
+    color: #111;
+  }
+  select {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  table {
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 20px;
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 4px;
+    text-align: center;
+    width: 34px;
+    height: 34px;
+  }
+  th {
+    background-color: #ddd;
+    position: sticky;
+    top: 0;
+  }
+  .container {
+    overflow: auto;
+    height: 90vh;
+  }
+</style>
+</head>
+<body>
+
+<h1>Unicode-Tabelle (BMP / Plane 10 / Emojis)</h1>
+<label>Bereich wählen: </label>
+<select id="planeSelect">
+  <option value="BMP">BMP (U+0000–U+FFFF)</option>
+  <option value="A0000">Plane 10 (U+A0000–U+A0FFF)</option>
+  <option value="Emoji">Emojis (U+1F300–U+1FAFF)</option>
+</select>
+
+<div class="container">
+  <table id="uniTable"></table>
+</div>
+
+<script>
+const table = document.getElementById("uniTable");
+const select = document.getElementById("planeSelect");
+
+function renderRange(start, end) {
+  table.innerHTML = ""; // vorherige Tabelle löschen
+
+  // Spaltenkopf 0–F
+  let headerRow = document.createElement("tr");
+  headerRow.appendChild(document.createElement("th")); // Ecke
+  for (let col = 0; col <= 0xF; col++) {
+    let th = document.createElement("th");
+    th.textContent = col.toString(16).toUpperCase();
+    headerRow.appendChild(th);
+  }
+  table.appendChild(headerRow);
+
+  // Zeilen
+  for (let row = start; row <= end; row += 0x10) {
+    let tr = document.createElement("tr");
+
+    // Zeilenkopf
+    let th = document.createElement("th");
+    th.textContent = "U+" + row.toString(16).toUpperCase().padStart(6, '0');
+    tr.appendChild(th);
+
+    // 16 Spalten (0–F)
+    for (let col = 0x0; col <= 0xF; col++) {
+      let td = document.createElement("td");
+      let codePoint = row + col;
+      try {
+        td.textContent = String.fromCodePoint(codePoint);
+      } catch {
+        td.textContent = "";
+      }
+      tr.appendChild(td);
+    }
+
+    table.appendChild(tr);
+  }
+}
+
+// Umschalter
+select.addEventListener("change", () => {
+  switch (select.value) {
+    case "BMP":
+      renderRange(0x0000, 0x00FF); // Start mit kleinem Teil
+      break;
+    case "A0000":
+      renderRange(0xA0000, 0xA0FFF);
+      break;
+    case "Emoji":
+      renderRange(0x1F300, 0x1FAFF);
+      break;
+  }
+});
+
+// Startansicht
+renderRange(0x0000, 0x00FF);
+</script>
+
+</body>
+</html>
