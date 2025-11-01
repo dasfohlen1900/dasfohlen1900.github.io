@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Font-Zeichenanzeige (nur vorhandene Glyphen)</title>
+<title>Font-Zeichenanzeige (nur vorhandene Zeichen)</title>
 <style>
   body {
     font-family: system-ui, sans-serif;
@@ -56,6 +56,7 @@ fontInput.addEventListener("change", async () => {
   const blobURL = URL.createObjectURL(file);
   const fontName = "uploadedFont_" + Math.random().toString(36).slice(2);
 
+  // Font dynamisch einfügen
   const style = document.createElement("style");
   style.textContent = `
     @font-face {
@@ -65,39 +66,30 @@ fontInput.addEventListener("change", async () => {
   `;
   document.head.appendChild(style);
 
-  await document.fonts.load(`40px ${fontName}`);
+  await document.fonts.load(`20px ${fontName}`);
   output.innerHTML = `<p><b>Font geladen:</b> ${file.name}</p>`;
 
+  // Canvas zum Glyph-Vergleich
   const canvas = document.createElement("canvas");
-  canvas.width = 80;
-  canvas.height = 80;
   const ctx = canvas.getContext("2d");
+  ctx.font = "40px monospace";
 
-  // Referenzbild mit leeren oder Fallback-Glyphen
-  function renderGlyph(font, char) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = `60px ${font}`;
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "black";
-    ctx.fillText(char, 10, 40);
-    return ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-  }
+  const refWidth = ctx.measureText("█").width; // Referenzzeichen
 
-  function isDifferent(a, b) {
-    for (let i = 0; i < a.length; i += 4) {
-      if (a[i] !== b[i] || a[i + 1] !== b[i + 1] || a[i + 2] !== b[i + 2]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  const refData = renderGlyph("monospace", "▯"); // Platzhalter als Referenz
-
+  // 32–65535 (BMP)
   for (let i = 32; i <= 0xFFFF; i++) {
     const char = String.fromCharCode(i);
-    const data = renderGlyph(fontName, char);
-    if (isDifferent(refData, data)) {
+
+    // Breite in monospace (Fallback)
+    ctx.font = "40px monospace";
+    const monoWidth = ctx.measureText(char).width;
+
+    // Breite in hochgeladener Font
+    ctx.font = "40px " + fontName;
+    const fontWidth = ctx.measureText(char).width;
+
+    // Wenn deutlicher Unterschied → Zeichen existiert
+    if (Math.abs(fontWidth - monoWidth) > 0.5 && fontWidth !== 0) {
       const div = document.createElement("div");
       div.className = "char";
       div.style.fontFamily = fontName;
@@ -107,6 +99,10 @@ fontInput.addEventListener("change", async () => {
       `;
       output.appendChild(div);
     }
+  }
+
+  if (output.children.length === 1) {
+    output.innerHTML += "<p>Keine Zeichen erkannt 😢</p>";
   }
 });
 </script>
