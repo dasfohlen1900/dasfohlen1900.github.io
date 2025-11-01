@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Font-Zeichenanzeige</title>
+<title>Font-Zeichenanzeige (nur vorhandene Zeichen)</title>
 <style>
   body {
     font-family: system-ui, sans-serif;
@@ -15,17 +15,17 @@
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
   }
   .char {
     background: white;
     border: 1px solid #ccc;
     padding: 10px;
-    width: 90px;
-    height: 110px;
+    width: 80px;
+    height: 100px;
     text-align: center;
-    font-size: 36px;
-    border-radius: 8px;
+    font-size: 32px;
+    border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
@@ -55,24 +55,41 @@ fontInput.addEventListener("change", async () => {
 
   const blobURL = URL.createObjectURL(file);
   const fontName = "uploadedFont_" + Math.random().toString(36).slice(2);
-  const fontFace = new FontFace(fontName, `url(${blobURL})`);
-  await fontFace.load();
-  document.fonts.add(fontFace);
 
-  output.innerHTML = "<p><b>Font geladen:</b> " + file.name + "</p>";
+  // Font dynamisch einfügen
+  const style = document.createElement("style");
+  style.textContent = `
+    @font-face {
+      font-family: '${fontName}';
+      src: url('${blobURL}');
+    }
+  `;
+  document.head.appendChild(style);
 
-  // BMP-Zeichen prüfen (0x20 – 0xFFFF)
+  await document.fonts.load(`20px ${fontName}`);
+  output.innerHTML = `<p><b>Font geladen:</b> ${file.name}</p>`;
+
+  // Canvas zum Glyph-Vergleich
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.font = "40px monospace";
+
+  const refWidth = ctx.measureText("█").width; // Referenzzeichen
+
+  // 32–65535 (BMP)
   for (let i = 32; i <= 0xFFFF; i++) {
     const char = String.fromCharCode(i);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.font = "40px " + fontName;
-    const w1 = ctx.measureText(char).width;
-    ctx.font = "40px monospace";
-    const w2 = ctx.measureText(char).width;
 
-    // Nur anzeigen, wenn Glyph existiert
-    if (Math.abs(w1 - w2) > 0.01) {
+    // Breite in monospace (Fallback)
+    ctx.font = "40px monospace";
+    const monoWidth = ctx.measureText(char).width;
+
+    // Breite in hochgeladener Font
+    ctx.font = "40px " + fontName;
+    const fontWidth = ctx.measureText(char).width;
+
+    // Wenn deutlicher Unterschied → Zeichen existiert
+    if (Math.abs(fontWidth - monoWidth) > 0.5 && fontWidth !== 0) {
       const div = document.createElement("div");
       div.className = "char";
       div.style.fontFamily = fontName;
@@ -83,7 +100,12 @@ fontInput.addEventListener("change", async () => {
       output.appendChild(div);
     }
   }
+
+  if (output.children.length === 1) {
+    output.innerHTML += "<p>Keine Zeichen erkannt 😢</p>";
+  }
 });
 </script>
 </body>
 </html>
+
