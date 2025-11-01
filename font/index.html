@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font-Zeichenanzeige</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f4f4f4;
+    padding: 20px;
+  }
+  h1 { font-size: 1.5em; }
+  #output {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .char {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 90px;
+    height: 110px;
+    text-align: center;
+    font-size: 36px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .code {
+    font-family: monospace;
+    font-size: 12px;
+    color: #555;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+<h1>Font-Zeichenanzeige</h1>
+<p><input type="file" id="fontInput" accept=".ttf,.otf,.woff,.woff2"></p>
+<div id="output"></div>
+
+<script>
+const fontInput = document.getElementById("fontInput");
+const output = document.getElementById("output");
+
+fontInput.addEventListener("change", async () => {
+  const file = fontInput.files[0];
+  if (!file) return;
+
+  const blobURL = URL.createObjectURL(file);
+  const fontName = "uploadedFont_" + Math.random().toString(36).slice(2);
+  const fontFace = new FontFace(fontName, `url(${blobURL})`);
+  await fontFace.load();
+  document.fonts.add(fontFace);
+
+  output.innerHTML = "<p><b>Font geladen:</b> " + file.name + "</p>";
+
+  // BMP-Zeichen prüfen (0x20 – 0xFFFF)
+  for (let i = 32; i <= 0xFFFF; i++) {
+    const char = String.fromCharCode(i);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    ctx.font = "40px " + fontName;
+    const w1 = ctx.measureText(char).width;
+    ctx.font = "40px monospace";
+    const w2 = ctx.measureText(char).width;
+
+    // Nur anzeigen, wenn Glyph existiert
+    if (Math.abs(w1 - w2) > 0.01) {
+      const div = document.createElement("div");
+      div.className = "char";
+      div.style.fontFamily = fontName;
+      div.innerHTML = `
+        <div>${char}</div>
+        <div class="code">U+${i.toString(16).toUpperCase().padStart(4,"0")}</div>
+      `;
+      output.appendChild(div);
+    }
+  }
+});
+</script>
+</body>
+</html>
