@@ -13,7 +13,7 @@
 @font-face { font-family: 'Bahnschrift'; src: url('assets/fonts/bahnschrift.ttf'); }
 @font-face { font-family: 'Calibri'; src: url('assets/fonts/calibri.ttf'); }
 @font-face { font-family: 'SegoeUI'; src: url('assets/fonts/segoeui.ttf'); }
-
+@font-face { font-family: 'Aeropus UI II'; src: url('assets/fonts/AeropusUIII-Regular.otf'); }
 /* IcoMoon Icons */
 @font-face {
   font-family: 'IcoMoon';
@@ -116,8 +116,8 @@ body.mobile-smartphone #editor {
   font-size: 14px;
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Exo+2&family=Fira+Code&family=Georgia&family=Gloria+Hallelujah&family=JetBrains+Mono&family=Lilita+One&family=Lora&family=Merriweather&family=Montserrat&family=Noto+Sans&family=Open+Sans&family=Patrick+Hand&family=Playfair+Display&family=Poppins&family=PT+Serif&family=Quicksand&family=Raleway&family=Roboto&family=Shadows+Into+Light&family=Signika&family=Vollkorn&family=Work+Sans&display=swap" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -207,11 +207,12 @@ body.mobile-smartphone #editor {
 </div>
 
 <script>
-// === Tabs ---
+// === Tabs & Editor ===
 const tabs = document.querySelectorAll('.tab');
 const contents = document.querySelectorAll('.tab-content');
 const editor = document.getElementById('editor');
 const fileInput = document.getElementById('fileInput');
+
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
     tabs.forEach(t => t.classList.remove('active'));
@@ -222,65 +223,116 @@ tabs.forEach(tab => {
 });
 
 // === Formatierungen ===
-function format(cmd, value=null){ document.execCommand(cmd,false,value); }
+function format(cmd, value = null) { 
+  document.execCommand(cmd, false, value); 
+}
 document.getElementById('colorPicker').onchange = e => format('foreColor', e.target.value);
 document.getElementById('fontSize').onchange = e => format('fontSize', e.target.value);
 
 // Alphabetische Fontliste
-const fonts=['Arial','Bahnschrift','Bungee','Calibri','Comic Sans MS','Courier Prime','Exo 2','Fira Code','Georgia','Gloria Hallelujah','JetBrains Mono','Lilita One','Lora','LukovicSans','Lukovic2','Merriweather','Montserrat','Noto Sans','Open Sans','Patrick Hand','Playfair Display','Poppins','PT Serif','Quicksand','Raleway','Roboto','SegoeUI','Shadows Into Light','Signika','Times','Vollkorn','Verdana','Work Sans'].sort();
-const fontSelect=document.getElementById('fontSelect');
-fonts.forEach(f => { const opt=document.createElement('option'); opt.value=f; opt.textContent=f; fontSelect.appendChild(opt); });
-fontSelect.onchange=e=>format('fontName', e.target.value);
+const fonts = [
+  'Aeropus UI II','Arial','Bahnschrift','Bungee','Calibri','Comic Sans MS','Courier Prime','Exo 2','Fira Code',
+  'Georgia','Gloria Hallelujah','JetBrains Mono','Lilita One','Lora','LukovicSans','Lukovic2',
+  'Merriweather','Montserrat','Noto Sans','Open Sans','Patrick Hand','Playfair Display','Poppins',
+  'PT Serif','Quicksand','Raleway','Roboto','SegoeUI','Shadows Into Light','Signika','Times',
+  'Vollkorn','Verdana','Work Sans'
+].sort();
+
+const fontSelect = document.getElementById('fontSelect');
+fonts.forEach(f => { 
+  const opt = document.createElement('option'); 
+  opt.value = f; 
+  opt.textContent = f; 
+  fontSelect.appendChild(opt); 
+});
+fontSelect.onchange = e => format('fontName', e.target.value);
 
 // === Bild / Tabelle / Symbol ===
-function insertImage(){ const url=prompt("Bild-URL eingeben:"); if(url) document.execCommand('insertImage', false, url); }
-function insertTable(){ const rows=parseInt(prompt("Zeilenanzahl:")); const cols=parseInt(prompt("Spaltenanzahl:")); if(!rows||!cols) return; let table="<table border='1' style='border-collapse:collapse;width:100%;'>"; for(let r=0;r<rows;r++){ table+="<tr>"; for(let c=0;c<cols;c++) table+="<td>&nbsp;</td>"; table+="</tr>"; } table+="</table>"; document.execCommand("insertHTML", false, table); }
-function insertSymbol(symbol){ document.execCommand("insertText", false, symbol); }
+function insertImage() { 
+  const url = prompt("Bild-URL eingeben:"); 
+  if(url) document.execCommand('insertImage', false, url); 
+}
+
+function insertTable() { 
+  const rows = parseInt(prompt("Zeilenanzahl:")); 
+  const cols = parseInt(prompt("Spaltenanzahl:")); 
+  if(!rows || !cols) return; 
+  let table = "<table border='1' style='border-collapse:collapse;width:100%;'>";
+  for(let r=0; r<rows; r++) {
+    table += "<tr>";
+    for(let c=0; c<cols; c++) table += "<td>&nbsp;</td>";
+    table += "</tr>";
+  }
+  table += "</table>"; 
+  document.execCommand("insertHTML", false, table); 
+}
+
+function insertSymbol(symbol) { 
+  document.execCommand("insertText", false, symbol); 
+}
 
 // === Speichern / Laden / Export ===
-function newDocument(){
+function newDocument() {
   if(confirm("Neues Dokument erstellen? Alle ungespeicherten Änderungen gehen verloren.")){
-    editor.innerHTML="<p></p>";
+    editor.innerHTML = "<p></p>";
     localStorage.removeItem('miniword_autosave');
   }
 }
-function saveOctxt(){ const blob=new Blob([editor.innerHTML],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MiniWord.octxt'; a.click(); }
-function loadOctxt(){ fileInput.accept=".octxt,.txt"; fileInput.click(); fileInput.onchange=e=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ if(file.name.endsWith(".txt")) editor.textContent=ev.target.result; else editor.innerHTML=ev.target.result; localStorage.setItem('miniword_autosave', editor.innerHTML); }; reader.readAsText(file); }; }
-function saveTxt(){ const blob=new Blob([editor.textContent],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MiniWord.txt'; a.click(); }
-function exportDocx(){ const header=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body>`; const footer=`</body></html>`; const blob=new Blob(['\ufeff', header+editor.innerHTML+footer],{type:'application/msword'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='MiniWord.docx'; a.click(); }
 
-// === Autosave ===
-editor.addEventListener('input',()=>{ localStorage.setItem('miniword_autosave', editor.innerHTML); });
-window.addEventListener('load',()=>{ const saved=localStorage.getItem('miniword_autosave'); if(saved) editor.innerHTML=saved; });
-
-// === Smartphone-Erkennung & Mobile Toolbar ===
-function isSmartphone(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/Android/i.test(ua)&&!/Tablet|Tab/i.test(ua))||/iPhone/i.test(ua); }
-function initSmartphoneMiniWord(){
-  document.body.classList.add('mobile-smartphone');
-  const ribbon=document.querySelector('.ribbon'); if(ribbon) ribbon.style.display='none';
-  const burger=document.createElement('button'); burger.textContent='☰'; burger.style.position='fixed'; burger.style.top='10px'; burger.style.left='10px'; burger.style.zIndex='1000'; burger.style.fontSize='24px'; burger.style.background='#fff'; burger.style.border='1px solid #ccc'; burger.style.borderRadius='5px'; burger.style.padding='5px 10px'; document.body.appendChild(burger);
-  const menu=document.createElement('div'); menu.style.position='fixed'; menu.style.top='50px'; menu.style.left='10px'; menu.style.background='#fff'; menu.style.border='1px solid #ccc'; menu.style.borderRadius='5px'; menu.style.padding='10px'; menu.style.display='none'; menu.style.zIndex='1000';
-  menu.innerHTML=`<button onclick="newDocument()">Neu</button><br><button onclick="saveOctxt()">Speichern</button><br><button onclick="loadOctxt()">Laden</button><br><button onclick="exportDocx()">DOCX</button><br><button onclick="saveTxt()">TXT</button>`;
-  document.body.appendChild(menu);
-  burger.addEventListener('click',()=>{ menu.style.display=menu.style.display==='none'?'block':'none'; });
-
-  const toolbar=document.createElement('div'); toolbar.style.position='fixed'; toolbar.style.top='0'; toolbar.style.right='0'; toolbar.style.left='60px'; toolbar.style.height='50px'; toolbar.style.background='#f7f9fc'; toolbar.style.borderBottom='1px solid #ccc'; toolbar.style.display='flex'; toolbar.style.alignItems='center'; toolbar.style.padding='0 10px'; toolbar.style.zIndex='999'; toolbar.style.overflowX='auto';
-  ['bold','italic','underline','undo','redo'].forEach(cmd=>{ const btn=document.createElement('button'); btn.textContent=cmd[0].toUpperCase(); btn.style.marginRight='5px'; btn.style.fontSize='18px'; btn.onclick=()=>document.execCommand(cmd,false,null); toolbar.appendChild(btn); });
-  const colorInput=document.createElement('input'); colorInput.type='color'; colorInput.title='Textfarbe'; colorInput.onchange=e=>document.execCommand('foreColor', false, e.target.value); toolbar.appendChild(colorInput);
-
-  const fontSizes=[4,6,8,10,11,12,14,16,18,20,24,32,40,50,64,72];
-  const sizeSelect=document.createElement('select'); fontSizes.forEach(sz=>{ const opt=document.createElement('option'); opt.value=sz; opt.textContent=sz; sizeSelect.appendChild(opt); });
-  sizeSelect.onchange=e=>{ const size=e.target.value; const sel=window.getSelection(); if(!sel.rangeCount) return; const range=sel.getRangeAt(0); if(range.collapsed) return; const span=document.createElement('span'); span.style.fontSize=size+'pt'; span.appendChild(range.extractContents()); range.insertNode(span); sel.removeAllRanges(); const newRange=document.createRange(); newRange.setStartAfter(span); sel.addRange(newRange); };
-  toolbar.appendChild(sizeSelect);
-
-  const insertSymbolBtn=document.createElement('button'); insertSymbolBtn.textContent='Ω'; insertSymbolBtn.onclick=()=>{ const sym=prompt("Symbol eingeben:"); if(sym) document.execCommand('insertText', false, sym); }; toolbar.appendChild(insertSymbolBtn);
-  const insertImageBtn=document.createElement('button'); insertImageBtn.textContent='🖼'; insertImageBtn.onclick=()=>{ const url=prompt("Bild-URL eingeben:"); if(url) document.execCommand('insertImage', false, url); }; toolbar.appendChild(insertImageBtn);
-  const insertTableBtn=document.createElement('button'); insertTableBtn.textContent='☰T'; insertTableBtn.onclick=()=>{ const rows=parseInt(prompt("Zeilenanzahl:")); const cols=parseInt(prompt("Spaltenanzahl:")); if(!rows||!cols) return; let table="<table border='1' style='border-collapse:collapse;width:100%;'>"; for(let r=0;r<rows;r++){ table+="<tr>"; for(let c=0;c<cols;c++) table+="<td>&nbsp;</td>"; table+="</tr>"; } table+="</table>"; document.execCommand("insertHTML", false, table); }; toolbar.appendChild(insertTableBtn);
-
-  document.body.appendChild(toolbar);
+function saveOctxt() {
+  const blob = new Blob([editor.innerHTML], {type:'text/html'}); 
+  const a = document.createElement('a'); 
+  a.href = URL.createObjectURL(blob); 
+  a.download = 'MiniWord.octxt'; 
+  a.click(); 
 }
 
-window.addEventListener('load',()=>{ if(isSmartphone()) initSmartphoneMiniWord(); });
+function loadOctxt() { 
+  fileInput.accept = ".octxt,.txt"; 
+  fileInput.click(); 
+  fileInput.onchange = e => { 
+    const file = e.target.files[0]; 
+    if(!file) return; 
+    const reader = new FileReader(); 
+    reader.onload = ev => { 
+      if(file.name.endsWith(".txt")) editor.textContent = ev.target.result; 
+      else editor.innerHTML = ev.target.result; 
+      localStorage.setItem('miniword_autosave', editor.innerHTML); 
+    }; 
+    reader.readAsText(file); 
+  }; 
+}
+
+function saveTxt() {
+  const blob = new Blob([editor.textContent], {type:'text/plain'}); 
+  const a = document.createElement('a'); 
+  a.href = URL.createObjectURL(blob); 
+  a.download = 'MiniWord.txt'; 
+  a.click(); 
+}
+
+function exportDocx() { 
+  const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body>`; 
+  const footer = `</body></html>`; 
+  const blob = new Blob(['\ufeff', header + editor.innerHTML + footer], {type:'application/msword'}); 
+  const a = document.createElement('a'); 
+  a.href = URL.createObjectURL(blob); 
+  a.download = 'MiniWord.docx'; 
+  a.click(); 
+}
+
+// === Autosave ===
+editor.addEventListener('input', () => { 
+  localStorage.setItem('miniword_autosave', editor.innerHTML); 
+});
+
+window.addEventListener('load', () => { 
+  const saved = localStorage.getItem('miniword_autosave'); 
+  if(saved) editor.innerHTML = saved; 
+});
+
+}
+
 </script>
 </body>
 </html>
