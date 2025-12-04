@@ -92,4 +92,23 @@ Video not supported
 
   </div>
 </body>
+<script>
+  // Beispiel: Button um Bild zu vergrößern
+  document.addEventListener('DOMContentLoaded', () => {
+    const img = document.querySelector('#media img');
+    const button = document.createElement('button');
+    button.textContent = "Vergrößere das Bild";
+    document.querySelector('#media').appendChild(button);
+
+    button.addEventListener('click', () => {
+      if (img.style.transform === 'scale(1.5)') {
+        img.style.transform = 'scale(1)';
+      } else {
+        img.style.transform = 'scale(1.5)';
+      }
+      img.style.transition = 'transform 0.3s ease';
+    });
+  });
+</script>
+
 </html>
