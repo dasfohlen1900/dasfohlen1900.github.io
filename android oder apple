@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android oder Apple Quiz</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+    #quiz-container { background: #fff; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; }
+    h2 { margin-bottom: 10px; }
+    button { margin: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 20px; font-weight: bold; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <h2 id="question">Frage wird geladen...</h2>
+    <div id="answers">
+        <button onclick="answer('A')">A</button>
+        <button onclick="answer('B')">B</button>
+        <button onclick="answer('C')">C</button>
+        <button onclick="answer('D')">D</button>
+    </div>
+    <div id="progress">Frage 1 von 25</div>
+    <div id="result"></div>
+</div>
+
+<script>
+const quiz = [
+{q:"Was ist dir bei einem Smartphone am wichtigsten?", a:["Maximale Freiheit & Anpassbarkeit","Einfachheit & Zuverlässigkeit","Bestes Gesamt-Erlebnis ohne viel Nachdenken","Gutes Preis-Leistungs-Verhältnis"]},
+{q:"Wie gehst du mit Technik um?", a:["Ich experimentiere gern und probiere Neues aus","Ich kenne mich gut aus, will aber keine Spielereien","Technik soll einfach funktionieren","Ich nutze nur das Nötigste"]},
+{q:"Wie wichtig ist dir Design & Haptik?", a:["Egal – Hauptsache funktional","Schön wäre gut, muss aber nicht perfekt sein","Sehr wichtig, es soll hochwertig wirken","Extrem wichtig, Design ist Kaufgrund"]},
+{q:"Wie stehst du zu Einschränkungen im System (Regeln, Limits)?", a:["Gehen gar nicht – ich will alles selbst bestimmen","Nervig, aber manchmal okay","Wenn es dafür stabil & sicher ist, passt es","Gut so – klare Regeln machen alles einfacher"]},
+{q:"Wie wichtig ist dir die Auswahl an Geräten und Marken?", a:["Sehr wichtig – ich liebe Vielfalt","Schon wichtig, aber nicht entscheidend","Mir reicht eine kleine, klare Auswahl","Egal, Hauptsache mein Gerät funktioniert gut"]},
+{q:"Wie wichtig sind dir Updates & lange Software-Unterstützung?", a:["Sehr wichtig – ich will immer die neuesten Funktionen","Wichtig, aber nicht entscheidend","Stabilität & Sicherheit sind wichtiger als neue Features","Mir egal, solange mein Handy funktioniert"]},
+{q:"Wie stehst du zu individuellen Anpassungen (Icons, Widgets, Themes)?", a:["Unbedingt – mein Handy muss einzigartig sein","Schön, aber kein Muss","Mir egal, Hauptsache es funktioniert","Lieber ein einheitliches, sauberes System"]},
+{q:"Wie wichtig ist dir der Zugriff auf Dateien und Ordner?", a:["Sehr wichtig – ich will alles selbst kontrollieren","Nützlich, aber kein Muss","Eher unwichtig, ich nutze hauptsächlich Apps","Mir egal, Cloud & Apps reichen mir völlig"]},
+{q:"Welche Rolle spielen Apps von Drittanbietern für dich?", a:["Sehr wichtig – ich nutze viele spezielle Apps","Nützlich, aber keine Pflicht","Ich bleibe meist bei Standard-Apps","Apps sind nur Beiwerk, nicht entscheidend"]},
+{q:"Wie wichtig ist dir die Integration in ein Ökosystem (andere Geräte, Cloud, Services)?", a:["Weniger wichtig – ich will Freiheit, kein geschlossenes System","Schon wichtig, aber nicht entscheidend","Sehr wichtig – alles sollte nahtlos zusammenarbeiten","Extrem wichtig – ich will ein einheitliches System ohne Probleme"]},
+{q:"Wie entscheidend ist dir der Preis eines Smartphones?", a:["Sehr wichtig – ich will maximale Preis-Leistung","Wichtig, aber Qualität darf etwas kosten","Preis ist zweitrangig – ich kaufe, was mir gefällt","Preis egal – Premium & Design sind mir wichtiger"]},
+{q:"Wie wichtig sind dir viele Hardware-Optionen und Anschlüsse (Kopfhörer, Speicher, Zubehör)?", a:["Sehr wichtig – ich will flexibel sein","Nützlich, aber kein Muss","Eher unwichtig – Standard reicht mir","Mir egal – ein sauberes, einheitliches System reicht"]},
+{q:"Wie stehst du zu neuen Features & Experimenten in Software?", a:["Ich liebe es – je früher, desto besser","Schön, aber Stabilität ist wichtiger","Lieber ein stabiles System ohne Experimente","Neue Features brauche ich gar nicht"]},
+{q:"Wie wichtig ist dir der Support und Kundenservice der Marke?", a:["Nicht so wichtig – ich kann vieles selbst lösen","Schon wichtig, aber nicht entscheidend","Wichtig – ich will schnelle Hilfe bei Problemen","Sehr wichtig – exzellenter Service ist ein Muss"]},
+{q:"Wie wichtig ist dir die langfristige Nutzung eines Geräts (Langlebigkeit, Updates)?", a:["Sehr wichtig – ich will mein Handy lange nutzen","Wichtig, aber nicht kritisch","Mir egal, ich wechsle eh öfter","Updates & Langlebigkeit sind zweitrangig, Hauptsache neu & schnell"]},
+{q:"Wie wichtig ist dir Datenschutz und Sicherheit?", a:["Sehr wichtig – alles muss geschützt sein","Wichtig, aber ich nehme Abstriche hin","Nicht so wichtig, Hauptsache bequem","Egal – ich vertraue auf die Marke"]},
+{q:"Wie wichtig ist dir die Akkulaufzeit und Hardware-Flexibilität?", a:["Sehr wichtig – ich will lange Nutzung & starke Hardware","Wichtig, aber nicht entscheidend","Eher unwichtig – Hauptsache es funktioniert","Mir egal – ich lade einfach öfter"]},
+{q:"Wie entscheidend ist dir die Möglichkeit, das System anzupassen oder zu erweitern?", a:["Sehr entscheidend – ich will volle Kontrolle","Schön, aber kein Muss","Eher unwichtig – Standard reicht mir","Mir egal – ich mag ein fertiges, sauberes System"]},
+{q:"Wie wichtig ist dir Gaming oder spezielle Apps/Emulationen?", a:["Sehr wichtig – ich nutze viele Spiele & Spezial-Apps","Schön, aber nicht entscheidend","Eher unwichtig – ich nutze das Handy alltäglich","Gar nicht wichtig – ich nutze es nur für Standardfunktionen"]},
+{q:"Wie stehst du zu Cloud-Diensten und Online-Speicherung?", a:["Eher unwichtig – lokal ist besser","Nützlich, aber kein Muss","Wichtig – Cloud erleichtert vieles","Sehr wichtig – alles sollte automatisch synchronisiert sein"]},
+{q:"Wie wichtig ist dir die Anzahl der Kamerafunktionen & Fotomöglichkeiten?", a:["Sehr wichtig – ich nutze viele Fotofeatures","Schön, aber nicht entscheidend","Mir egal – Hauptsache Standardkamera","Überhaupt nicht wichtig – Fotos sind zweitrangig"]},
+{q:"Wie wichtig ist dir ein einheitliches, geschlossenes System (alles aus einer Hand)?", a:["Gar nicht – ich will Freiheit & offene Systeme","Schön, aber kein Muss","Wichtig – zusammenhängendes Ökosystem ist praktisch","Sehr wichtig – alles aus einer Hand für maximale Sicherheit"]},
+{q:"Wie wichtig ist dir das schnelle Laden und die Ladevielfalt (Kabellos, Power Delivery, etc.)?", a:["Sehr wichtig – ich will Flexibilität beim Laden","Schön, aber kein Muss","Eher unwichtig – Hauptsache Laden funktioniert","Mir egal – ich lade, wie es passt"]},
+{q:"Wie wichtig ist dir die Software-Erfahrung & Benutzerfreundlichkeit?", a:["Weniger wichtig – Freiheit & Kontrolle gehen vor","Schön, aber ich kann mich anpassen","Wichtig – intuitives System ist mir wichtig","Extrem wichtig – es muss alles reibungslos laufen"]},
+{q:"Was ist dir am wichtigsten beim Kauf eines Smartphones?", a:["Maximale Kontrolle & Anpassbarkeit","Stabilität & Sicherheit","Design & Gesamt-Erlebnis","Preis-Leistung"]},
+];
+
+let current = 0;
+let scores = {A:0,B:0,C:0,D:0};
+
+function showQuestion() {
+    document.getElementById("question").innerText = quiz[current].q;
+    const btns = document.querySelectorAll("#answers button");
+    btns.forEach((b,i)=>{ b.innerText = quiz[current].a[i]; });
+    document.getElementById("progress").innerText = `Frage ${current+1} von ${quiz.length}`;
+}
+
+function answer(choice) {
+    scores[choice]++;
+    current++;
+    if(current < quiz.length) {
+        showQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById("answers").style.display = "none";
+    document.getElementById("progress").style.display = "none";
+    
+    // Auswertung nach deiner Logik
+    let resultText = "";
+    if(scores.A >= 9) {
+        resultText = "✅ Android passt am besten zu dir.<br>Grund: Du willst Freiheit, Anpassbarkeit und Experimente.";
+    } else if(scores.C >= 6) {
+        resultText = "📱 Apple könnte gut passen.<br>Grund: Du achtest sehr auf Design & Erlebnis.";
+    } else if(scores.D >= 6) {
+        resultText = "💰 Preis-Leistung ist dir wichtig – Android bietet viele Optionen.";
+    } else {
+        resultText = "📱 Beide Systeme sind möglich – du magst ein ausgewogenes Erlebnis.";
+    }
+
+    document.getElementById("result").innerHTML = resultText;
+}
+
+showQuestion();
+</script>
+
+</body>
+</html>
