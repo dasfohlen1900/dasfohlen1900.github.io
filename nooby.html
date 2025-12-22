@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noob Care Webapp mit Sounds</title>
+<style>
+body { background:#222; color:#fff; font-family:sans-serif; text-align:center; }
+button { margin:3px; padding:6px 12px; font-size:13px; }
+#output { margin-top:10px; font-size:16px; }
+#buttons { max-width:900px; margin:auto; }
+svg { width:250px; height:335px; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<h1>Noob Care mit Sounds</h1>
+
+<svg id="noob" viewBox="42.355 65.743 250.873 334.653">
+  <!-- Körper -->
+  <rect x="106.121" y="261.694" width="60.507" height="138.701" fill="#3f8b19"/>
+  <rect x="169.886" y="261.695" width="60.507" height="138.701" fill="#3f8b19"/>
+  <rect x="106.586" y="119.27" width="123.342" height="138.701" fill="#3a04f7"/>
+  <rect x="232.721" y="118.803" width="60.507" height="138.701" fill="#ebc700"/>
+  <rect x="42.355" y="118.804" width="60.507" height="138.701" fill="#ebc700"/>
+  <rect x="140.563" y="65.743" width="57.249" height="52.595" rx="7.447" ry="7.447" fill="#ebc700"/>
+  <!-- Augen -->
+  <circle id="eye-left" cx="155" cy="90" r="5" fill="#000"/>
+  <circle id="eye-right" cx="185" cy="90" r="5" fill="#000"/>
+  <!-- Mund -->
+  <path id="mouth" d="M155 110 Q170 120 185 110" stroke="#000" stroke-width="3" fill="transparent"/>
+</svg>
+
+<div id="output"></div>
+<div id="buttons"></div>
+
+<script>
+// 20 Buttons + 15 Antworten je Button
+const responses = {
+  "Essen 🍕":["Lecker! 😋","Mehr Essen bitte 🍕","Yummy! 😍","Hmm lecker!","Noob liebt Pizza!","Juhu!","Oh yeah! 🍕","Schmatz 😋","Yummy 😆","Noob snackt 🍕","Hmmmm 😍","Pizza-Time!","Yay!","Mhh lecker 😋","🍕 für Noob!"],
+  "Spielen 🕹️":["Juhu! 🎮","Spielzeit! 😎","Ich liebe spielen!","Yay!","Noob zockt!","Level up!","Highscore!","Yeah!","Let’s play!","Game on!","Hihi 😆","Noob Gamer","Power up!","Let's go!","Ready to play!"],
+  "Streicheln 🤗":["Yay! 😍","Noob liebt Streicheln!","🤗 Danke! 😄","Juhu!","So nett!","Ich freue mich!","Hihi 😆","Wuhu!","💖 Yay!","Noob happy!","Mmh 😍","Yayyy!","Danke 🤗","So süß!","Aww 😄"],
+  "Schlagen 👊":["Aua! 😭","😢 Warum?!","😭 Oh nein!","Ouch!","Noob traurig 😢","Nicht fair!","😞","Aua aua!","Oh nein!","💔","Noob weint","😭","Warum?!","😡","Aua!"],
+  "Tanzen 💃":["Tanzparty! 🕺","Yeahhh! 😆","Shake it!","Yay!","Noob tanzt!","Wuhu!","Hihi 😄","Tanzen time!","💃 Let’s dance","Party!","Juhu!","Noob groove","Dance!","So cool!","Tanzen macht Spaß!"],
+  "Lernen 📚":["Oh nein 😢","Muss ich lernen? 😭","Boring...","Hmm...","Noob denkt","Hmmmm 😕","Not fun!","😞","Kopfweh 😓","Oh nein!","Noob lernt","Puh 😅","Hmm hmm","So schwierig!","Noob müde"],
+  "Schlafen 😴":["Ich bin müde... 😴","Zeit für ein Nickerchen 💤","Zzz...","Noob schläft","Gähn 😪","Träum süß!","😴","Schlafenszeit!","💤","Noob entspannt","Mhh 😴","Puh...","Yay 😴","Schlummer","Zzzzzz"],
+  "Beleidigen 👊":["😢 Aua!","😭 Warum?!","😡 Ich bin traurig!","Ouch!","Noob verletzt","Nicht nett!","😞","Aua aua!","Oh nein!","💔","Noob traurig","😢","Hmpf!","Aua!","Nicht cool!"],
+  "Kompliment ❤️":["Yay! 😍","😊 Ich freue mich!","💖 So nett!","Danke!","Noob happy!","Wuhu!","Awww 😄","Hihi 😍","Juhu!","So süß!","Yayyy!","Oh wow!","💖 Danke!","Noob liebt!","So schön!"],
+  "Weinen 😭":["😭 Noooob!","😢 Warum?","😞","Aua 😭","Oh nein!","Noob traurig","💔","Weinen 😢","Ooooh 😭","So schlimm!","Hilfe 😢","😭","Nicht fair!","Aua aua!","Nooo!"],
+  "Überraschen 😲":["😲 Wow!","Oha!","😳 Überraschung!","Noob erschrocken","Oh!","Ahhhh!","😮","Uaaah!","Noob sagt Huch!","😲","Ooooh!","Wow!","Hihi 😲","Ups!","Huch!"],
+  "Grüßen 👋":["Hallo! 👋","Hey hey! 😎","Hi! 😄","Noob sagt Hi!","👋","Grüß dich!","Wuhu!","Hihi!","Hey!","Hallo Hallo!","Noob winkt","Hi hi!","Juhu!","Heyyy!","💖"],
+  "Umarmen 🤗":["🤗 Umarmung!","🥰 Danke!","😊","Noob freut sich!","Hihi!","Wuhu!","So süß!","💖","Aww 😍","Noob happy","Juhu!","Hihi 😄","Umarmung yay!","Danke 🤗","Yay!"],
+  "Musik 🎶":["🎵 Juhu!","Oh yeah!","Rock on! 🎸","Noob singt","Yeah!","Hihi 😄","Musik time","Wuhu!","🎶","Juhu!","Lalala","Tanz!","Party!","Yay!","Noob loves music"],
+  "Witz 😆":["Hahaha 😆","😂 Noob quatscht!","😜 Blödsinn!","Juhu!","Wuhu!","Noob lacht","Hihi 😄","🤣","Yay!","Oho!","Haha!","Hihi 😆","Wuhu!","😆","Noob spaßt"],
+  "Lachen 😂":["Hahaha 😂","😆 So lustig!","🤣","Juhu!","Wuhu!","Noob lacht","Hihi 😄","Yay!","😄","Haha!","😂","Hihi!","Lalala","Hihi 😆","Wuhu!"],
+  "Snack 🍿":["Snacktime! 🍿","Juhu 😆","Ich liebe Snacks!","Hmmmm 😋","Lecker!","Yay!","Noob happy!","Schmatz 😄","Mhh!","Wuhu!","Yayyy!","Snack 🍿","Hihi!","😋","Noob snackt"],
+  "Trinken 🥤":["Durstig 😅","Hmm 🥤","Danke!","Yay!","Noob happy!","Wuhu!","Hihi!","🥤","Juhu!","Hmmmm","Yayyy!","😄","Noob trinkt","Mhh!","Hihi 😄"]
+};
+
+// Buttons
+const buttonsDiv = document.getElementById("buttons");
+Object.keys(responses).forEach(action=>{
+  const btn = document.createElement("button");
+  btn.innerText = action;
+  btn.onclick = ()=>handleAction(action);
+  buttonsDiv.appendChild(btn);
+});
+
+// Sounds aus Web (freie URLs)
+const sounds = {
+  "Streicheln": "https://www.soundjay.com/human/sounds/petting-cat-1.mp3",
+  "Schlagen": "https://www.soundjay.com/human/sounds/punch-01.mp3",
+  "Lachen": "https://www.soundjay.com/human/sounds/laugh-1.mp3",
+  "Essen": "https://www.soundjay.com/human/sounds/eating-01.mp3",
+  "Überraschen": "https://www.soundjay.com/button/sounds/button-10.mp3"
+};
+
+function playSound(action){
+  let url;
+  if(action.includes("Streicheln") || action.includes("Umarmen") || action.includes("Kompliment")){
+    url = sounds.Streicheln;
+  } else if(action.includes("Schlagen") || action.includes("Beleidigen")){
+    url = sounds.Schlagen;
+  } else if(action.includes("Lachen") || action.includes("Witz")){
+    url = sounds.Lachen;
+  } else if(action.includes("Essen") || action.includes("Snack") || action.includes("Trinken")){
+    url = sounds.Essen;
+  } else if(action.includes("Überraschen")){
+    url = sounds.Überraschen;
+  }
+
+  if(url){
+    const audio = new Audio(url);
+    audio.play();
+  }
+}
+
+function handleAction(action){
+  playSound(action);
+
+  const arr = responses[action];
+  const resp = arr[Math.floor(Math.random()*arr.length)];
+  document.getElementById("output").innerText = resp;
+
+  // Gesichtsausdruck
+  const mouth = document.getElementById("mouth");
+  const eyeL = document.getElementById("eye-left");
+  const eyeR = document.getElementById("eye-right");
+
+  if(action.includes("Schlagen") || action.includes("Beleidigen")){
+    mouth.setAttribute("d","M155 120 Q170 110 185 120");
+    eyeL.setAttribute("r",3); eyeR.setAttribute("r",3);
+  } else if(action.includes("Streicheln") || action.includes("Kompliment")){
+    mouth.setAttribute("d","M155 110 Q170 130 185 110");
+    eyeL.setAttribute("r",5); eyeR.setAttribute("r",5);
+  } else {
+    mouth.setAttribute("d","M155 110 Q170 120 185 110");
+    eyeL.setAttribute("r",5); eyeR.setAttribute("r",5);
+  }
+}
+</script>
+
+</body>
+</html>
