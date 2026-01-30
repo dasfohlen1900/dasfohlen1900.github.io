@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Einfacher HTML Texteditor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .editor-container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px;
+      background: #222;
+    }
+
+    .toolbar button {
+      background: #444;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover {
+      background: #666;
+    }
+
+    #editor {
+      min-height: 350px;
+      padding: 15px;
+      outline: none;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: #eee;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="editor-container">
+  <div class="toolbar">
+    <button onclick="cmd('bold')"><b>B</b></button>
+    <button onclick="cmd('italic')"><i>I</i></button>
+    <button onclick="cmd('underline')"><u>U</u></button>
+    <button onclick="cmd('strikeThrough')">S</button>
+
+    <button onclick="cmd('insertUnorderedList')">• Liste</button>
+    <button onclick="cmd('insertOrderedList')">1. Liste</button>
+
+    <button onclick="cmd('justifyLeft')">Links</button>
+    <button onclick="cmd('justifyCenter')">Mitte</button>
+    <button onclick="cmd('justifyRight')">Rechts</button>
+
+    <button onclick="insertLink()">Link</button>
+    <button onclick="insertImage()">Bild</button>
+
+    <button onclick="showHTML()">HTML anzeigen</button>
+    <button onclick="clearEditor()">Leeren</button>
+  </div>
+
+  <div id="editor" contenteditable="true">
+    <h2>Willkommen 👋</h2>
+    <p>Hier kannst du Text schreiben und formatieren.</p>
+  </div>
+
+  <div class="footer">
+    <span id="wordCount">0 Wörter</span>
+    <span>Einfacher HTML‑Editor</span>
+  </div>
+</div>
+
+<script>
+  const editor = document.getElementById('editor');
+  const wordCount = document.getElementById('wordCount');
+
+  function cmd(command, value = null) {
+    document.execCommand(command, false, value);
+    editor.focus();
+  }
+
+  function insertLink() {
+    const url = prompt('URL eingeben:');
+    if (url) cmd('createLink', url);
+  }
+
+  function insertImage() {
+    const url = prompt('Bild-URL eingeben:');
+    if (url) cmd('insertImage', url);
+  }
+
+  function clearEditor() {
+    if (confirm('Text wirklich löschen?')) {
+      editor.innerHTML = '';
+    }
+  }
+
+  function showHTML() {
+    const html = editor.innerHTML;
+    const win = window.open('', '_blank');
+    win.document.write('<pre>' + escapeHtml(html) + '</pre>');
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  editor.addEventListener('input', updateWordCount);
+
+  function updateWordCount() {
+    const text = editor.innerText.trim();
+    const count = text ? text.split(/\s+/).length : 0;
+    wordCount.textContent = count + ' Wörter';
+  }
+
+  updateWordCount();
+</script>
+
+</body>
+</html>
